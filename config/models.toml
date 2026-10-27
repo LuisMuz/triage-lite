@@ -1,0 +1,10 @@
+[client]
+timeout_seconds = 60.0
+
+[stages.classify]
+model_id = "global.anthropic.claude-haiku-4-5-20251001-v1:0"
+max_tokens = 4096
+# Haiku 5.5, once the quota lands. Haiku 4.5 takes neither field.
+# model_id = "global.anthropic.claude-haiku-5-5"
+# thinking = "disabled"
+# effort = "low"

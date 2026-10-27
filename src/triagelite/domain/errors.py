@@ -9,6 +9,10 @@ class TriageError(Exception):
     """Base class for every error this package raises on purpose."""
 
 
+class ConfigError(TriageError):
+    """Configuration or prompt files are inconsistent (missing price, unknown variable…)."""
+
+
 class InputValidationError(TriageError):
     """Input data (CSV, event, config) failed validation at a boundary."""
 

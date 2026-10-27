@@ -6,8 +6,12 @@ from pydantic import DirectoryPath
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from triagelite.domain.taxonomy import Taxonomy
+from triagelite.llm.config import ModelsConfig
+from triagelite.llm.pricing import PriceTable
 
 TAXONOMY_FILE = "taxonomy.toml"
+MODELS_FILE = "models.toml"
+PRICING_FILE = "pricing.toml"
 
 
 class Settings(BaseSettings):
@@ -29,3 +33,12 @@ def get_settings() -> Settings:
 def load_taxonomy(settings: Settings) -> Taxonomy:
     """Read and validate the taxonomy file from the config directory."""
     return Taxonomy.from_toml((settings.config_dir / TAXONOMY_FILE).read_text(encoding="utf-8"))
+
+
+def load_llm_config(settings: Settings) -> tuple[ModelsConfig, PriceTable]:
+    """Read models and prices, failing at startup if any configured model has no price."""
+    models = ModelsConfig.from_toml((settings.config_dir / MODELS_FILE).read_text(encoding="utf-8"))
+    prices = PriceTable.from_toml((settings.config_dir / PRICING_FILE).read_text(encoding="utf-8"))
+    for stage in models.stages.values():
+        prices.price_for(stage.model_id)
+    return models, prices

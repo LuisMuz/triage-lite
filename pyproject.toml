@@ -76,8 +76,9 @@ testpaths = ["tests"]
 addopts = ["-ra", "--strict-markers", "--strict-config"]
 
 [tool.coverage.run]
-# Coverage gate applies to pure logic only (CLAUDE.md); add pipeline/ when it exists.
-source_pkgs = ["triagelite.domain"]
+# Gate covers pure logic (CLAUDE.md) plus llm/, whose retry logic is the riskiest code;
+# add pipeline/ when it exists.
+source_pkgs = ["triagelite.domain", "triagelite.llm"]
 branch = true
 
 [tool.coverage.report]

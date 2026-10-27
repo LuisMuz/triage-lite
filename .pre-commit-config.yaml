@@ -1,5 +1,3 @@
-# Ruff and mypy run through `uv run`, so hooks use the exact versions pinned in uv.lock
-# instead of a second, separately pinned copy. terraform fmt is added in week 3.
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0

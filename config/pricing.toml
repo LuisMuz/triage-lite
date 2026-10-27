@@ -1,0 +1,10 @@
+# USD per million tokens, used to compute LLMCallRecord.cost_usd from `usage`.
+# https://aws.amazon.com/bedrock/pricing/
+
+[models."global.anthropic.claude-haiku-4-5-20251001-v1:0"]
+input_per_mtok = 1.00
+output_per_mtok = 5.00
+
+[models."amazon.titan-embed-text-v2:0"]
+input_per_mtok = 0.02
+output_per_mtok = 0.00
