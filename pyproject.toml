@@ -1,0 +1,86 @@
+[project]
+name = "triagelite"
+version = "0.1.0"
+description = "Classify, deduplicate and summarize bilingual QA incidents with Claude on Amazon Bedrock."
+readme = "README.md"
+authors = [
+    { name = "LuisMuz", email = "luisangelsm04@hotmail.com" }
+]
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "anthropic[bedrock]>=2.2.0",
+    "boto3>=1.43.118",
+    "lingua-language-detector>=2.2.0",
+    "numpy>=2.5.4",
+    "pydantic>=2",
+    "pydantic-settings>=2.16.1",
+]
+
+[build-system]
+requires = ["uv_build>=0.8.22,<0.9.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "moto>=5.2.4",
+    "mypy>=2.4.0",
+    "pre-commit>=4.7.0",
+    "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.17.2",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = [
+    "E", "W", "F",  # pycodestyle, pyflakes
+    "I",            # import sorting
+    "B",            # bugbear
+    "UP",           # pyupgrade
+    "SIM",          # simplify
+    "RUF",          # ruff-specific
+    "N",            # naming
+    "S",            # bandit (security)
+    "PT",           # pytest style
+    "BLE",          # no blind except
+    "T20",          # no print
+    "D",            # docstrings
+]
+# Module/package/magic-method/__init__ docstrings add noise without information.
+ignore = ["D100", "D104", "D105", "D107"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101", "D"]
+# One-off check scripts print their results by design.
+"scripts/**" = ["T20"]
+
+[tool.mypy]
+strict = true
+python_version = "3.12"
+files = ["src", "tests", "scripts"]
+plugins = ["pydantic.mypy"]
+
+[tool.pydantic-mypy]
+init_forbid_extra = true
+init_typed = true
+warn_required_dynamic_aliases = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = ["-ra", "--strict-markers", "--strict-config"]
+
+[tool.coverage.run]
+# Coverage gate applies to pure logic only (CLAUDE.md); add pipeline/ when it exists.
+source_pkgs = ["triagelite.domain"]
+branch = true
+
+[tool.coverage.report]
+fail_under = 85
+show_missing = true
+skip_covered = true

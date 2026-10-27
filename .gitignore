@@ -1,0 +1,31 @@
+# Private docs and assistant config (TL-11)
+CLAUDE.md
+CLAUDE.local.md
+.claude/
+docs/
+
+# Secrets
+.env
+.env.*
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Build and run output
+build/
+dist/
+runs/
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+*.tfplan
+crash.log

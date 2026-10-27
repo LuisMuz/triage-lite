@@ -1,0 +1,31 @@
+# Label taxonomy for a fictional bilingual e-commerce app ("TiendaLite").
+# Definitions are sent to the model in the classify prompt, so write them as
+# decision rules, not descriptions. Severity and category keys must match the
+# enums in src/triagelite/domain/enums.py exactly; component keys are free-form
+# slugs checked at runtime.
+
+[severity]
+critical = "Data loss, payment failure, security breach or full outage of a core flow, with no workaround."
+high = "A core flow (login, cart, checkout, payments, search) is broken or wrong for many users, but a workaround exists."
+medium = "A non-core feature is broken, or a core flow misbehaves for a small group of users or in one environment."
+low = "Cosmetic, copy or minor usability issue; nothing is blocked."
+
+[category]
+functional = "The feature does the wrong thing or does not do what the user asked."
+ui = "Layout, styling, text, translation or accessibility problem; behavior is correct."
+performance = "Correct result but too slow, times out, or uses too many resources."
+security = "Exposure of data, broken authorization, injection, or leaked secrets/tokens."
+data = "Stored or displayed data is wrong, duplicated, missing or inconsistent."
+crash = "The app, page or process terminates, freezes, or shows an unhandled error."
+
+[component]
+auth = "Sign-up, login, logout, password reset, sessions and MFA."
+cart = "Adding, removing and updating items in the shopping cart."
+checkout = "Shipping address, delivery options and the order review steps."
+payments = "Card and wallet payments, refunds and payment confirmations."
+search = "Search box, results, filters and sorting."
+catalog = "Product pages, categories, prices, stock and images."
+notifications = "Emails, push notifications and SMS sent to users."
+profile = "User profile, addresses, saved cards and order history."
+admin = "Back-office tools used by staff to manage products, orders and users."
+api = "Public or partner REST API endpoints and webhooks."
