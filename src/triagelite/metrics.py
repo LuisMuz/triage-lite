@@ -1,10 +1,11 @@
 import logging
 
 from triagelite.domain.models import LLMCallRecord
+from triagelite.logs import log_fields
 
 CALL_LOGGER = logging.getLogger("triagelite.llm_calls")
 
 
 def log_call_record(record: LLMCallRecord) -> None:
-    """Emit one LLM call record as a single JSON log line (the default `CallRecorder`)."""
-    CALL_LOGGER.info(record.model_dump_json())
+    """Emit one LLM call record as structured log fields (the default `CallRecorder`)."""
+    CALL_LOGGER.info("llm_call", extra=log_fields(**record.model_dump(mode="json")))

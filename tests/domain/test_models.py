@@ -3,14 +3,16 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
-from triagelite.domain.enums import CallStatus, Category, Severity, Stage
+from triagelite.domain.enums import CallStatus, Category, Severity, Stage, TriageStatus
 from triagelite.domain.models import (
     RATIONALE_MAX_CHARS,
     Classification,
     ClassifyOutput,
     Incident,
+    IncidentClassification,
     LLMCallRecord,
     RawIncident,
+    RowError,
 )
 
 
@@ -198,3 +200,50 @@ class TestLLMCallRecord:
     def test_counters_cannot_be_negative(self, field: str, value: float) -> None:
         with pytest.raises(ValidationError, match=field):
             LLMCallRecord.model_validate(call_record_data(**{field: value}))
+
+
+class TestIncidentClassification:
+    def test_classified_needs_matching_labels(self) -> None:
+        result = IncidentClassification.model_validate(
+            {
+                "incident_id": "inc-001",
+                "status": "classified",
+                "classification": classification_data(),
+            }
+        )
+
+        assert result.status is TriageStatus.CLASSIFIED
+
+    @pytest.mark.parametrize(
+        "data",
+        [
+            {"incident_id": "inc-001", "status": "classified"},
+            {
+                "incident_id": "inc-002",
+                "status": "classified",
+                "classification": classification_data(),
+            },
+            {
+                "incident_id": "inc-001",
+                "status": "classified",
+                "classification": classification_data(),
+                "reason": "x",
+            },
+            {"incident_id": "inc-001", "status": "needs_manual"},
+            {
+                "incident_id": "inc-001",
+                "status": "needs_manual",
+                "reason": "x",
+                "classification": classification_data(),
+            },
+        ],
+        ids=["no-labels", "wrong-id", "reason-on-success", "no-reason", "labels-on-manual"],
+    )
+    def test_inconsistent_results_are_rejected(self, data: dict[str, Any]) -> None:
+        with pytest.raises(ValidationError, match="inconsistent"):
+            IncidentClassification.model_validate(data)
+
+
+def test_row_error_needs_at_least_one_message() -> None:
+    with pytest.raises(ValidationError, match="errors"):
+        RowError(line=2, errors=[])

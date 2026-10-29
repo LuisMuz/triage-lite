@@ -1,5 +1,7 @@
 .DEFAULT_GOAL := help
-.PHONY: help install lint format test check eval build deploy
+.PHONY: help install lint format test check run eval build deploy
+
+CSV ?= data/sample.csv
 
 help: ## List targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-10s %s\n", $$1, $$2}'
@@ -21,6 +23,9 @@ test: ## Unit tests with the coverage gate
 	uv run pytest --cov --cov-report=term-missing
 
 check: lint test ## Everything CI runs
+
+run: ## Classify a CSV locally with real Bedrock calls (CSV=path, default data/sample.csv)
+	uv run triagelite run $(CSV)
 
 eval: ## Run the eval harness
 	@echo "eval: not implemented yet" >&2; exit 1

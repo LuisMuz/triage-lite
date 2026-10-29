@@ -5,13 +5,17 @@ from typing import Literal
 from pydantic import DirectoryPath
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from triagelite.domain.enums import Stage
 from triagelite.domain.taxonomy import Taxonomy
 from triagelite.llm.config import ModelsConfig
 from triagelite.llm.pricing import PriceTable
+from triagelite.llm.prompts import PromptFile, load_prompt
+from triagelite.pipeline.config import PipelineConfig
 
 TAXONOMY_FILE = "taxonomy.toml"
 MODELS_FILE = "models.toml"
 PRICING_FILE = "pricing.toml"
+PIPELINE_FILE = "pipeline.toml"
 
 
 class Settings(BaseSettings):
@@ -20,6 +24,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="TRIAGELITE_", extra="forbid", frozen=True)
 
     config_dir: DirectoryPath = Path("config")
+    prompts_dir: DirectoryPath = Path("prompts")
     aws_region: str = "us-east-1"
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = "INFO"
 
@@ -42,3 +47,14 @@ def load_llm_config(settings: Settings) -> tuple[ModelsConfig, PriceTable]:
     for stage in models.stages.values():
         prices.price_for(stage.model_id)
     return models, prices
+
+
+def load_pipeline_config(settings: Settings) -> PipelineConfig:
+    """Read and validate the pipeline file from the config directory."""
+    path = settings.config_dir / PIPELINE_FILE
+    return PipelineConfig.from_toml(path.read_text(encoding="utf-8"))
+
+
+def load_stage_prompt(settings: Settings, stage: Stage, version: int) -> PromptFile:
+    """Load `prompts/<stage>/v<version>.md`."""
+    return load_prompt(settings.prompts_dir / stage / f"v{version}.md")

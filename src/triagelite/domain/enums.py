@@ -37,3 +37,18 @@ class CallStatus(StrEnum):
     VALIDATION_ERROR = "validation_error"
     RATE_LIMITED = "rate_limited"
     PROVIDER_ERROR = "provider_error"
+
+
+class PiiKind(StrEnum):
+    """Kinds of personal or secret data replaced before text reaches a model."""
+
+    EMAIL = "email"
+    PHONE = "phone"
+    CREDENTIAL = "credential"
+
+
+class TriageStatus(StrEnum):
+    """Final state of one incident after the classify stage."""
+
+    CLASSIFIED = "classified"
+    NEEDS_MANUAL = "needs_manual"

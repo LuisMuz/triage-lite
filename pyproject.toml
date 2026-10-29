@@ -16,6 +16,9 @@ dependencies = [
     "pydantic-settings>=2.16.1",
 ]
 
+[project.scripts]
+triagelite = "triagelite.cli:main"
+
 [build-system]
 requires = ["uv_build>=0.8.22,<0.9.0"]
 build-backend = "uv_build"
@@ -76,9 +79,7 @@ testpaths = ["tests"]
 addopts = ["-ra", "--strict-markers", "--strict-config"]
 
 [tool.coverage.run]
-# Gate covers pure logic (CLAUDE.md) plus llm/, whose retry logic is the riskiest code;
-# add pipeline/ when it exists.
-source_pkgs = ["triagelite.domain", "triagelite.llm"]
+source_pkgs = ["triagelite.domain", "triagelite.llm", "triagelite.pipeline"]
 branch = true
 
 [tool.coverage.report]

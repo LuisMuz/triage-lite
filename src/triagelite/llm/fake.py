@@ -1,20 +1,21 @@
 """Scripted stand-in for Claude, so tests and dry runs never touch the network."""
 
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 
 from pydantic import JsonValue
 
 from triagelite.domain.errors import LLMProviderError, LLMRateLimitError
 from triagelite.llm.types import ModelRequest, ModelResponse, ToolCall
 
-type ScriptStep = ModelResponse | LLMRateLimitError | LLMProviderError
+type Responder = Callable[[ModelRequest], ModelResponse]
+type ScriptStep = ModelResponse | Responder | LLMRateLimitError | LLMProviderError
 
 DEFAULT_INPUT_TOKENS = 1_000
 DEFAULT_OUTPUT_TOKENS = 200
 
 
 class FakeLLMClient:
-    """`LLMClient` that replays a script: each call returns (or raises) the next step."""
+    """`LLMClient` that replays a script: each call returns, raises or computes the next step."""
 
     def __init__(self, script: Iterable[ScriptStep]) -> None:
         self._script = list(script)
@@ -29,7 +30,9 @@ class FakeLLMClient:
         step = self._script.pop(0)
         if isinstance(step, LLMRateLimitError | LLMProviderError):
             raise step
-        return step
+        if isinstance(step, ModelResponse):
+            return step
+        return step(request)
 
 
 def tool_response(tool_name: str, payload: JsonValue) -> ModelResponse:
