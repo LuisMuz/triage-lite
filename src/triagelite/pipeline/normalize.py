@@ -61,6 +61,12 @@ def normalize(csv_text: str, config: NormalizeConfig) -> NormalizeResult:
         InputValidationError: the file as a whole is unusable (bad header, no rows).
     """
     rows, row_errors = parse_csv(csv_text)
+    result = normalize_rows(rows, config)
+    return result.model_copy(update={"row_errors": row_errors})
+
+
+def normalize_rows(rows: Sequence[RawIncident], config: NormalizeConfig) -> NormalizeResult:
+    """Scrub and language-tag rows that are already validated; IDs follow the given order."""
     redactions: Counter[PiiKind] = Counter()
 
     def scrub(value: str) -> str:
@@ -103,7 +109,7 @@ def normalize(csv_text: str, config: NormalizeConfig) -> NormalizeResult:
     ]
     return NormalizeResult(
         incidents=incidents,
-        row_errors=row_errors,
+        row_errors=[],
         pii_redactions={kind: redactions[kind] for kind in PiiKind},
     )
 

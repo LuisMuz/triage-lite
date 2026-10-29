@@ -3,9 +3,11 @@
 
 CSV ?= data/sample.csv
 DATASET ?= seed-v1
+PROMPT ?= classify/v1
+REPEAT ?= 1
 
 help: ## List targets
-	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-10s %s\n", $$1, $$2}'
+	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-15s %s\n", $$1, $$2}'
 
 install: ## Install locked dependencies and the git hooks
 	uv sync --locked
@@ -34,8 +36,8 @@ eval-build: ## Freeze reviewed candidates into evals/datasets/$(DATASET) (once, 
 eval-validate: ## Check a frozen dataset: hashes, counts, cells, groups, labels
 	uv run python -m evals.validate $(DATASET)
 
-eval: ## Run the eval harness
-	@echo "eval: not implemented yet" >&2; exit 1
+eval: ## Run the eval harness on the tuning split (PROMPT=classify/v1, REPEAT=1)
+	uv run python -m evals.harness --dataset $(DATASET) --split tuning --prompt $(PROMPT) --repeat $(REPEAT)
 
 build: ## Build Lambda packages
 	@echo "build: not implemented yet" >&2; exit 1

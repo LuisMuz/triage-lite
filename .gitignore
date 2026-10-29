@@ -35,3 +35,6 @@ graphify-out/
 
 # LibreOffice lock files
 .~lock.*
+
+# Eval response cache (re-runs of unchanged configs are free)
+evals/cache/
