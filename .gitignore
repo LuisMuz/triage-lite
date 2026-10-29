@@ -32,3 +32,6 @@ crash.log
 
 # Local knowledge graph (graphify)
 graphify-out/
+
+# LibreOffice lock files
+.~lock.*

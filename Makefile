@@ -1,7 +1,8 @@
 .DEFAULT_GOAL := help
-.PHONY: help install lint format test check run eval build deploy
+.PHONY: help install lint format test check run eval-build eval-validate eval build deploy
 
 CSV ?= data/sample.csv
+DATASET ?= seed-v1
 
 help: ## List targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-10s %s\n", $$1, $$2}'
@@ -26,6 +27,12 @@ check: lint test ## Everything CI runs
 
 run: ## Classify a CSV locally with real Bedrock calls (CSV=path, default data/sample.csv)
 	uv run triagelite run $(CSV)
+
+eval-build: ## Freeze reviewed candidates into evals/datasets/$(DATASET) (once, never rebuilt)
+	uv run python -m evals.build $(DATASET)
+
+eval-validate: ## Check a frozen dataset: hashes, counts, cells, groups, labels
+	uv run python -m evals.validate $(DATASET)
 
 eval: ## Run the eval harness
 	@echo "eval: not implemented yet" >&2; exit 1

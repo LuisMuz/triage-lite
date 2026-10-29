@@ -1,0 +1,23 @@
+{
+  "name": "seed-v1",
+  "created_at": "2026-10-29T03:59:14+00:00",
+  "spec": {
+    "total": 120,
+    "per_split": 60,
+    "min_per_cell": 8,
+    "min_duplicate_groups": 20,
+    "min_cross_language_groups": 6,
+    "min_hand_written": 10
+  },
+  "sha256": {
+    "incidents.jsonl": "db8b4282aa8fffb2115607d63dd74002d4b60bd34f7d6d78f76d9ca0f862d567",
+    "labels.jsonl": "79d0c0f1d06910d4eb4dd1015b8a9bfd3183c31b1a58abe8aaf7fbb6a6f9223f"
+  },
+  "counts": {
+    "items": 120,
+    "split.tuning": 60,
+    "split.holdout": 60,
+    "source.synthetic": 110,
+    "source.hand_written": 10
+  }
+}

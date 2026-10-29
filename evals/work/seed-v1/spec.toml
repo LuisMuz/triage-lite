@@ -1,0 +1,6 @@
+total = 120
+per_split = 60
+min_per_cell = 8
+min_duplicate_groups = 20
+min_cross_language_groups = 6
+min_hand_written = 10
