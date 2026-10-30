@@ -1,7 +1,7 @@
-"""Classification quality, calibration, cost and latency for one eval run. Pure functions."""
+"""Classify and dedupe quality, calibration, cost and latency for one eval run. Pure functions."""
 
 from collections import defaultdict
-from collections.abc import Callable, Mapping, Sequence
+from collections.abc import Callable, Iterable, Mapping, Sequence
 from typing import Annotated
 
 import numpy as np
@@ -223,4 +223,88 @@ def compute_metrics(
         cost_per_100_incidents_usd=cost / len(predictions) * PER_HUNDRED if predictions else 0.0,
         latency_p50_ms=float(np.percentile(latencies, P50)),
         latency_p95_ms=float(np.percentile(latencies, P95)),
+    )
+
+
+type UnorderedPair = frozenset[str]
+
+
+class DedupeMetrics(StrictModel):
+    """Dedupe quality on cluster-implied pairs: every pair inside a cluster is a claim."""
+
+    clusters: NonNegativeInt
+    largest_cluster: NonNegativeInt
+    predicted_pairs: NonNegativeInt
+    gold_pairs: NonNegativeInt
+    true_pairs: NonNegativeInt
+    precision: Interval
+    recall: Interval
+
+
+def implied_pairs(groups: Iterable[Sequence[str]]) -> set[UnorderedPair]:
+    """Every unordered pair of members inside each group."""
+    return {
+        frozenset((group[i], group[j]))
+        for group in groups
+        for i in range(len(group))
+        for j in range(i + 1, len(group))
+    }
+
+
+def connected_pair_groups(
+    predicted: set[UnorderedPair], gold: set[UnorderedPair]
+) -> list[list[tuple[bool, bool]]]:
+    """`(predicted, gold)` flags per pair, grouped by connected incidents.
+
+    Pairs that share incidents are not independent evidence (one wrong merge creates several
+    wrong pairs), so the bootstrap resamples these groups, not single pairs.
+    """
+    neighbours: dict[str, set[str]] = defaultdict(set)
+    for pair in predicted | gold:
+        first, second = sorted(pair)
+        neighbours[first].add(second)
+        neighbours[second].add(first)
+    seen: set[str] = set()
+    groups: list[list[tuple[bool, bool]]] = []
+    for start in sorted(neighbours):
+        if start in seen:
+            continue
+        component, frontier = {start}, [start]
+        while frontier:
+            for nxt in neighbours[frontier.pop()] - component:
+                component.add(nxt)
+                frontier.append(nxt)
+        seen |= component
+        pairs = sorted((p for p in predicted | gold if p <= component), key=lambda p: sorted(p))
+        groups.append([(p in predicted, p in gold) for p in pairs])
+    return groups
+
+
+def pair_precision(rows: Sequence[tuple[bool, bool]]) -> float:
+    """Share of predicted pairs that are gold pairs."""
+    predicted = sum(pred for pred, _ in rows)
+    return sum(pred and gold for pred, gold in rows) / predicted if predicted else 0.0
+
+
+def pair_recall(rows: Sequence[tuple[bool, bool]]) -> float:
+    """Share of gold pairs that were predicted."""
+    gold = sum(g for _, g in rows)
+    return sum(pred and g for pred, g in rows) / gold if gold else 0.0
+
+
+def dedupe_metrics(
+    clusters: Sequence[Sequence[str]], gold_groups: Sequence[Sequence[str]]
+) -> DedupeMetrics:
+    """Precision and recall of cluster-implied pairs against gold-group pairs, with CIs."""
+    predicted, gold = implied_pairs(clusters), implied_pairs(gold_groups)
+    groups = connected_pair_groups(predicted, gold)
+    multi = [cluster for cluster in clusters if len(cluster) > 1]
+    return DedupeMetrics(
+        clusters=len(multi),
+        largest_cluster=max((len(cluster) for cluster in multi), default=0),
+        predicted_pairs=len(predicted),
+        gold_pairs=len(gold),
+        true_pairs=len(predicted & gold),
+        precision=bootstrap_interval(groups, pair_precision),
+        recall=bootstrap_interval(groups, pair_recall),
     )

@@ -1,6 +1,5 @@
 from pathlib import Path
 
-import numpy as np
 import pytest
 
 from evals.build import build
@@ -16,7 +15,6 @@ from evals.similarity import (
     run_similarity,
     sweep,
     thresholds,
-    top_k_pairs,
     write_report,
 )
 from tests.evals.test_dataset import base_rows, write_work
@@ -64,17 +62,6 @@ def label(
 )
 def test_pair_kind(first: EvalLabel, second: EvalLabel, kind: PairKind) -> None:
     assert pair_kind(first, second) is kind
-
-
-def test_top_k_keeps_each_items_nearest_neighbours() -> None:
-    similarity = np.array(
-        [[1.0, 0.9, 0.1, 0.2], [0.9, 1.0, 0.3, 0.1], [0.1, 0.3, 1.0, 0.8], [0.2, 0.1, 0.8, 1.0]],
-        dtype=np.float32,
-    )
-
-    assert top_k_pairs(similarity, 1) == {(0, 1), (2, 3)}
-    assert (1, 2) in top_k_pairs(similarity, 2)
-    assert top_k_pairs(np.ones((1, 1), dtype=np.float32), 5) == set()
 
 
 def pair(kind: PairKind, similarity: float, in_top_k: bool = True) -> Pair:

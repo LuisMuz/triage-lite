@@ -19,6 +19,7 @@ from triagelite.llm.bedrock import BedrockEmbeddingClient
 from triagelite.llm.client import EmbeddingClient
 from triagelite.llm.config import EmbeddingConfig
 from triagelite.llm.types import EmbeddingRequest, EmbeddingResponse
+from triagelite.pipeline.dedupe import top_k_pairs
 from triagelite.pipeline.embed import Matrix, embed_incidents, similarity_matrix
 from triagelite.pipeline.normalize import normalize_rows
 from triagelite.settings import (
@@ -145,18 +146,6 @@ def pair_kind(first: EvalLabel, second: EvalLabel) -> PairKind:
     ):
         return PairKind.NEAR_MISS
     return PairKind.UNRELATED
-
-
-def top_k_pairs(similarity: Matrix, k: int) -> set[tuple[int, int]]:
-    """Index pairs (i < j) where either side is among the other's k most similar items."""
-    n = similarity.shape[0]
-    masked = similarity.astype(np.float64)
-    np.fill_diagonal(masked, -np.inf)
-    keep: set[tuple[int, int]] = set()
-    for i in range(n):
-        for j in np.argsort(-masked[i])[: min(k, n - 1)]:
-            keep.add((min(i, int(j)), max(i, int(j))))
-    return keep
 
 
 def labelled_pairs(

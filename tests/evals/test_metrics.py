@@ -7,8 +7,13 @@ from evals.metrics import (
     calibration_table,
     compute_metrics,
     confusion_matrix,
+    connected_pair_groups,
+    dedupe_metrics,
     first_try_rate,
+    implied_pairs,
     macro_f1,
+    pair_precision,
+    pair_recall,
     per_class_metrics,
 )
 from triagelite.domain.enums import CallStatus, Severity, Stage
@@ -172,3 +177,40 @@ def test_compute_metrics_end_to_end() -> None:
     assert metrics.latency_p50_ms == 200
     assert metrics.severity_macro_f1.low <= metrics.severity_macro_f1.value
     assert metrics.confusion["low"]["needs_manual"] == 1
+
+
+def fs(a: str, b: str) -> frozenset[str]:
+    return frozenset((a, b))
+
+
+class TestDedupeMetrics:
+    def test_a_cluster_implies_every_pair_inside_it(self) -> None:
+        assert implied_pairs([["a", "b", "c"], ["d"]]) == {fs("a", "b"), fs("a", "c"), fs("b", "c")}
+
+    def test_precision_and_recall_on_implied_pairs(self) -> None:
+        metrics = dedupe_metrics([["a", "b", "c"], ["d"], ["e"]], [["a", "b"], ["d", "e"]])
+
+        assert (metrics.predicted_pairs, metrics.gold_pairs, metrics.true_pairs) == (3, 2, 1)
+        assert metrics.precision.value == pytest.approx(1 / 3)
+        assert metrics.recall.value == pytest.approx(1 / 2)
+        assert (metrics.clusters, metrics.largest_cluster) == (1, 3)
+        assert metrics.precision.low <= metrics.precision.value <= metrics.precision.high
+
+    def test_nothing_predicted_or_gold_is_all_zero(self) -> None:
+        metrics = dedupe_metrics([["a"], ["b"]], [])
+
+        assert (metrics.predicted_pairs, metrics.clusters, metrics.largest_cluster) == (0, 0, 0)
+        assert metrics.precision.value == metrics.recall.value == 0.0
+
+    def test_pairs_sharing_incidents_are_resampled_together(self) -> None:
+        predicted = {fs("a", "b"), fs("b", "c"), fs("x", "y")}
+        gold = {fs("a", "b"), fs("p", "q")}
+
+        groups = connected_pair_groups(predicted, gold)
+
+        assert sorted(map(len, groups)) == [1, 1, 2]
+        assert [(True, True), (True, False)] in groups
+
+    def test_pair_rates_handle_empty_denominators(self) -> None:
+        assert pair_precision([(False, True)]) == 0.0
+        assert pair_recall([(True, False)]) == 0.0

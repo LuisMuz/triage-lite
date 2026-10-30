@@ -1,8 +1,6 @@
 """Classify one chunk of incidents: model call, business checks, one targeted re-ask."""
 
-from collections import Counter
 from collections.abc import Mapping, Sequence
-from dataclasses import dataclass
 from html import escape
 
 from triagelite.domain.enums import TriageStatus
@@ -16,16 +14,9 @@ from triagelite.domain.models import (
 from triagelite.domain.taxonomy import Taxonomy
 from triagelite.llm.prompts import PromptFile
 from triagelite.llm.structured import StructuredLLM
+from triagelite.pipeline.checks import AnswerCheck, check_answer_ids
 
 INCIDENTS_VARIABLE = "incidents"
-
-
-@dataclass(frozen=True)
-class BusinessCheck:
-    """Items that passed the business rules, and a reason for every expected ID that didn't."""
-
-    valid: dict[str, Classification]
-    problems: dict[str, str]
 
 
 def classify_chunk(
@@ -61,7 +52,7 @@ def _ask(
     *,
     batch_id: str,
     feedback: Sequence[str],
-) -> BusinessCheck:
+) -> AnswerCheck[Classification]:
     expected = {incident.incident_id for incident in incidents}
     variables = taxonomy_variables(taxonomy) | {INCIDENTS_VARIABLE: render_incidents(incidents)}
     try:
@@ -70,31 +61,23 @@ def _ask(
         )
     except LLMOutputValidationError as error:
         reason = f"model output failed validation twice ({error})"
-        return BusinessCheck(valid={}, problems=dict.fromkeys(sorted(expected), reason))
+        return AnswerCheck(valid={}, problems=dict.fromkeys(sorted(expected), reason))
     return check_business_rules(result.output, expected, taxonomy)
 
 
 def check_business_rules(
     output: ClassifyOutput, expected_ids: set[str], taxonomy: Taxonomy
-) -> BusinessCheck:
+) -> AnswerCheck[Classification]:
     """Keep items whose ID was asked for exactly once and whose component exists."""
-    counts = Counter(item.incident_id for item in output.items)
+    check = check_answer_ids(output.items, lambda item: item.incident_id, expected_ids)
     valid: dict[str, Classification] = {}
-    problems: dict[str, str] = {}
-    for item in output.items:
-        if item.incident_id not in expected_ids:
-            continue
-        if counts[item.incident_id] > 1:
-            problems[item.incident_id] = "answered more than once; answer exactly once"
-        elif not taxonomy.has_component(item.component):
-            problems[item.incident_id] = (
-                f"component {item.component!r} is not in the list of components"
-            )
+    problems = dict(check.problems)
+    for incident_id, item in check.valid.items():
+        if taxonomy.has_component(item.component):
+            valid[incident_id] = item
         else:
-            valid[item.incident_id] = item
-    for missing in sorted(expected_ids - counts.keys()):
-        problems[missing] = "missing from your answer"
-    return BusinessCheck(valid=valid, problems=problems)
+            problems[incident_id] = f"component {item.component!r} is not in the list of components"
+    return AnswerCheck(valid=valid, problems=problems)
 
 
 def _outcome(
@@ -128,10 +111,11 @@ def _bullets[K: str](definitions: Mapping[K, str]) -> str:
 
 def render_incidents(incidents: Sequence[Incident]) -> str:
     """Incidents as `<incident id="...">` blocks; text is escaped so it can't close a tag."""
-    return "\n".join(_render_incident(incident) for incident in incidents)
+    return "\n".join(render_incident(incident) for incident in incidents)
 
 
-def _render_incident(incident: Incident) -> str:
+def render_incident(incident: Incident) -> str:
+    """One incident as an `<incident>` block with escaped text."""
     parts = [
         f'<incident id="{escape(incident.incident_id)}" lang="{incident.lang}">',
         f"<title>{escape(incident.title, quote=False)}</title>",

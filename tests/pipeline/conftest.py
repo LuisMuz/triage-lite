@@ -75,3 +75,26 @@ def answer_all(component: str = "checkout") -> Responder:
         return tool_response(CLASSIFY_TOOL, {"items": items})
 
     return respond
+
+
+JUDGE_TOOL = "submit_judgements"
+PAIR_ID = re.compile(r'<pair id="(p-\d+)"')
+
+
+def judgement_item(pair_id: str, is_duplicate: bool = True) -> dict[str, JsonValue]:
+    return {
+        "pair_id": pair_id,
+        "rationale": "Both report the same 500 when placing an order.",
+        "is_duplicate": is_duplicate,
+        "confidence": 0.8,
+    }
+
+
+def judge_all(is_duplicate: bool = True) -> Responder:
+    def respond(request: ModelRequest) -> ModelResponse:
+        items: list[JsonValue] = [
+            judgement_item(pair_id, is_duplicate) for pair_id in PAIR_ID.findall(request.user)
+        ]
+        return tool_response(JUDGE_TOOL, {"items": items})
+
+    return respond

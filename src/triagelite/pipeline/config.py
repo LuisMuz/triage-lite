@@ -17,6 +17,7 @@ class PromptVersions(StrictModel):
     """Which prompt version each LLM stage uses."""
 
     classify: PositiveInt
+    dedupe_judge: PositiveInt
 
 
 class LocalRetryConfig(StrictModel):
@@ -28,10 +29,13 @@ class LocalRetryConfig(StrictModel):
 
 
 class DedupeConfig(StrictModel):
-    """Candidate-pair limits for duplicate detection (TL-06, TL-21)."""
+    """Candidate pairs, judge batching and cluster limits for duplicate detection (TL-06)."""
 
     top_k: PositiveInt
     similarity_threshold: Probability
+    max_pairs: PositiveInt
+    judge_chunk_size: PositiveInt
+    max_cluster_size: Annotated[int, Field(ge=2)]
 
 
 class PipelineConfig(StrictModel):

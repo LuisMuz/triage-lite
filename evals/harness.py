@@ -25,7 +25,7 @@ from evals.dataset import (
 from evals.metrics import ClassifyMetrics, ItemPrediction, compute_metrics
 from evals.report import render_markdown
 from evals.validate import validate
-from triagelite.cli import Sleep, classify_with_backoff
+from triagelite.cli import classify_with_backoff
 from triagelite.domain.enums import Stage, TriageStatus
 from triagelite.domain.models import (
     Incident,
@@ -41,6 +41,7 @@ from triagelite.llm.client import LLMClient
 from triagelite.llm.config import StageModelConfig
 from triagelite.llm.prompts import PromptFile
 from triagelite.llm.structured import StructuredLLM
+from triagelite.pipeline.backoff import Sleep
 from triagelite.pipeline.classify import render_incidents
 from triagelite.pipeline.normalize import chunked, normalize_rows
 from triagelite.settings import (

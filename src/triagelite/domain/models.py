@@ -82,6 +82,73 @@ class ClassifyOutput(StrictModel):
     items: Annotated[list[Classification], Field(min_length=1)]
 
 
+class CandidatePair(StrictModel):
+    """Two incidents close enough as vectors to be judged; `first_id` was reported earlier."""
+
+    pair_id: NonEmptyStr
+    first_id: NonEmptyStr
+    second_id: NonEmptyStr
+    similarity: float
+
+
+class PairJudgement(StrictModel):
+    """The judge's decision on one pair; `rationale` comes first so the answer follows it."""
+
+    pair_id: NonEmptyStr
+    rationale: Annotated[str, Field(min_length=1, max_length=RATIONALE_MAX_CHARS)]
+    is_duplicate: bool
+    confidence: Probability
+
+
+class JudgeOutput(StrictModel):
+    """Tool input for `submit_judgements`: one item per pair in the chunk."""
+
+    items: Annotated[list[PairJudgement], Field(min_length=1)]
+
+
+class PairVerdict(StrictModel):
+    """Outcome of judging one candidate pair: a judgement, or why there is none."""
+
+    pair: CandidatePair
+    judgement: PairJudgement | None = None
+    reason: str | None = None
+
+    @model_validator(mode="after")
+    def _judgement_or_reason(self) -> Self:
+        """Judged pairs carry their own judgement; unjudged pairs carry only a reason."""
+        if self.judgement is not None:
+            ok = self.judgement.pair_id == self.pair.pair_id and self.reason is None
+        else:
+            ok = bool(self.reason)
+        if not ok:
+            msg = f"inconsistent verdict for {self.pair.pair_id}"
+            raise ValueError(msg)
+        return self
+
+    @property
+    def is_duplicate(self) -> bool:
+        """Only a judged `true` merges; an unjudged pair stays apart."""
+        return self.judgement is not None and self.judgement.is_duplicate
+
+
+class DuplicateCluster(StrictModel):
+    """A canonical incident and every incident confirmed as its duplicate (canonical first)."""
+
+    cluster_id: NonEmptyStr
+    canonical_id: NonEmptyStr
+    member_ids: Annotated[list[NonEmptyStr], Field(min_length=1)]
+
+    @model_validator(mode="after")
+    def _canonical_leads(self) -> Self:
+        """The canonical is the first member and nobody appears twice."""
+        if self.member_ids[0] != self.canonical_id or len(set(self.member_ids)) != len(
+            self.member_ids
+        ):
+            msg = f"cluster {self.cluster_id} must start with its canonical and have unique members"
+            raise ValueError(msg)
+        return self
+
+
 class LLMCallRecord(StrictModel):
     """One structured log record per model call attempt, including failed ones."""
 
@@ -154,3 +221,9 @@ class RunSummary(StrictModel):
     cost_usd: Annotated[float, Field(ge=0.0)]
     cost_per_100_incidents_usd: Annotated[float, Field(ge=0.0)]
     pii_redactions: dict[PiiKind, NonNegativeInt]
+    candidate_pairs: NonNegativeInt
+    pairs_dropped_by_cap: NonNegativeInt
+    confirmed_pairs: NonNegativeInt
+    unjudged_pairs: NonNegativeInt
+    clusters: NonNegativeInt
+    duplicate_incidents: NonNegativeInt

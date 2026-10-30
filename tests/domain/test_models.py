@@ -6,11 +6,16 @@ from pydantic import ValidationError
 from triagelite.domain.enums import CallStatus, Category, Severity, Stage, TriageStatus
 from triagelite.domain.models import (
     RATIONALE_MAX_CHARS,
+    CandidatePair,
     Classification,
     ClassifyOutput,
+    DuplicateCluster,
     Incident,
     IncidentClassification,
+    JudgeOutput,
     LLMCallRecord,
+    PairJudgement,
+    PairVerdict,
     RawIncident,
     RowError,
 )
@@ -247,3 +252,50 @@ class TestIncidentClassification:
 def test_row_error_needs_at_least_one_message() -> None:
     with pytest.raises(ValidationError, match="errors"):
         RowError(line=2, errors=[])
+
+
+PAIR = CandidatePair(pair_id="p-0001", first_id="inc-1", second_id="inc-2", similarity=0.8)
+
+
+def judgement(pair_id: str = "p-0001", is_duplicate: bool = True) -> PairJudgement:
+    return PairJudgement(
+        pair_id=pair_id,
+        rationale="Same 500 on checkout.",
+        is_duplicate=is_duplicate,
+        confidence=0.9,
+    )
+
+
+class TestJudgeModels:
+    def test_schema_lists_rationale_before_the_answer(self) -> None:
+        fields = list(PairJudgement.model_json_schema()["properties"])
+
+        assert fields.index("rationale") < fields.index("is_duplicate")
+
+    def test_empty_judge_output_is_rejected(self) -> None:
+        with pytest.raises(ValidationError):
+            JudgeOutput(items=[])
+
+    def test_judged_verdict_merges_only_when_true(self) -> None:
+        assert PairVerdict(pair=PAIR, judgement=judgement()).is_duplicate
+        assert not PairVerdict(pair=PAIR, judgement=judgement(is_duplicate=False)).is_duplicate
+        assert not PairVerdict(pair=PAIR, reason="model unavailable").is_duplicate
+
+    @pytest.mark.parametrize(
+        "data",
+        [
+            {"judgement": judgement(pair_id="p-0002")},
+            {"judgement": judgement(), "reason": "both"},
+            {},
+        ],
+    )
+    def test_inconsistent_verdict_is_rejected(self, data: dict[str, Any]) -> None:
+        with pytest.raises(ValidationError, match="inconsistent verdict"):
+            PairVerdict(pair=PAIR, **data)
+
+    @pytest.mark.parametrize("members", [["inc-2", "inc-1"], ["inc-1", "inc-1"]])
+    def test_cluster_starts_with_its_canonical_and_has_unique_members(
+        self, members: list[str]
+    ) -> None:
+        with pytest.raises(ValidationError, match="must start with its canonical"):
+            DuplicateCluster(cluster_id="cl-0001", canonical_id="inc-1", member_ids=members)

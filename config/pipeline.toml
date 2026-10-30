@@ -4,6 +4,7 @@ min_language_confidence = 0.7
 
 [prompts]
 classify = 1
+dedupe_judge = 1
 
 [local_retry]
 max_attempts = 4
@@ -13,3 +14,6 @@ backoff_rate = 2.0
 [dedupe]
 top_k = 5
 similarity_threshold = 0.30
+max_pairs = 400
+judge_chunk_size = 10
+max_cluster_size = 8

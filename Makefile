@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help install lint format test check run eval-build eval-validate eval eval-similarity build deploy
+.PHONY: help install lint format test check run eval-build eval-validate eval eval-similarity eval-dedupe build deploy
 
 CSV ?= data/sample.csv
 DATASET ?= seed-v1
@@ -41,6 +41,9 @@ eval: ## Run the eval harness on the tuning split (PROMPT=classify/v1, REPEAT=1)
 
 eval-similarity: ## Embed the tuning split and sweep dedupe thresholds (plot + table)
 	uv run python -m evals.similarity --dataset $(DATASET)
+
+eval-dedupe: ## Dedupe precision/recall on the tuning split, with and without the judge
+	uv run python -m evals.dedupe --dataset $(DATASET) --split tuning
 
 build: ## Build Lambda packages
 	@echo "build: not implemented yet" >&2; exit 1
