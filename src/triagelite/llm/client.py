@@ -1,7 +1,7 @@
 from typing import Protocol
 
 from triagelite.domain.models import LLMCallRecord
-from triagelite.llm.types import ModelRequest, ModelResponse
+from triagelite.llm.types import EmbeddingRequest, EmbeddingResponse, ModelRequest, ModelResponse
 
 
 class LLMClient(Protocol):
@@ -9,6 +9,19 @@ class LLMClient(Protocol):
 
     def complete(self, request: ModelRequest) -> ModelResponse:
         """Send `request`.
+
+        Raises:
+            LLMRateLimitError: the provider throttled the call.
+            LLMProviderError: the provider failed; `retryable` says whether backoff can help.
+        """
+        ...
+
+
+class EmbeddingClient(Protocol):
+    """Transport for one embedding call; no retries."""
+
+    def embed(self, request: EmbeddingRequest) -> EmbeddingResponse:
+        """Embed one text.
 
         Raises:
             LLMRateLimitError: the provider throttled the call.

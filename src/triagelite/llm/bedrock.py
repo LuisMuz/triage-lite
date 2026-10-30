@@ -1,8 +1,10 @@
-"""Claude on Bedrock. Anthropic SDK."""
+"""Claude and Titan on Bedrock: the only module that imports the Bedrock SDKs."""
 
-from typing import Self
+import json
+from typing import TYPE_CHECKING, Self
 
 import anthropic
+import boto3
 from anthropic import AnthropicBedrock
 from anthropic.types import (
     Message,
@@ -11,10 +13,23 @@ from anthropic.types import (
     ThinkingConfigDisabledParam,
     ToolParam,
 )
+from botocore.config import Config
+from botocore.exceptions import BotoCoreError, ClientError, HTTPClientError
+from botocore.exceptions import ConnectionError as BotoConnectionError
+from pydantic import BaseModel, ConfigDict, Field
 
 from triagelite.domain.errors import LLMProviderError, LLMRateLimitError, TriageError
-from triagelite.llm.types import ModelRequest, ModelResponse, ToolCall
+from triagelite.llm.types import (
+    EmbeddingRequest,
+    EmbeddingResponse,
+    ModelRequest,
+    ModelResponse,
+    ToolCall,
+)
 from triagelite.settings import Settings
+
+if TYPE_CHECKING:
+    from mypy_boto3_bedrock_runtime import BedrockRuntimeClient
 
 FIRST_SERVER_ERROR_STATUS = 500
 
@@ -90,3 +105,69 @@ def to_model_response(message: Message) -> ModelResponse:
         input_tokens=message.usage.input_tokens,
         output_tokens=message.usage.output_tokens,
     )
+
+
+class TitanEmbeddingBody(BaseModel):
+    """The fields we use from a Titan embeddings response; the provider may add others."""
+
+    model_config = ConfigDict(extra="ignore", frozen=True)
+
+    embedding: list[float]
+    input_text_token_count: int = Field(alias="inputTextTokenCount", ge=0)
+
+
+class BedrockEmbeddingClient:
+    """`EmbeddingClient` for Titan Text Embeddings via boto3 `invoke_model`."""
+
+    def __init__(self, runtime: "BedrockRuntimeClient") -> None:
+        self._runtime = runtime
+        errors = runtime.exceptions
+        self._throttled = (errors.ThrottlingException, errors.ServiceQuotaExceededException)
+        self._transient = (
+            errors.InternalServerException,
+            errors.ServiceUnavailableException,
+            errors.ModelNotReadyException,
+            errors.ModelTimeoutException,
+        )
+
+    @classmethod
+    def from_settings(cls, settings: Settings, timeout_seconds: float) -> Self:
+        """Client with botocore retries off: every attempt is recorded, backoff is ours."""
+        config = Config(
+            retries={"total_max_attempts": 1},
+            read_timeout=timeout_seconds,
+            connect_timeout=timeout_seconds,
+        )
+        return cls(boto3.client("bedrock-runtime", region_name=settings.aws_region, config=config))
+
+    def embed(self, request: EmbeddingRequest) -> EmbeddingResponse:
+        """Embed one text; map errors by exception type, never by message."""
+        body = {
+            "inputText": request.text,
+            "dimensions": request.dimensions,
+            "normalize": request.normalize,
+        }
+        try:
+            response = self._runtime.invoke_model(
+                modelId=request.model_id,
+                body=json.dumps(body),
+                contentType="application/json",
+                accept="application/json",
+            )
+        except self._throttled as error:
+            raise LLMRateLimitError(str(error)) from error
+        except self._transient as error:
+            raise LLMProviderError(str(error), retryable=True) from error
+        except ClientError as error:
+            raise LLMProviderError(str(error), retryable=False) from error
+        except (BotoConnectionError, HTTPClientError) as error:
+            raise LLMProviderError(str(error), retryable=True) from error
+        except BotoCoreError as error:
+            raise LLMProviderError(str(error), retryable=False) from error
+        parsed = TitanEmbeddingBody.model_validate_json(response["body"].read())
+        if len(parsed.embedding) != request.dimensions:
+            msg = f"expected {request.dimensions} dimensions, got {len(parsed.embedding)}"
+            raise LLMProviderError(msg, retryable=False)
+        return EmbeddingResponse(
+            vector=tuple(parsed.embedding), input_tokens=parsed.input_text_token_count
+        )

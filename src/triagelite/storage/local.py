@@ -3,9 +3,22 @@
 from collections.abc import Iterable
 from pathlib import Path
 
+import numpy as np
 from pydantic import BaseModel
 
-from triagelite.domain.models import LLMCallRecord
+from triagelite.domain.models import LLMCallRecord, NonEmptyStr, StrictModel
+from triagelite.pipeline.embed import EmbeddingMatrix
+
+VECTORS_FILE = "vectors.npy"
+VECTORS_META_FILE = "vectors.json"
+
+
+class VectorsMeta(StrictModel):
+    """What produced a vectors file; vectors from different models or sizes don't compare."""
+
+    model_id: NonEmptyStr
+    dimensions: int
+    incident_ids: list[str]
 
 
 class LocalRunStore:
@@ -28,6 +41,29 @@ class LocalRunStore:
         path = self.run_dir / name
         path.write_text(item.model_dump_json(indent=2) + "\n", encoding="utf-8")
         return path
+
+    def write_vectors(self, matrix: EmbeddingMatrix) -> Path:
+        """Save vectors as `.npy` with their model, dimensions and row order alongside."""
+        np.save(self.run_dir / VECTORS_FILE, matrix.vectors)
+        meta = VectorsMeta(
+            model_id=matrix.model_id,
+            dimensions=matrix.dimensions,
+            incident_ids=list(matrix.incident_ids),
+        )
+        return self.write_json(VECTORS_META_FILE, meta)
+
+    def read_vectors(self) -> EmbeddingMatrix:
+        """Load vectors written by `write_vectors`."""
+        meta = VectorsMeta.model_validate_json(
+            (self.run_dir / VECTORS_META_FILE).read_text("utf-8")
+        )
+        vectors = np.load(self.run_dir / VECTORS_FILE).astype(np.float32)
+        return EmbeddingMatrix(
+            model_id=meta.model_id,
+            dimensions=meta.dimensions,
+            incident_ids=tuple(meta.incident_ids),
+            vectors=vectors,
+        )
 
     def call_recorder(self, name: str) -> "JsonlRecorder":
         """A `CallRecorder` that appends to `name`, emptied first so re-runs don't duplicate."""

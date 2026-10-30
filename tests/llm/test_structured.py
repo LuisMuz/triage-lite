@@ -1,6 +1,6 @@
 import pytest
 
-from tests.llm.conftest import MODEL_ID, TOOL, VARIABLES, valid_payload
+from tests.llm.conftest import EMBEDDING, MODEL_ID, TOOL, VARIABLES, valid_payload
 from triagelite.domain.enums import CallStatus, Severity
 from triagelite.domain.errors import (
     ConfigError,
@@ -226,7 +226,9 @@ def test_schema_mismatch_with_prompt_is_a_config_error(
 def test_unconfigured_stage_is_a_config_error(
     prompt: PromptFile, prices: PriceTable, recorded: list[LLMCallRecord]
 ) -> None:
-    no_stages = ModelsConfig.model_validate({"client": {"timeout_seconds": 30}, "stages": {}})
+    no_stages = ModelsConfig.model_validate(
+        {"client": {"timeout_seconds": 30}, "stages": {}, "embedding": EMBEDDING}
+    )
     _, llm = run([GOOD], prompt, no_stages, prices, recorded)
 
     with pytest.raises(ConfigError, match=r"stages\.classify"):

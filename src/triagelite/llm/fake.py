@@ -1,11 +1,19 @@
 """Scripted stand-in for Claude, so tests and dry runs never touch the network."""
 
+import hashlib
 from collections.abc import Callable, Iterable
 
+import numpy as np
 from pydantic import JsonValue
 
 from triagelite.domain.errors import LLMProviderError, LLMRateLimitError
-from triagelite.llm.types import ModelRequest, ModelResponse, ToolCall
+from triagelite.llm.types import (
+    EmbeddingRequest,
+    EmbeddingResponse,
+    ModelRequest,
+    ModelResponse,
+    ToolCall,
+)
 
 type Responder = Callable[[ModelRequest], ModelResponse]
 type ScriptStep = ModelResponse | Responder | LLMRateLimitError | LLMProviderError
@@ -57,3 +65,35 @@ def text_only() -> ModelResponse:
         input_tokens=DEFAULT_INPUT_TOKENS,
         output_tokens=DEFAULT_OUTPUT_TOKENS,
     )
+
+
+class FakeEmbeddingClient:
+    """`EmbeddingClient` with deterministic vectors: a seeded random unit vector per text.
+
+    `fixed` pins chosen texts to given vectors, so a test can control which pairs are close.
+    """
+
+    def __init__(
+        self,
+        fixed: dict[str, tuple[float, ...]] | None = None,
+        failures: Iterable[LLMRateLimitError | LLMProviderError] = (),
+    ) -> None:
+        self._fixed = fixed or {}
+        self._failures = list(failures)
+        self.requests: list[EmbeddingRequest] = []
+
+    def embed(self, request: EmbeddingRequest) -> EmbeddingResponse:
+        """Raise the next scripted failure, else return the pinned or seeded vector."""
+        self.requests.append(request)
+        if self._failures:
+            raise self._failures.pop(0)
+        vector = self._fixed.get(request.text) or _seeded_unit_vector(
+            request.text, request.dimensions
+        )
+        return EmbeddingResponse(vector=vector, input_tokens=len(request.text.split()))
+
+
+def _seeded_unit_vector(text: str, dimensions: int) -> tuple[float, ...]:
+    seed = int.from_bytes(hashlib.sha256(text.encode("utf-8")).digest()[:8], "big")
+    raw = np.random.default_rng(seed).normal(size=dimensions)
+    return tuple(float(x) for x in raw / np.linalg.norm(raw))

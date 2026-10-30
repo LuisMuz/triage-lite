@@ -3,7 +3,7 @@
 from pydantic import JsonValue, NonNegativeInt, PositiveFloat, PositiveInt
 
 from triagelite.domain.models import NonEmptyStr, StrictModel
-from triagelite.llm.config import Effort, Thinking
+from triagelite.llm.config import Effort, EmbeddingDimensions, Thinking
 
 
 class ToolSpec(StrictModel):
@@ -41,3 +41,19 @@ class ModelResponse(StrictModel):
     tool_calls: tuple[ToolCall, ...] = ()
     input_tokens: NonNegativeInt
     output_tokens: NonNegativeInt
+
+
+class EmbeddingRequest(StrictModel):
+    """One text to embed, with the model settings that make its vector comparable."""
+
+    model_id: NonEmptyStr
+    text: NonEmptyStr
+    dimensions: EmbeddingDimensions
+    normalize: bool
+
+
+class EmbeddingResponse(StrictModel):
+    """The vector and the tokens billed for it."""
+
+    vector: tuple[float, ...]
+    input_tokens: NonNegativeInt

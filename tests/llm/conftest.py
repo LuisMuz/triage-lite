@@ -8,6 +8,13 @@ from triagelite.llm.pricing import PriceTable
 from triagelite.llm.prompts import PromptFile
 
 MODEL_ID = "test-model"
+EMBED_MODEL_ID = "test-embed"
+EMBEDDING: dict[str, object] = {
+    "model_id": EMBED_MODEL_ID,
+    "dimensions": 1024,
+    "normalize": True,
+    "max_description_chars": 500,
+}
 TOOL = "submit_classifications"
 
 PROMPT_TEXT = f"""+++
@@ -39,6 +46,7 @@ def models() -> ModelsConfig:
         {
             "client": {"timeout_seconds": 30},
             "stages": {"classify": {"model_id": MODEL_ID, "max_tokens": 4096}},
+            "embedding": EMBEDDING,
         }
     )
 

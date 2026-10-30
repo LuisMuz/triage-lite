@@ -8,3 +8,9 @@ max_tokens = 4096
 # model_id = "global.anthropic.claude-haiku-5-5"
 # thinking = "disabled"
 # effort = "low"
+
+[embedding]
+model_id = "amazon.titan-embed-text-v2:0"
+dimensions = 1024
+normalize = true
+max_description_chars = 500

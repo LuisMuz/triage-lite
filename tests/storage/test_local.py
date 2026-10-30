@@ -1,8 +1,11 @@
 import json
 from pathlib import Path
 
+import numpy as np
+
 from triagelite.domain.enums import CallStatus, Stage
 from triagelite.domain.models import LLMCallRecord, RowError
+from triagelite.pipeline.embed import EmbeddingMatrix
 from triagelite.storage.local import LocalRunStore
 
 RECORD = LLMCallRecord(
@@ -53,3 +56,23 @@ def test_call_recorder_appends_and_starts_empty(tmp_path: Path) -> None:
 
     lines = (tmp_path / "calls.jsonl").read_text(encoding="utf-8").splitlines()
     assert [json.loads(line)["attempt"] for line in lines] == [1, 2]
+
+
+def test_vectors_round_trip_with_their_metadata(tmp_path: Path) -> None:
+    store = LocalRunStore(tmp_path)
+    matrix = EmbeddingMatrix(
+        model_id="titan",
+        dimensions=3,
+        incident_ids=("inc-0001", "inc-0002"),
+        vectors=np.array([[1, 0, 0], [0, 1, 0]], dtype=np.float32),
+    )
+
+    store.write_vectors(matrix)
+    loaded = store.read_vectors()
+
+    assert (loaded.model_id, loaded.dimensions, loaded.incident_ids) == (
+        "titan",
+        3,
+        ("inc-0001", "inc-0002"),
+    )
+    assert np.array_equal(loaded.vectors, matrix.vectors)

@@ -44,8 +44,10 @@ def load_llm_config(settings: Settings) -> tuple[ModelsConfig, PriceTable]:
     """Read models and prices, failing at startup if any configured model has no price."""
     models = ModelsConfig.from_toml((settings.config_dir / MODELS_FILE).read_text(encoding="utf-8"))
     prices = PriceTable.from_toml((settings.config_dir / PRICING_FILE).read_text(encoding="utf-8"))
-    for stage in models.stages.values():
-        prices.price_for(stage.model_id)
+    for model_id in [stage.model_id for stage in models.stages.values()] + [
+        models.embedding.model_id
+    ]:
+        prices.price_for(model_id)
     return models, prices
 
 

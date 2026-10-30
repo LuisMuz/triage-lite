@@ -9,6 +9,7 @@ from triagelite.domain.models import NonEmptyStr, StrictModel
 
 Effort = Literal["low", "medium", "high", "xhigh", "max"]
 Thinking = Literal["disabled"]
+EmbeddingDimensions = Literal[256, 512, 1024]
 
 
 class ClientConfig(StrictModel):
@@ -26,11 +27,21 @@ class StageModelConfig(StrictModel):
     effort: Effort | None = None
 
 
+class EmbeddingConfig(StrictModel):
+    """Embedding model and how incident text is turned into its input."""
+
+    model_id: NonEmptyStr
+    dimensions: EmbeddingDimensions
+    normalize: bool
+    max_description_chars: PositiveInt
+
+
 class ModelsConfig(StrictModel):
     """Contents of config/models.toml."""
 
     client: ClientConfig
     stages: dict[Stage, StageModelConfig]
+    embedding: EmbeddingConfig
 
     @classmethod
     def from_toml(cls, text: str) -> Self:

@@ -9,3 +9,7 @@ classify = 1
 max_attempts = 4
 initial_delay_seconds = 2.0
 backoff_rate = 2.0
+
+[dedupe]
+top_k = 5
+similarity_threshold = 0.30

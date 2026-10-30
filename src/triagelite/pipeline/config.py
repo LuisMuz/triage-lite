@@ -27,12 +27,20 @@ class LocalRetryConfig(StrictModel):
     backoff_rate: Annotated[float, Field(ge=1.0)]
 
 
+class DedupeConfig(StrictModel):
+    """Candidate-pair limits for duplicate detection (TL-06, TL-21)."""
+
+    top_k: PositiveInt
+    similarity_threshold: Probability
+
+
 class PipelineConfig(StrictModel):
     """Contents of config/pipeline.toml."""
 
     normalize: NormalizeConfig
     prompts: PromptVersions
     local_retry: LocalRetryConfig
+    dedupe: DedupeConfig
 
     @classmethod
     def from_toml(cls, text: str) -> Self:

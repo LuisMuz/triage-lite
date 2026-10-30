@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help install lint format test check run eval-build eval-validate eval build deploy
+.PHONY: help install lint format test check run eval-build eval-validate eval eval-similarity build deploy
 
 CSV ?= data/sample.csv
 DATASET ?= seed-v1
@@ -38,6 +38,9 @@ eval-validate: ## Check a frozen dataset: hashes, counts, cells, groups, labels
 
 eval: ## Run the eval harness on the tuning split (PROMPT=classify/v1, REPEAT=1)
 	uv run python -m evals.harness --dataset $(DATASET) --split tuning --prompt $(PROMPT) --repeat $(REPEAT)
+
+eval-similarity: ## Embed the tuning split and sweep dedupe thresholds (plot + table)
+	uv run python -m evals.similarity --dataset $(DATASET)
 
 build: ## Build Lambda packages
 	@echo "build: not implemented yet" >&2; exit 1
