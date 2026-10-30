@@ -11,6 +11,7 @@ from tests.pipeline.conftest import (
     classification_item,
     judge_all,
     make_incident,
+    write_report,
 )
 from triagelite.cli import (
     DEFAULT_RUNS_DIR,
@@ -20,8 +21,9 @@ from triagelite.cli import (
     dedupe_batch,
     judge_with_backoff,
     run_batch,
+    summarize_with_backoff,
 )
-from triagelite.domain.enums import PiiKind, Stage, TriageStatus
+from triagelite.domain.enums import PiiKind, ReportSource, Stage, TriageStatus
 from triagelite.domain.errors import LLMProviderError, LLMRateLimitError
 from triagelite.domain.models import (
     CandidatePair,
@@ -31,6 +33,7 @@ from triagelite.domain.models import (
 )
 from triagelite.llm.fake import FakeEmbeddingClient, FakeLLMClient, ScriptStep, tool_response
 from triagelite.llm.structured import StructuredLLM
+from triagelite.pipeline.aggregates import ReportFacts
 from triagelite.pipeline.config import LocalRetryConfig
 from triagelite.pipeline.embed import embedding_text
 from triagelite.settings import (
@@ -65,7 +68,7 @@ def read_jsonl(path: Path) -> list[dict[str, object]]:
 
 class TestRunBatch:
     def test_sample_csv_runs_end_to_end(self, tmp_path: Path) -> None:
-        client = FakeLLMClient([answer_all(), answer_all()])
+        client = FakeLLMClient([answer_all(), answer_all(), write_report(), write_report()])
 
         summary, run_dir = run_batch(
             SAMPLE, tmp_path, SETTINGS, client, FakeEmbeddingClient(), sleep=lambda _: None
@@ -73,7 +76,8 @@ class TestRunBatch:
 
         assert run_dir == tmp_path
         assert (summary.incidents, summary.classified, summary.needs_manual) == (20, 20, 0)
-        assert summary.llm_calls == 2 + SAMPLE_INCIDENTS
+        assert summary.llm_calls == 4 + SAMPLE_INCIDENTS
+        assert summary.reports_from_template == []
         assert (summary.candidate_pairs, summary.clusters) == (0, SAMPLE_INCIDENTS)
         assert summary.cost_usd > 0
         assert summary.pii_redactions[PiiKind.PHONE] == 1
@@ -86,10 +90,18 @@ class TestRunBatch:
         assert len(read_jsonl(run_dir / "clusters.jsonl")) == SAMPLE_INCIDENTS
         assert read_jsonl(run_dir / "pairs.jsonl") == []
         assert (run_dir / "vectors.npy").exists()
+        report_es = (run_dir / "report.es.md").read_text()
+        assert report_es.startswith("# Informe de triage QA")
+        assert "20 incidents." in report_es
+        assert "redactado por el modelo" in report_es
+        assert "# QA triage report" in (run_dir / "report.en.md").read_text()
+        assert len(read_jsonl(run_dir / "report_drafts.jsonl")) == 2
+        facts = json.loads((run_dir / "report_facts.json").read_text())
+        assert facts["aggregates"]["total.incidents"]["value"] == SAMPLE_INCIDENTS
         assert json.loads((run_dir / "summary.json").read_text())["batch_id"] == summary.batch_id
 
     def test_no_pii_reaches_the_outputs_or_the_model(self, tmp_path: Path) -> None:
-        client = FakeLLMClient([answer_all(), answer_all()])
+        client = FakeLLMClient([answer_all(), answer_all(), write_report(), write_report()])
 
         _, run_dir = run_batch(
             SAMPLE, tmp_path, SETTINGS, client, FakeEmbeddingClient(), sleep=lambda _: None
@@ -107,12 +119,12 @@ class TestRunBatch:
                 SAMPLE,
                 tmp_path,
                 SETTINGS,
-                FakeLLMClient([answer_all(), answer_all()]),
+                FakeLLMClient([answer_all(), answer_all(), write_report(), write_report()]),
                 FakeEmbeddingClient(),
                 sleep=lambda _: None,
             )
 
-        assert len(read_jsonl(tmp_path / "llm_calls.jsonl")) == 2 + SAMPLE_INCIDENTS
+        assert len(read_jsonl(tmp_path / "llm_calls.jsonl")) == 4 + SAMPLE_INCIDENTS
         assert len(read_jsonl(tmp_path / "classifications.jsonl")) == 20
 
     def test_default_run_dir_is_named_after_the_batch(
@@ -126,7 +138,7 @@ class TestRunBatch:
             csv_path,
             None,
             SETTINGS,
-            FakeLLMClient([answer_all(), answer_all()]),
+            FakeLLMClient([answer_all(), answer_all(), write_report(), write_report()]),
             FakeEmbeddingClient(),
             sleep=lambda _: None,
         )
@@ -152,7 +164,7 @@ class TestRunBatch:
                 for _, title, text, _ in DUPLICATE_ROWS[:2]
             }
         )
-        client = FakeLLMClient([answer_all(), judge_all()])
+        client = FakeLLMClient([answer_all(), judge_all(), write_report(), write_report()])
 
         summary, run_dir = run_batch(
             csv_path, store, SETTINGS, client, embedder, sleep=lambda _: None
@@ -290,3 +302,25 @@ def test_parser_requires_a_command() -> None:
     assert (args.command, args.csv, args.out) == ("run", Path("data/sample.csv"), Path("x"))
     with pytest.raises(SystemExit):
         build_parser().parse_args([])
+
+
+def test_unavailable_model_gives_a_template_report() -> None:
+    client = FakeLLMClient([LLMRateLimitError("429")] * 3)
+    llm = StructuredLLM(client, *load_llm_config(SETTINGS), recorder=lambda _: None)
+    pipeline = load_pipeline_config(SETTINGS)
+    facts = ReportFacts(aggregates={}, top_components=[], representatives=[])
+
+    draft = summarize_with_backoff(
+        llm,
+        load_stage_prompt(SETTINGS, Stage.SUMMARIZE, 1),
+        facts,
+        "en",
+        pipeline.report,
+        batch_id="b",
+        retry=RETRY,
+        sleep=lambda _: None,
+    )
+
+    assert len(client.requests) == 3
+    assert draft.source is ReportSource.TEMPLATE
+    assert draft.problems == ["model unavailable after 3 attempts (LLMRateLimitError)"]

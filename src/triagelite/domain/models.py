@@ -14,6 +14,9 @@ from pydantic import (
 from triagelite.domain.enums import CallStatus, Category, PiiKind, Severity, Stage, TriageStatus
 
 RATIONALE_MAX_CHARS = 300
+HEADING_MAX_CHARS = 80
+SECTION_MAX_CHARS = 1500
+MAX_REPORT_SECTIONS = 6
 COMPONENT_SLUG_PATTERN = r"^[a-z][a-z0-9_]*$"
 
 NonEmptyStr = Annotated[str, Field(min_length=1)]
@@ -149,6 +152,20 @@ class DuplicateCluster(StrictModel):
         return self
 
 
+class ReportSection(StrictModel):
+    """One section of the summary report, with numbers written as `{{placeholders}}`."""
+
+    heading: Annotated[str, Field(min_length=1, max_length=HEADING_MAX_CHARS)]
+    body: Annotated[str, Field(min_length=1, max_length=SECTION_MAX_CHARS)]
+
+
+class SummaryOutput(StrictModel):
+    """Tool input for `submit_report`: the report sections in one language."""
+
+    lang: Language
+    sections: Annotated[list[ReportSection], Field(min_length=1, max_length=MAX_REPORT_SECTIONS)]
+
+
 class LLMCallRecord(StrictModel):
     """One structured log record per model call attempt, including failed ones."""
 
@@ -227,3 +244,4 @@ class RunSummary(StrictModel):
     unjudged_pairs: NonNegativeInt
     clusters: NonNegativeInt
     duplicate_incidents: NonNegativeInt
+    reports_from_template: list[Language]

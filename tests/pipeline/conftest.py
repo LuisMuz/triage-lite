@@ -98,3 +98,20 @@ def judge_all(is_duplicate: bool = True) -> Responder:
         return tool_response(JUDGE_TOOL, {"items": items})
 
     return respond
+
+
+REPORT_TOOL = "submit_report"
+REPORT_LANG = re.compile(r'set lang to "(es|en)"')
+
+
+def report_payload(lang: str, body: str = "{{total.incidents}} incidents.") -> JsonValue:
+    return {"lang": lang, "sections": [{"heading": "Overview", "body": body}]}
+
+
+def write_report(body: str = "{{total.incidents}} incidents.") -> Responder:
+    def respond(request: ModelRequest) -> ModelResponse:
+        match = REPORT_LANG.search(request.system)
+        lang = match[1] if match else "en"
+        return tool_response(REPORT_TOOL, report_payload(lang, body))
+
+    return respond

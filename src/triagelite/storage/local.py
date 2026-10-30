@@ -42,6 +42,12 @@ class LocalRunStore:
         path.write_text(item.model_dump_json(indent=2) + "\n", encoding="utf-8")
         return path
 
+    def write_text(self, name: str, text: str) -> Path:
+        """Write a text file such as a rendered report and return its path."""
+        path = self.run_dir / name
+        path.write_text(text, encoding="utf-8")
+        return path
+
     def write_vectors(self, matrix: EmbeddingMatrix) -> Path:
         """Save vectors as `.npy` with their model, dimensions and row order alongside."""
         np.save(self.run_dir / VECTORS_FILE, matrix.vectors)

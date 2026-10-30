@@ -52,3 +52,10 @@ class TriageStatus(StrEnum):
 
     CLASSIFIED = "classified"
     NEEDS_MANUAL = "needs_manual"
+
+
+class ReportSource(StrEnum):
+    """Who wrote a report's prose: the model, or the deterministic fallback template."""
+
+    MODEL = "model"
+    TEMPLATE = "template"

@@ -18,6 +18,7 @@ class PromptVersions(StrictModel):
 
     classify: PositiveInt
     dedupe_judge: PositiveInt
+    summarize: PositiveInt
 
 
 class LocalRetryConfig(StrictModel):
@@ -38,6 +39,15 @@ class DedupeConfig(StrictModel):
     max_cluster_size: Annotated[int, Field(ge=2)]
 
 
+class ReportConfig(StrictModel):
+    """What the summary prompt sees and how its numbers are formatted."""
+
+    max_representative_incidents: PositiveInt
+    top_components: PositiveInt
+    percent_decimals: Annotated[int, Field(ge=0, le=3)]
+    min_data_token_digits: PositiveInt
+
+
 class PipelineConfig(StrictModel):
     """Contents of config/pipeline.toml."""
 
@@ -45,6 +55,7 @@ class PipelineConfig(StrictModel):
     prompts: PromptVersions
     local_retry: LocalRetryConfig
     dedupe: DedupeConfig
+    report: ReportConfig
 
     @classmethod
     def from_toml(cls, text: str) -> Self:
