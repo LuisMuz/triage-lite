@@ -56,6 +56,7 @@ def test_bare_digit_triggers_one_re_ask_with_the_problem(
     assert "bare number '13'" in client.requests[1].user
     assert client.requests[1].system == client.requests[0].system
     assert draft.source is ReportSource.MODEL
+    assert "bare number '13'" in draft.problems[0]
 
 
 def test_failing_grounding_twice_falls_back_to_the_template(

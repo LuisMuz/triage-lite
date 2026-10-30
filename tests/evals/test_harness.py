@@ -33,7 +33,14 @@ def datasets(tmp_path: Path) -> Path:
     return root / "datasets"
 
 
-def run(datasets: Path, cache: Path, client: FakeLLMClient, repeat: int = 1) -> EvalResult:
+def run(
+    datasets: Path,
+    cache: Path,
+    client: FakeLLMClient,
+    repeat: int = 1,
+    chunk_size: int | None = None,
+    model_id: str | None = None,
+) -> EvalResult:
     return run_eval(
         dataset="seed-test",
         split=Split.TUNING,
@@ -41,6 +48,9 @@ def run(datasets: Path, cache: Path, client: FakeLLMClient, repeat: int = 1) -> 
         repeat=repeat,
         settings=SETTINGS,
         client=client,
+        chunk_size=chunk_size,
+        model_id=model_id,
+        api="converse" if model_id else None,
         datasets_dir=datasets,
         cache_dir=cache,
         sleep=lambda _: None,
@@ -83,6 +93,32 @@ def test_each_repeat_is_a_separate_call(datasets: Path, tmp_path: Path) -> None:
     assert result.metrics.items == 6
 
 
+def test_chunk_size_override_changes_calls_and_file_name(datasets: Path, tmp_path: Path) -> None:
+    client = FakeLLMClient([answer_all(), answer_all()])
+
+    result = run(datasets, tmp_path / "cache", client, repeat=1, chunk_size=3)
+    json_path, _ = write_result(result, tmp_path / "results")
+
+    assert len(client.requests) == 2
+    assert result.chunk_size == 3
+    assert json_path.name.endswith("-tuning-c3.json")
+
+
+def test_model_override_swaps_model_and_api(datasets: Path, tmp_path: Path) -> None:
+    client = FakeLLMClient([answer_all()])
+
+    result = run(datasets, tmp_path / "cache", client, model_id="moonshotai.kimi-k2.5")
+    json_path, _ = write_result(result, tmp_path / "results")
+
+    assert (client.requests[0].model_id, client.requests[0].api) == (
+        "moonshotai.kimi-k2.5",
+        "converse",
+    )
+    assert client.requests[0].max_tokens == 4096
+    assert result.model.api == "converse"
+    assert "-moonshotai-kimi-k2-5-tuning-c10" in json_path.name
+
+
 def test_tampered_dataset_is_refused(datasets: Path, tmp_path: Path) -> None:
     labels = datasets / "seed-test" / "labels.jsonl"
     labels.write_text(labels.read_text() + "\n", encoding="utf-8")
@@ -96,7 +132,7 @@ def test_write_result_produces_json_and_markdown(datasets: Path, tmp_path: Path)
 
     json_path, md_path = write_result(result, tmp_path / "results")
 
-    assert json_path.name.endswith("-classify-v1-claude-haiku-4-5-tuning.json")
+    assert json_path.name.endswith("-classify-v1-claude-haiku-4-5-tuning-c10.json")
     assert json.loads(json_path.read_text())["metrics"]["items"] == 6
     report = md_path.read_text()
     assert "severity macro-F1 [95% CI]" in report
@@ -128,3 +164,17 @@ def test_holdout_needs_explicit_confirmation() -> None:
 
 def test_repeat_must_be_positive() -> None:
     assert main(["--repeat", "0"]) == 1
+
+
+def test_chunk_size_must_be_positive() -> None:
+    assert main(["--chunk-size", "0"]) == 1
+
+
+def test_results_written_before_the_api_field_load_as_messages(
+    datasets: Path, tmp_path: Path
+) -> None:
+    result = run(datasets, tmp_path / "cache", FakeLLMClient([answer_all()]))
+    data = json.loads(result.model_dump_json())
+    del data["model"]["api"]
+
+    assert EvalResult.model_validate(data).model.api == "messages"

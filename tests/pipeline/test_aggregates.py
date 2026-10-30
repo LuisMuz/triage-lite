@@ -61,6 +61,16 @@ def test_counts_and_percentages_come_from_the_results() -> None:
     assert facts.aggregates["total.incidents"].kind == "count"
 
 
+def test_top_components_get_their_severity_mix() -> None:
+    facts = compute_facts(INCIDENTS, RESULTS, CLUSTERS, 0, CONFIG)
+    mix = {key: a.value for key, a in facts.aggregates.items() if ".severity." in key}
+
+    assert mix == {
+        "component.checkout.severity.critical.count": 2,
+        "component.cart.severity.medium.count": 1,
+    }
+
+
 def test_top_components_by_count_then_name() -> None:
     facts = compute_facts(INCIDENTS, RESULTS, CLUSTERS, 0, CONFIG)
 

@@ -1,0 +1,1227 @@
+{
+  "created_at": "2026-10-30T20:19:00+00:00",
+  "dataset": "seed-v1",
+  "dataset_labels_sha256": "79d0c0f1d06910d4eb4dd1015b8a9bfd3183c31b1a58abe8aaf7fbb6a6f9223f",
+  "split": "holdout",
+  "prompt": "dedupe_judge/v3",
+  "model_id": "global.anthropic.claude-haiku-4-5-20251001-v1:0",
+  "embedding_model_id": "amazon.titan-embed-text-v2:0",
+  "dimensions": 1024,
+  "config": {
+    "top_k": 5,
+    "similarity_threshold": 0.3,
+    "max_pairs": 400,
+    "judge_chunk_size": 10,
+    "max_cluster_size": 8
+  },
+  "incidents": 60,
+  "candidates": 81,
+  "dropped_by_cap": 0,
+  "arms": {
+    "threshold_only": {
+      "clusters": 14,
+      "largest_cluster": 7,
+      "predicted_pairs": 78,
+      "gold_pairs": 21,
+      "true_pairs": 21,
+      "precision": {
+        "value": 0.2692307692307692,
+        "low": 0.1325867346938776,
+        "high": 0.5
+      },
+      "recall": {
+        "value": 1.0,
+        "low": 1.0,
+        "high": 1.0
+      }
+    },
+    "threshold_judge": {
+      "clusters": 14,
+      "largest_cluster": 4,
+      "predicted_pairs": 23,
+      "gold_pairs": 21,
+      "true_pairs": 21,
+      "precision": {
+        "value": 0.9130434782608695,
+        "low": 0.7391304347826086,
+        "high": 1.0
+      },
+      "recall": {
+        "value": 1.0,
+        "low": 1.0,
+        "high": 1.0
+      }
+    }
+  },
+  "judge": {
+    "judged": 81,
+    "unjudged": 0,
+    "precision": 0.9130434782608695,
+    "recall": 1.0,
+    "by_kind": {
+      "duplicate_same_language": {
+        "pairs": 15,
+        "said_duplicate": 15,
+        "unjudged": 0
+      },
+      "duplicate_cross_language": {
+        "pairs": 6,
+        "said_duplicate": 6,
+        "unjudged": 0
+      },
+      "near_miss": {
+        "pairs": 1,
+        "said_duplicate": 0,
+        "unjudged": 0
+      },
+      "unrelated": {
+        "pairs": 59,
+        "said_duplicate": 2,
+        "unjudged": 0
+      }
+    },
+    "calibration": [
+      {
+        "lower": 0.0,
+        "upper": 0.2,
+        "count": 0,
+        "mean_confidence": null,
+        "accuracy": null
+      },
+      {
+        "lower": 0.2,
+        "upper": 0.4,
+        "count": 0,
+        "mean_confidence": null,
+        "accuracy": null
+      },
+      {
+        "lower": 0.4,
+        "upper": 0.6,
+        "count": 0,
+        "mean_confidence": null,
+        "accuracy": null
+      },
+      {
+        "lower": 0.6,
+        "upper": 0.8,
+        "count": 1,
+        "mean_confidence": 0.75,
+        "accuracy": 1.0
+      },
+      {
+        "lower": 0.8,
+        "upper": 1.0,
+        "count": 80,
+        "mean_confidence": 0.93625,
+        "accuracy": 0.975
+      }
+    ]
+  },
+  "never_proposed": [],
+  "pairs": [
+    {
+      "pair_id": "p-0001",
+      "a": "cand-004",
+      "b": "cand-005",
+      "kind": "duplicate_cross_language",
+      "similarity": 0.556,
+      "is_duplicate": true,
+      "confidence": 0.99,
+      "rationale": "A: API /v1/orders/{id} missing ownership check, exposes other customers' full order data. B: Same API endpoint, same missing validation, same exposed data (address, phone). Same defect, different language.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0002",
+      "a": "cand-004",
+      "b": "cand-072",
+      "kind": "unrelated",
+      "similarity": 0.3348,
+      "is_duplicate": false,
+      "confidence": 0.95,
+      "rationale": "A: API /v1/orders/{id} missing ownership check on orders. B: Web /perfil endpoint missing ownership check on profiles. Different endpoints, different resources (orders vs profiles), different data exposed.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0003",
+      "a": "cand-005",
+      "b": "cand-072",
+      "kind": "unrelated",
+      "similarity": 0.3815,
+      "is_duplicate": false,
+      "confidence": 0.95,
+      "rationale": "A: API /v1/orders/{id} missing ownership validation, exposes orders. B: Web /perfil endpoint missing ownership validation, exposes profiles. Different endpoints, resources, and environments (API vs Web).",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0004",
+      "a": "cand-009",
+      "b": "cand-010",
+      "kind": "duplicate_cross_language",
+      "similarity": 0.6404,
+      "is_duplicate": true,
+      "confidence": 0.98,
+      "rationale": "A: Google login loops back to login screen (Spanish, Android 14). B: Google login loops back to login screen (English, Android 4.1.3). Same defect, same app version, same symptom, different language.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0005",
+      "a": "cand-009",
+      "b": "cand-056",
+      "kind": "unrelated",
+      "similarity": 0.302,
+      "is_duplicate": false,
+      "confidence": 0.98,
+      "rationale": "A: Google login on Android 4.1.3 loops back to login. B: Login endpoint returns 503 for all users web/app, complete outage. Different defects: specific Google auth failure vs broad service outage.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0006",
+      "a": "cand-009",
+      "b": "cand-057",
+      "kind": "unrelated",
+      "similarity": 0.3093,
+      "is_duplicate": false,
+      "confidence": 0.98,
+      "rationale": "A: Google login loops back to login (Android app). B: Password reset endpoint missing authorization check on email parameter. Different features: authentication vs password recovery.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0007",
+      "a": "cand-009",
+      "b": "cand-084",
+      "kind": "unrelated",
+      "similarity": 0.3179,
+      "is_duplicate": false,
+      "confidence": 0.97,
+      "rationale": "A: Google login fails on Android 4.1.3. B: 'Remember me' checkbox not working on iOS. Different platforms, different features (Google auth vs session persistence).",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0008",
+      "a": "cand-009",
+      "b": "hand-002",
+      "kind": "unrelated",
+      "similarity": 0.317,
+      "is_duplicate": false,
+      "confidence": 0.97,
+      "rationale": "A: Google login loops back to login on Android 4.1.3. B: Phone number reverts after logout/login on Android 4.2.1. Different defects: authentication failure vs data persistence issue.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0009",
+      "a": "cand-009",
+      "b": "hand-008",
+      "kind": "unrelated",
+      "similarity": 0.3894,
+      "is_duplicate": false,
+      "confidence": 0.97,
+      "rationale": "A: Google login loops back to login on Android 4.1.3. B: Login button hidden behind keyboard on small screen (UI layout issue). Different defects: Google auth failure vs keyboard overlap.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0010",
+      "a": "cand-010",
+      "b": "cand-084",
+      "kind": "unrelated",
+      "similarity": 0.3745,
+      "is_duplicate": false,
+      "confidence": 0.97,
+      "rationale": "A: Google login loops back to login Android 4.1.3. B: 'Remember me' not working on iOS. Different platforms (Android vs iOS), different features (auth vs persistence).",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0011",
+      "a": "cand-010",
+      "b": "cand-117",
+      "kind": "unrelated",
+      "similarity": 0.304,
+      "is_duplicate": false,
+      "confidence": 0.99,
+      "rationale": "A: Google sign-in loops back to login. B: App crashes on saved cards on Android 12. Different features and defects.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0012",
+      "a": "cand-011",
+      "b": "cand-012",
+      "kind": "duplicate_cross_language",
+      "similarity": 0.4666,
+      "is_duplicate": true,
+      "confidence": 0.95,
+      "rationale": "A: Promo code shows badge but total unchanged, works on retry at checkout. B: Same issue: coupon shows discount label but total doesn't change, reapplying at checkout fixes it. Same defect in different languages.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0013",
+      "a": "cand-011",
+      "b": "cand-013",
+      "kind": "duplicate_same_language",
+      "similarity": 0.5435,
+      "is_duplicate": true,
+      "confidence": 0.92,
+      "rationale": "A: Promo code shows badge but total unchanged, works on retry at checkout. B: Discount not applied, code accepted but price same, cart shows 10% off. Same defect with less detail.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0014",
+      "a": "cand-011",
+      "b": "cand-027",
+      "kind": "unrelated",
+      "similarity": 0.3943,
+      "is_duplicate": false,
+      "confidence": 0.98,
+      "rationale": "A: Promo code shows badge but total unchanged. B: Stock badge stale for electronics. Different features and defects.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0015",
+      "a": "cand-011",
+      "b": "cand-054",
+      "kind": "unrelated",
+      "similarity": 0.3938,
+      "is_duplicate": false,
+      "confidence": 0.97,
+      "rationale": "A: Promo code badge applied but total unchanged. B: Cart item count badge not updated after deletions. Different defects, both involve badges but in different features.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0016",
+      "a": "cand-011",
+      "b": "hand-009",
+      "kind": "unrelated",
+      "similarity": 0.4935,
+      "is_duplicate": false,
+      "confidence": 0.88,
+      "rationale": "A: Promo code shows badge but total unchanged. B: Discount applied twice after changing shipping method. Different promo discount issues but different mechanisms and outcomes.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0017",
+      "a": "cand-012",
+      "b": "cand-013",
+      "kind": "duplicate_cross_language",
+      "similarity": 0.4054,
+      "is_duplicate": true,
+      "confidence": 0.93,
+      "rationale": "A: Coupon shows discount label but total doesn't change, reapplying at checkout fixes it. B: Discount not applied, code accepted but price same, cart shows 10% off. Same defect in different languages.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0018",
+      "a": "cand-012",
+      "b": "cand-050",
+      "kind": "unrelated",
+      "similarity": 0.3266,
+      "is_duplicate": false,
+      "confidence": 0.92,
+      "rationale": "A: Coupon shows label but total unchanged, reapply at checkout works. B: Coupon plus gift card results in free orders. Different defects: badge issue vs. pricing calculation with multiple payment methods.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0019",
+      "a": "cand-012",
+      "b": "cand-051",
+      "kind": "unrelated",
+      "similarity": 0.3972,
+      "is_duplicate": false,
+      "confidence": 0.9,
+      "rationale": "A: Coupon shows label but total unchanged, reapply at checkout works. B: Coupon and gift card together zero the total, orders fulfilled with negative remainder clamped to 0. Different defects: badge issue vs. pricing stacking logic.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0020",
+      "a": "cand-012",
+      "b": "cand-052",
+      "kind": "unrelated",
+      "similarity": 0.4015,
+      "is_duplicate": false,
+      "confidence": 0.97,
+      "rationale": "A: Coupon shows label but total unchanged. B: Cart item count badge not updated after removals. Different defects in different features.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0021",
+      "a": "cand-012",
+      "b": "hand-009",
+      "kind": "unrelated",
+      "similarity": 0.3411,
+      "is_duplicate": false,
+      "confidence": 0.85,
+      "rationale": "A: Coupon shows discount label in cart but total unchanged; works in checkout. B: Discount applied twice after changing shipping method. Different defects in discount application logic.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0022",
+      "a": "cand-013",
+      "b": "hand-009",
+      "kind": "unrelated",
+      "similarity": 0.3975,
+      "is_duplicate": false,
+      "confidence": 0.8,
+      "rationale": "A: Code accepted but price unchanged; shows 10% off label. B: Discount applied twice after shipping change. Both involve discount issues but different manifestations.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0023",
+      "a": "cand-016",
+      "b": "cand-018",
+      "kind": "duplicate_cross_language",
+      "similarity": 0.3671,
+      "is_duplicate": true,
+      "confidence": 0.92,
+      "rationale": "A: Search doesn't find accented words when searching without accents (café/cafe, teléfono/telefono). B: Search for 'cafetera electrica' finds nothing but 'cafetera eléctrica' exists. Same root cause: accent-insensitive search matching.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0024",
+      "a": "cand-016",
+      "b": "cand-089",
+      "kind": "unrelated",
+      "similarity": 0.3055,
+      "is_duplicate": false,
+      "confidence": 0.88,
+      "rationale": "A: Search accent-sensitivity issue in user-facing search. B: CSV upload fails with 500 error when product names have accents in admin. Different features affected by accent handling.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0025",
+      "a": "cand-018",
+      "b": "cand-047",
+      "kind": "unrelated",
+      "similarity": 0.3065,
+      "is_duplicate": false,
+      "confidence": 0.98,
+      "rationale": "A: Search returns no results for 'cafetera electrica' but product exists with accents. B: Unsubscribe link in email returns 404. Completely different features and defects.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0026",
+      "a": "cand-018",
+      "b": "cand-132",
+      "kind": "unrelated",
+      "similarity": 0.3213,
+      "is_duplicate": false,
+      "confidence": 0.88,
+      "rationale": "A: Search shows no results for accented product (accent sensitivity issue). B: Search box clears when switching tabs. Different defects in search functionality.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0027",
+      "a": "cand-018",
+      "b": "hand-001",
+      "kind": "unrelated",
+      "similarity": 0.3137,
+      "is_duplicate": false,
+      "confidence": 0.87,
+      "rationale": "A: Search returns no results for accented product (accent sensitivity). B: Search filters reset after opening a product. Different search-related defects.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0028",
+      "a": "cand-024",
+      "b": "cand-025",
+      "kind": "duplicate_same_language",
+      "similarity": 0.6351,
+      "is_duplicate": true,
+      "confidence": 0.95,
+      "rationale": "A: Exporting month of orders times out after 2+ minutes; weekly exports work. B: Monthly order export returns 504 timeout error; workaround is weekly export. Same defect: timeout on bulk order export.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0029",
+      "a": "cand-024",
+      "b": "cand-064",
+      "kind": "unrelated",
+      "similarity": 0.3554,
+      "is_duplicate": false,
+      "confidence": 0.92,
+      "rationale": "A: Monthly order export times out. B: Customer export accessible without login (security issue). Different defects in admin export functionality.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0030",
+      "a": "cand-024",
+      "b": "cand-126",
+      "kind": "unrelated",
+      "similarity": 0.3387,
+      "is_duplicate": false,
+      "confidence": 0.85,
+      "rationale": "A: Monthly order export times out. B: Admin crashes on customer export with emoji names in customer data. Different root causes and affected exports.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0031",
+      "a": "cand-025",
+      "b": "cand-064",
+      "kind": "unrelated",
+      "similarity": 0.3265,
+      "is_duplicate": false,
+      "confidence": 0.95,
+      "rationale": "A: orders export 504 timeout, requires weekly exports. B: customer export accessible without login (security vulnerability). Different defects in export feature.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0032",
+      "a": "cand-025",
+      "b": "cand-126",
+      "kind": "unrelated",
+      "similarity": 0.3692,
+      "is_duplicate": false,
+      "confidence": 0.92,
+      "rationale": "A: orders export 504 timeout. B: customer export 500 error with emoji names in customers. Different root causes (timeout vs unicode encoding).",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0033",
+      "a": "cand-026",
+      "b": "cand-027",
+      "kind": "duplicate_same_language",
+      "similarity": 0.4961,
+      "is_duplicate": true,
+      "confidence": 0.88,
+      "rationale": "A: product page shows in stock but cart says sold out, admin shows 0. B: availability badge stale for electronics, cache not refreshed. Same defect: stock cache/display issue.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0034",
+      "a": "cand-026",
+      "b": "cand-055",
+      "kind": "unrelated",
+      "similarity": 0.3528,
+      "is_duplicate": false,
+      "confidence": 0.93,
+      "rationale": "A: product page in stock but cart out of stock, stock is 0. B: cart icon shows wrong quantity after deletion. Different issues: stock display vs badge update.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0035",
+      "a": "cand-027",
+      "b": "cand-054",
+      "kind": "unrelated",
+      "similarity": 0.4547,
+      "is_duplicate": false,
+      "confidence": 0.9,
+      "rationale": "A: electronics stock badge stale, zero stock shows available. B: cart badge quantity not updated after item deletion. Different defects: product availability vs cart count.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0036",
+      "a": "cand-027",
+      "b": "cand-055",
+      "kind": "unrelated",
+      "similarity": 0.3423,
+      "is_duplicate": false,
+      "confidence": 0.92,
+      "rationale": "A: stock badge stale for electronics, shows available when zero stock. B: cart icon quantity incorrect after deletion. Different defects: product stock display vs cart badge.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0037",
+      "a": "cand-027",
+      "b": "cand-103",
+      "kind": "unrelated",
+      "similarity": 0.3913,
+      "is_duplicate": false,
+      "confidence": 0.98,
+      "rationale": "A: stock badge stale for electronics. B: pickup in store option greyed out. Completely different features and defects.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0038",
+      "a": "cand-037",
+      "b": "cand-038",
+      "kind": "duplicate_same_language",
+      "similarity": 0.639,
+      "is_duplicate": true,
+      "confidence": 0.96,
+      "rationale": "A: app crashes when selecting Apple Pay at checkout. B: app crashes with Apple Pay. Same crash defect, same payment method, same behavior.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0039",
+      "a": "cand-037",
+      "b": "cand-074",
+      "kind": "unrelated",
+      "similarity": 0.3353,
+      "is_duplicate": false,
+      "confidence": 0.94,
+      "rationale": "A: app crashes when selecting Apple Pay at checkout (iOS app). B: keyboard hides pay button on iPhone Safari web. Different issues: crash vs UI layout.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0040",
+      "a": "cand-037",
+      "b": "hand-005",
+      "kind": "unrelated",
+      "similarity": 0.4361,
+      "is_duplicate": false,
+      "confidence": 0.95,
+      "rationale": "A: app crashes with Apple Pay at checkout (iOS 19, app 4.1.3). B: app crashes removing last cart item (Android 14, app 4.2.1). Different triggers, platforms, and versions.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0041",
+      "a": "cand-038",
+      "b": "cand-074",
+      "kind": "unrelated",
+      "similarity": 0.408,
+      "is_duplicate": false,
+      "confidence": 0.95,
+      "rationale": "A: App crashes on Apple Pay selection. B: Payment button hidden behind keyboard on iPhone. Different defects: one crashes, the other is a UI layout issue.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0042",
+      "a": "cand-038",
+      "b": "hand-005",
+      "kind": "unrelated",
+      "similarity": 0.3531,
+      "is_duplicate": false,
+      "confidence": 0.9,
+      "rationale": "A: App crashes on Apple Pay selection (iPhone). B: App crashes when removing last cart item (Android). Different triggers and platforms; crashes in different features.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0043",
+      "a": "cand-039",
+      "b": "cand-040",
+      "kind": "duplicate_same_language",
+      "similarity": 0.6208,
+      "is_duplicate": true,
+      "confidence": 0.92,
+      "rationale": "A: Shipping address fields overlap labels on narrow screens (360px). B: Address fields overlap labels on iPhone SE. Same visual defect on address form, same feature.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0044",
+      "a": "cand-039",
+      "b": "cand-103",
+      "kind": "unrelated",
+      "similarity": 0.307,
+      "is_duplicate": false,
+      "confidence": 0.96,
+      "rationale": "A: Address form fields overlap labels on small screens. B: Pickup option radio button greyed out. Different features: form layout vs. shipping option selection.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0045",
+      "a": "cand-039",
+      "b": "cand-112",
+      "kind": "unrelated",
+      "similarity": 0.3212,
+      "is_duplicate": false,
+      "confidence": 0.97,
+      "rationale": "A: Address form misalignment on narrow screens. B: Checkout takes 15s to load on mobile. Different defects: UI layout vs. performance issue.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0046",
+      "a": "cand-039",
+      "b": "cand-123",
+      "kind": "near_miss",
+      "similarity": 0.3575,
+      "is_duplicate": false,
+      "confidence": 0.96,
+      "rationale": "A: Address form fields overlap on small screens. B: Shipping options unreadable in dark mode. Different defects: layout misalignment vs. color contrast issue.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0047",
+      "a": "cand-039",
+      "b": "cand-134",
+      "kind": "unrelated",
+      "similarity": 0.3194,
+      "is_duplicate": false,
+      "confidence": 0.97,
+      "rationale": "A: Address form fields overlap on small screens. B: Empty cart image is blurry on retina screens. Different features and defects: form layout vs. image quality.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0048",
+      "a": "cand-039",
+      "b": "hand-004",
+      "kind": "unrelated",
+      "similarity": 0.3056,
+      "is_duplicate": false,
+      "confidence": 0.98,
+      "rationale": "A: Address form fields overlap on mobile web. B: Order shipped email arrives twice. Different systems: frontend checkout vs. backend email notification.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0049",
+      "a": "cand-040",
+      "b": "cand-074",
+      "kind": "unrelated",
+      "similarity": 0.314,
+      "is_duplicate": false,
+      "confidence": 0.88,
+      "rationale": "A: Address fields overlap labels on iPhone SE. B: Payment button hidden behind keyboard on iPhone. Both iOS Safari, but different defects: form layout vs. payment UI obscured.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0050",
+      "a": "cand-046",
+      "b": "cand-047",
+      "kind": "duplicate_same_language",
+      "similarity": 0.4386,
+      "is_duplicate": true,
+      "confidence": 0.94,
+      "rationale": "A: Newsletter unsubscribe link returns 404. B: Newsletter unsubscribe returns 'page not found'. Same defect in newsletter unsubscribe feature, different language/detail level.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0051",
+      "a": "cand-048",
+      "b": "cand-049",
+      "kind": "duplicate_same_language",
+      "similarity": 0.7054,
+      "is_duplicate": true,
+      "confidence": 0.95,
+      "rationale": "A: Orders $0 total from coupon+gift card combination. B: Finance report shows same $0 orders, same coupon+gift card cause. Same defect, different detection point.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0052",
+      "a": "cand-048",
+      "b": "cand-050",
+      "kind": "duplicate_same_language",
+      "similarity": 0.5867,
+      "is_duplicate": true,
+      "confidence": 0.92,
+      "rationale": "A: Orders $0 total from coupon+gift card combination, 37 orders yesterday. B: Coupon+gift card makes order free. Same defect, B is informal report of same issue.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0053",
+      "a": "cand-048",
+      "b": "cand-051",
+      "kind": "duplicate_same_language",
+      "similarity": 0.6835,
+      "is_duplicate": true,
+      "confidence": 0.95,
+      "rationale": "A: Orders $0 total from coupon+gift card. B: Explains mechanism: gift card covers pre-discount, clamped to 0. Same defect, B provides root cause detail.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0054",
+      "a": "cand-048",
+      "b": "cand-102",
+      "kind": "unrelated",
+      "similarity": 0.4156,
+      "is_duplicate": false,
+      "confidence": 0.9,
+      "rationale": "A: Orders $0 total from coupon+gift card at checkout. B: Prices became $0 from API endpoint bug, different cause. Different defects despite same symptom.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0055",
+      "a": "cand-048",
+      "b": "hand-004",
+      "kind": "unrelated",
+      "similarity": 0.3383,
+      "is_duplicate": false,
+      "confidence": 0.98,
+      "rationale": "A: Orders $0 total from coupon+gift card. B: Duplicate shipping emails. Unrelated defects, different symptoms and causes.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0056",
+      "a": "cand-049",
+      "b": "cand-050",
+      "kind": "duplicate_same_language",
+      "similarity": 0.3881,
+      "is_duplicate": true,
+      "confidence": 0.93,
+      "rationale": "A: Finance report of $0 orders with coupon+gift card. B: Forum post about coupon+gift card making orders free. Same defect reported differently.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0057",
+      "a": "cand-049",
+      "b": "cand-051",
+      "kind": "duplicate_same_language",
+      "similarity": 0.5297,
+      "is_duplicate": true,
+      "confidence": 0.94,
+      "rationale": "A: Finance found $0 orders, coupon+gift card cause. B: Explains gift card/coupon stacking bug causing $0. Same defect with technical detail.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0058",
+      "a": "cand-049",
+      "b": "cand-102",
+      "kind": "unrelated",
+      "similarity": 0.4314,
+      "is_duplicate": false,
+      "confidence": 0.89,
+      "rationale": "A: Finance report of $0 orders from coupon+gift card. B: API bug caused all prices $0. Different root causes despite same symptom.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0059",
+      "a": "cand-050",
+      "b": "cand-051",
+      "kind": "duplicate_same_language",
+      "similarity": 0.5717,
+      "is_duplicate": true,
+      "confidence": 0.94,
+      "rationale": "A: Coupon+gift card makes order free (informal). B: Gift card/coupon stacking zeroes total (technical explanation). Same defect.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0060",
+      "a": "cand-051",
+      "b": "hand-009",
+      "kind": "unrelated",
+      "similarity": 0.3664,
+      "is_duplicate": false,
+      "confidence": 0.88,
+      "rationale": "A: Coupon+gift card stacking causes $0 total. B: Coupon applied twice when changing shipping method causes lower total. Different discount mechanisms, different defects.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0061",
+      "a": "cand-052",
+      "b": "cand-054",
+      "kind": "duplicate_same_language",
+      "similarity": 0.4418,
+      "is_duplicate": true,
+      "confidence": 0.95,
+      "rationale": "A: Cart counter doesn't decrease when removing products, needs reload. B: Cart badge doesn't update when deleting items, actual cart is correct. Same defect: badge UI not updating on item removal.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0062",
+      "a": "cand-052",
+      "b": "cand-055",
+      "kind": "duplicate_same_language",
+      "similarity": 0.48,
+      "is_duplicate": true,
+      "confidence": 0.92,
+      "rationale": "A: Cart icon counter doesn't decrease until reload (Web). B: Cart icon shows old number after deletion (iOS). Same defect: badge not updating on item removal, different platforms.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0063",
+      "a": "cand-052",
+      "b": "hand-005",
+      "kind": "unrelated",
+      "similarity": 0.4222,
+      "is_duplicate": false,
+      "confidence": 0.88,
+      "rationale": "A: Cart counter doesn't update on item removal. B: App crashes when deleting last cart item. Different defects: badge update issue vs crash/data consistency.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0064",
+      "a": "cand-054",
+      "b": "cand-055",
+      "kind": "duplicate_same_language",
+      "similarity": 0.5652,
+      "is_duplicate": true,
+      "confidence": 0.94,
+      "rationale": "A: Badge not updating when deleting items (Web/app). B: Icon shows old number after deletion (iOS). Same defect: cart badge UI not refreshing after item removal.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0065",
+      "a": "cand-054",
+      "b": "hand-005",
+      "kind": "unrelated",
+      "similarity": 0.4403,
+      "is_duplicate": false,
+      "confidence": 0.9,
+      "rationale": "A: Cart badge doesn't update on item deletion, cart itself is correct. B: App crashes when deleting last item. Different defects: UI not updating vs application crash.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0066",
+      "a": "cand-055",
+      "b": "hand-005",
+      "kind": "unrelated",
+      "similarity": 0.3756,
+      "is_duplicate": false,
+      "confidence": 0.92,
+      "rationale": "A: Cart icon shows old count after deletion, actual cart correct (iOS). B: App crashes when deleting last item (Android). Different defects: stale badge vs crash on specific scenario.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0067",
+      "a": "cand-056",
+      "b": "cand-084",
+      "kind": "unrelated",
+      "similarity": 0.3816,
+      "is_duplicate": false,
+      "confidence": 0.96,
+      "rationale": "A: All users cannot login, 503 error, complete outage. B: Remember-me checkbox doesn't persist session. Different defects: authentication server failure vs session persistence.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0068",
+      "a": "cand-056",
+      "b": "hand-008",
+      "kind": "unrelated",
+      "similarity": 0.3464,
+      "is_duplicate": false,
+      "confidence": 0.97,
+      "rationale": "A: Complete login outage, 503 errors, all users affected. B: Login button hidden behind keyboard on small screens. Different defects: server failure vs UI layout issue.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0069",
+      "a": "cand-072",
+      "b": "hand-002",
+      "kind": "unrelated",
+      "similarity": 0.3537,
+      "is_duplicate": false,
+      "confidence": 0.95,
+      "rationale": "A: Can view other users' profiles by changing ID parameter. B: Phone number reverts to old value after editing. Different defects: authorization/access control vs data persistence.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0070",
+      "a": "cand-074",
+      "b": "hand-008",
+      "kind": "unrelated",
+      "similarity": 0.3983,
+      "is_duplicate": true,
+      "confidence": 0.85,
+      "rationale": "A: Pay button hidden behind keyboard on iPhone during CVV entry. B: Login button hidden behind keyboard on small Android screen. Same defect: button obscured by keyboard, unable to scroll.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0071",
+      "a": "cand-080",
+      "b": "hand-004",
+      "kind": "unrelated",
+      "similarity": 0.4654,
+      "is_duplicate": false,
+      "confidence": 0.98,
+      "rationale": "A: confirmation email shows wrong delivery date. B: duplicate shipping emails received. Different defects: date mismatch vs. duplicate sends.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0072",
+      "a": "cand-082",
+      "b": "hand-001",
+      "kind": "duplicate_cross_language",
+      "similarity": 0.5254,
+      "is_duplicate": true,
+      "confidence": 0.92,
+      "rationale": "A: price filters lost after returning from product (Spanish, app). B: brand and price filters cleared after product open (English, web). Same defect, different platforms and language.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0073",
+      "a": "cand-082",
+      "b": "hand-005",
+      "kind": "unrelated",
+      "similarity": 0.3094,
+      "is_duplicate": false,
+      "confidence": 0.98,
+      "rationale": "A: price filters cleared after product return. B: app crashes when removing last cart item. Different defects: filter persistence vs. crash on cart empty.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0074",
+      "a": "cand-084",
+      "b": "hand-008",
+      "kind": "unrelated",
+      "similarity": 0.3691,
+      "is_duplicate": false,
+      "confidence": 0.95,
+      "rationale": "A: 'Remember me' doesn't work, must login each time. B: login button hidden by keyboard. Different defects: session persistence vs. UI layout problem.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0075",
+      "a": "cand-089",
+      "b": "cand-126",
+      "kind": "unrelated",
+      "similarity": 0.4505,
+      "is_duplicate": true,
+      "confidence": 0.85,
+      "rationale": "A: CSV import error 500 with accented characters. B: export error 500 with emoji in names. Same root cause (encoding issue) but different features (import vs export). Likely same underlying bug.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0076",
+      "a": "cand-103",
+      "b": "cand-123",
+      "kind": "unrelated",
+      "similarity": 0.3861,
+      "is_duplicate": false,
+      "confidence": 0.97,
+      "rationale": "A: pickup option radio button greyed out, can't select. B: shipping option text dark grey on black, unreadable. Different defects: disabled state vs. color contrast problem.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0077",
+      "a": "cand-112",
+      "b": "cand-115",
+      "kind": "unrelated",
+      "similarity": 0.4231,
+      "is_duplicate": false,
+      "confidence": 0.99,
+      "rationale": "A: checkout slow on mobile (15s). B: admin charts slow (40s). Different pages, different environments, different performance issues.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0078",
+      "a": "cand-123",
+      "b": "cand-134",
+      "kind": "unrelated",
+      "similarity": 0.3269,
+      "is_duplicate": false,
+      "confidence": 0.98,
+      "rationale": "A: shipping option text unreadable dark-on-black in dark mode. B: empty cart image pixelated on retina. Different defects: text contrast vs. image rendering.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0079",
+      "a": "cand-132",
+      "b": "cand-139",
+      "kind": "unrelated",
+      "similarity": 0.3219,
+      "is_duplicate": false,
+      "confidence": 0.99,
+      "rationale": "A: search query cleared when switching tabs. B: double space in 'No results' message. Different defects: state loss vs. typo/spacing.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0080",
+      "a": "cand-132",
+      "b": "hand-001",
+      "kind": "unrelated",
+      "similarity": 0.4916,
+      "is_duplicate": false,
+      "confidence": 0.75,
+      "rationale": "A: search query cleared switching tabs (app). B: search filters cleared after opening product (web). Both lose search state but different triggers and contexts.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0081",
+      "a": "hand-004",
+      "b": "hand-009",
+      "kind": "unrelated",
+      "similarity": 0.5321,
+      "is_duplicate": false,
+      "confidence": 0.99,
+      "rationale": "A: duplicate shipping confirmation email sent to customer. B: discount applied twice in order total after shipping method change. Different features (email notifications vs. pricing calculation), different defects.",
+      "reason": null
+    }
+  ],
+  "clusters": {
+    "threshold_only": [
+      [
+        "cand-004",
+        "cand-005",
+        "cand-072"
+      ],
+      [
+        "cand-009",
+        "cand-010",
+        "cand-056",
+        "cand-057",
+        "cand-084",
+        "hand-002",
+        "hand-008"
+      ],
+      [
+        "cand-011",
+        "cand-012",
+        "cand-013",
+        "hand-009"
+      ],
+      [
+        "cand-016",
+        "cand-018",
+        "cand-089"
+      ],
+      [
+        "cand-024",
+        "cand-025",
+        "cand-064",
+        "cand-126"
+      ],
+      [
+        "cand-026",
+        "cand-027"
+      ],
+      [
+        "cand-037",
+        "cand-038",
+        "cand-074",
+        "hand-005"
+      ],
+      [
+        "cand-039",
+        "cand-040",
+        "cand-103",
+        "cand-112",
+        "cand-123",
+        "cand-134"
+      ],
+      [
+        "cand-046",
+        "cand-047"
+      ],
+      [
+        "cand-048",
+        "cand-049",
+        "cand-050",
+        "cand-051",
+        "cand-102"
+      ],
+      [
+        "cand-052",
+        "cand-054",
+        "cand-055"
+      ],
+      [
+        "cand-080",
+        "hand-004"
+      ],
+      [
+        "cand-082",
+        "hand-001"
+      ],
+      [
+        "cand-132",
+        "cand-139"
+      ]
+    ],
+    "threshold_judge": [
+      [
+        "cand-004",
+        "cand-005"
+      ],
+      [
+        "cand-009",
+        "cand-010"
+      ],
+      [
+        "cand-011",
+        "cand-012",
+        "cand-013"
+      ],
+      [
+        "cand-016",
+        "cand-018"
+      ],
+      [
+        "cand-024",
+        "cand-025"
+      ],
+      [
+        "cand-026",
+        "cand-027"
+      ],
+      [
+        "cand-037",
+        "cand-038"
+      ],
+      [
+        "cand-039",
+        "cand-040"
+      ],
+      [
+        "cand-046",
+        "cand-047"
+      ],
+      [
+        "cand-048",
+        "cand-049",
+        "cand-050",
+        "cand-051"
+      ],
+      [
+        "cand-052",
+        "cand-054",
+        "cand-055"
+      ],
+      [
+        "cand-074",
+        "hand-008"
+      ],
+      [
+        "cand-082",
+        "hand-001"
+      ],
+      [
+        "cand-089",
+        "cand-126"
+      ]
+    ]
+  },
+  "titles": {
+    "cand-004": "GET /v1/orders/{id} returns other customers' orders",
+    "cand-005": "API devuelve pedidos de otros usuarios",
+    "cand-009": "Login con Google regresa a la pantalla inicial",
+    "cand-010": "Sign in with Google loops back to login",
+    "cand-011": "Promo code shows badge but total unchanged",
+    "cand-012": "El cupón no descuenta del total",
+    "cand-013": "discount not applied",
+    "cand-016": "Search is accent sensitive",
+    "cand-018": "buscador no sirve",
+    "cand-024": "Exportar pedidos del mes se queda colgado",
+    "cand-025": "timeout al exportar en admin",
+    "cand-026": "Product page says in stock but cart says sold out",
+    "cand-027": "Stock badge wrong for electronics",
+    "cand-037": "La app se cierra al pagar con Apple Pay",
+    "cand-038": "Crashea con apple pay",
+    "cand-039": "Shipping address form misaligned on small screens",
+    "cand-040": "Address fields overlap labels on iPhone SE",
+    "cand-046": "Link de darse de baja del newsletter da 404",
+    "cand-047": "no me puedo desuscribir",
+    "cand-048": "Orders created with $0 total",
+    "cand-049": "Zero-value orders in finance report",
+    "cand-050": "coupon + giftcard = free stuff",
+    "cand-051": "Gift card and coupon stacking zeroes the order total",
+    "cand-052": "El contador del carrito no baja al quitar productos",
+    "cand-054": "Badge del carrito desactualizado",
+    "cand-055": "Ícono de carrito con cantidad incorrecta",
+    "cand-056": "Nadie puede iniciar sesión",
+    "cand-057": "El link de restablecer contraseña funciona para cualquier correo",
+    "cand-061": "Número de tarjeta completo en el correo de confirmación",
+    "cand-064": "Exportación de clientes accesible sin iniciar sesión",
+    "cand-072": "Se puede ver el perfil de otra persona cambiando el ID",
+    "cand-074": "El botón Pagar queda escondido detrás del teclado",
+    "cand-078": "No se puede borrar una dirección guardada",
+    "cand-080": "Correo de confirmación con fecha de entrega equivocada",
+    "cand-082": "Los filtros de precio se pierden al regresar",
+    "cand-084": "'Recordarme' no funciona",
+    "cand-087": "No llegan notificaciones push en Huawei",
+    "cand-089": "Error 500 al subir CSV de productos con acentos",
+    "cand-097": "El carrusel se traba en celulares viejos",
+    "cand-102": "Bulk price endpoint set every price to 0",
+    "cand-103": "Pickup in store option can't be selected",
+    "cand-106": "Login endpoint has no rate limit",
+    "cand-109": "Password reset link expires immediately",
+    "cand-112": "Checkout takes 15s to load on mobile",
+    "cand-115": "Admin dashboard charts take 40s to load",
+    "cand-117": "App crashes opening saved cards on Android 12",
+    "cand-119": "Sorting reviews by most recent does nothing",
+    "cand-123": "Shipping options unreadable in dark mode",
+    "cand-126": "Admin crashes exporting customers with emoji names",
+    "cand-129": "'Forgot password?' link not underlined",
+    "cand-132": "Search box clears when switching tabs",
+    "cand-134": "Empty cart illustration is blurry",
+    "cand-137": "'Member since' shows 1970 for old accounts",
+    "cand-139": "Double space in 'No results' message",
+    "hand-001": "Search filters reset after opening a product",
+    "hand-002": "El teléfono del perfil vuelve al valor anterior",
+    "hand-004": "Order shipped email arrives twice",
+    "hand-005": "La app se cierra al quitar el último producto del carrito",
+    "hand-008": "El botón de iniciar sesión queda oculto con el teclado abierto",
+    "hand-009": "Discount is applied twice after changing shipping method"
+  },
+  "llm_calls": 9,
+  "judge_valid_first_try": 1.0,
+  "fresh_llm_calls": 9,
+  "fresh_embed_calls": 60,
+  "judge_cost_usd": 0.06322900000000001,
+  "cost_usd": 0.06327328,
+  "cost_per_100_incidents_usd": 0.10545546666666666
+}

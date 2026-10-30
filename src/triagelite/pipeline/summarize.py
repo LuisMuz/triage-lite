@@ -22,7 +22,10 @@ LANGUAGE_NAMES: dict[Language, str] = {"es": "Spanish", "en": "English"}
 
 
 class ReportDraft(StrictModel):
-    """The sections chosen for one language, who wrote them, and why the model's were rejected."""
+    """The sections chosen for one language, who wrote them, and why model drafts were rejected.
+
+    A model draft that passed on the re-ask keeps the problems of the first draft.
+    """
 
     lang: Language
     source: ReportSource
@@ -47,6 +50,7 @@ def summarize_report(
     incident_ids = {r.incident_id for r in facts.representatives}
     allowed = data_tokens((r.title for r in facts.representatives), config.min_data_token_digits)
     problems: list[str] = []
+    rejected: list[str] = []
     for _ in range(GROUNDING_ATTEMPTS):
         try:
             result = llm.generate_structured(
@@ -57,8 +61,12 @@ def summarize_report(
         problems = grounding_problems(result.output, lang, facts.aggregates, incident_ids, allowed)
         if not problems:
             return ReportDraft(
-                lang=lang, source=ReportSource.MODEL, sections=result.output.sections, problems=[]
+                lang=lang,
+                source=ReportSource.MODEL,
+                sections=result.output.sections,
+                problems=rejected,
             )
+        rejected = problems
     return template_draft(facts, lang, problems)
 
 

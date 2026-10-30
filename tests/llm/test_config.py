@@ -45,12 +45,23 @@ def test_cost_is_per_million_tokens() -> None:
 @pytest.mark.parametrize(
     "stage",
     [
-        {"model_id": "m", "max_tokens": 0},
-        {"model_id": "m", "max_tokens": 10, "thinking": "enabled"},
-        {"model_id": "m", "max_tokens": 10, "effort": "extreme"},
-        {"model_id": "m", "max_tokens": 10, "temperature": 0.2},
+        {"model_id": "m", "api": "messages", "max_tokens": 0},
+        {"model_id": "m", "api": "messages", "max_tokens": 10, "thinking": "enabled"},
+        {"model_id": "m", "api": "messages", "max_tokens": 10, "effort": "extreme"},
+        {"model_id": "m", "api": "messages", "max_tokens": 10, "temperature": 0.2},
+        {"model_id": "m", "max_tokens": 10},
+        {"model_id": "m", "api": "invoke", "max_tokens": 10},
+        {"model_id": "m", "api": "converse", "max_tokens": 10, "thinking": "disabled"},
     ],
-    ids=["zero-max-tokens", "thinking-enabled", "unknown-effort", "extra-field"],
+    ids=[
+        "zero-max-tokens",
+        "thinking-enabled",
+        "unknown-effort",
+        "extra-field",
+        "missing-api",
+        "unknown-api",
+        "thinking-on-converse",
+    ],
 )
 def test_invalid_stage_config_is_rejected(stage: dict[str, object]) -> None:
     with pytest.raises(ValidationError):

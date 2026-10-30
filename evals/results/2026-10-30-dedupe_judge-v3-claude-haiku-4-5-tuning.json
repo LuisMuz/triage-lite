@@ -1,0 +1,1548 @@
+{
+  "created_at": "2026-10-30T05:07:09+00:00",
+  "dataset": "seed-v1",
+  "dataset_labels_sha256": "79d0c0f1d06910d4eb4dd1015b8a9bfd3183c31b1a58abe8aaf7fbb6a6f9223f",
+  "split": "tuning",
+  "prompt": "dedupe_judge/v3",
+  "model_id": "global.anthropic.claude-haiku-4-5-20251001-v1:0",
+  "embedding_model_id": "amazon.titan-embed-text-v2:0",
+  "dimensions": 1024,
+  "config": {
+    "top_k": 5,
+    "similarity_threshold": 0.3,
+    "max_pairs": 400,
+    "judge_chunk_size": 10,
+    "max_cluster_size": 8
+  },
+  "incidents": 60,
+  "candidates": 112,
+  "dropped_by_cap": 0,
+  "arms": {
+    "threshold_only": {
+      "clusters": 11,
+      "largest_cluster": 8,
+      "predicted_pairs": 84,
+      "gold_pairs": 18,
+      "true_pairs": 15,
+      "precision": {
+        "value": 0.17857142857142858,
+        "low": 0.1346153846153846,
+        "high": 0.2528950077200206
+      },
+      "recall": {
+        "value": 0.8333333333333334,
+        "low": 0.7333333333333333,
+        "high": 1.0
+      }
+    },
+    "threshold_judge": {
+      "clusters": 12,
+      "largest_cluster": 3,
+      "predicted_pairs": 20,
+      "gold_pairs": 18,
+      "true_pairs": 18,
+      "precision": {
+        "value": 0.9,
+        "low": 0.7142857142857143,
+        "high": 1.0
+      },
+      "recall": {
+        "value": 1.0,
+        "low": 1.0,
+        "high": 1.0
+      }
+    }
+  },
+  "judge": {
+    "judged": 112,
+    "unjudged": 0,
+    "precision": 0.8571428571428571,
+    "recall": 1.0,
+    "by_kind": {
+      "duplicate_same_language": {
+        "pairs": 12,
+        "said_duplicate": 12,
+        "unjudged": 0
+      },
+      "duplicate_cross_language": {
+        "pairs": 6,
+        "said_duplicate": 6,
+        "unjudged": 0
+      },
+      "near_miss": {
+        "pairs": 1,
+        "said_duplicate": 0,
+        "unjudged": 0
+      },
+      "unrelated": {
+        "pairs": 93,
+        "said_duplicate": 3,
+        "unjudged": 0
+      }
+    },
+    "calibration": [
+      {
+        "lower": 0.0,
+        "upper": 0.2,
+        "count": 0,
+        "mean_confidence": null,
+        "accuracy": null
+      },
+      {
+        "lower": 0.2,
+        "upper": 0.4,
+        "count": 0,
+        "mean_confidence": null,
+        "accuracy": null
+      },
+      {
+        "lower": 0.4,
+        "upper": 0.6,
+        "count": 0,
+        "mean_confidence": null,
+        "accuracy": null
+      },
+      {
+        "lower": 0.6,
+        "upper": 0.8,
+        "count": 2,
+        "mean_confidence": 0.75,
+        "accuracy": 0.0
+      },
+      {
+        "lower": 0.8,
+        "upper": 1.0,
+        "count": 110,
+        "mean_confidence": 0.948090909090909,
+        "accuracy": 0.990909090909091
+      }
+    ]
+  },
+  "never_proposed": [],
+  "pairs": [
+    {
+      "pair_id": "p-0001",
+      "a": "cand-001",
+      "b": "cand-002",
+      "kind": "duplicate_cross_language",
+      "similarity": 0.462,
+      "is_duplicate": true,
+      "confidence": 0.99,
+      "rationale": "A: 500 error when clicking 'Pagar ahora', orders not created, all users since last night. B: same 500 on checkout POST /api/orders, all users since last night deploy. Same defect.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0002",
+      "a": "cand-001",
+      "b": "cand-003",
+      "kind": "duplicate_cross_language",
+      "similarity": 0.5302,
+      "is_duplicate": true,
+      "confidence": 0.99,
+      "rationale": "A: 500 error on 'Pagar ahora' after 4.2.0 update, no orders created. B: 500 on 'Place order' after 4.2.0, no orders created, all platforms. Same defect in checkout payment.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0003",
+      "a": "cand-001",
+      "b": "cand-021",
+      "kind": "unrelated",
+      "similarity": 0.4082,
+      "is_duplicate": false,
+      "confidence": 0.99,
+      "rationale": "A: 500 error on payment step, 4.2.0. B: app crash on order history with 100+ orders, 4.1.3. Different features (checkout vs order history) and different root causes.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0004",
+      "a": "cand-001",
+      "b": "cand-023",
+      "kind": "unrelated",
+      "similarity": 0.3278,
+      "is_duplicate": false,
+      "confidence": 0.98,
+      "rationale": "A: 500 error on payment step, 4.2.0 prevents ordering. B: app crash on order history with many orders. Different features and app versions; different defects.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0005",
+      "a": "cand-001",
+      "b": "cand-060",
+      "kind": "near_miss",
+      "similarity": 0.3041,
+      "is_duplicate": false,
+      "confidence": 0.95,
+      "rationale": "A: 500 error on payment step, 4.2.0. B: blank screen at shipping step with TypeError on 'zones'. Different checkout steps and different errors.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0006",
+      "a": "cand-001",
+      "b": "cand-062",
+      "kind": "unrelated",
+      "similarity": 0.3366,
+      "is_duplicate": false,
+      "confidence": 0.98,
+      "rationale": "A: 500 error on payment preventing orders, 4.2.0. B: empty order history for thousands after database migration. Different defects: checkout vs historical data.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0007",
+      "a": "cand-001",
+      "b": "cand-075",
+      "kind": "unrelated",
+      "similarity": 0.5018,
+      "is_duplicate": false,
+      "confidence": 0.99,
+      "rationale": "A: 500 error on payment step preventing orders, 4.2.0. B: admin button error marking orders as shipped. Different features: customer checkout vs admin operations.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0008",
+      "a": "cand-001",
+      "b": "cand-096",
+      "kind": "unrelated",
+      "similarity": 0.316,
+      "is_duplicate": false,
+      "confidence": 0.99,
+      "rationale": "A: 500 error preventing orders at payment step, 4.2.0. B: missing accents in checkout text label. Different defects: critical error vs UI typo.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0009",
+      "a": "cand-001",
+      "b": "cand-110",
+      "kind": "unrelated",
+      "similarity": 0.3151,
+      "is_duplicate": false,
+      "confidence": 0.97,
+      "rationale": "A: 500 error on payment step, 4.2.0. B: iOS app crash selecting saved card, 4.1.3, memory error. Different app versions and root causes (server vs client).",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0010",
+      "a": "cand-001",
+      "b": "cand-118",
+      "kind": "unrelated",
+      "similarity": 0.3617,
+      "is_duplicate": false,
+      "confidence": 0.99,
+      "rationale": "A: 500 error preventing order creation at payment, 4.2.0. B: cancellation email not sent by support. Different features: order placement vs post-order email.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0011",
+      "a": "cand-001",
+      "b": "hand-007",
+      "kind": "unrelated",
+      "similarity": 0.3047,
+      "is_duplicate": false,
+      "confidence": 0.95,
+      "rationale": "A: 500 error on 'Pagar ahora' preventing orders after update. B: Expired saved card accepted until payment fails. Different defects: payment processing vs. card validation.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0012",
+      "a": "cand-002",
+      "b": "cand-003",
+      "kind": "duplicate_same_language",
+      "similarity": 0.5066,
+      "is_duplicate": true,
+      "confidence": 0.98,
+      "rationale": "A: POST /api/orders returns 500, spinner error, all users since deploy. B: Place order returns 500, no order created, all platforms post-4.2.0. Same root cause: order creation endpoint failure.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0013",
+      "a": "cand-002",
+      "b": "cand-007",
+      "kind": "unrelated",
+      "similarity": 0.3461,
+      "is_duplicate": false,
+      "confidence": 0.95,
+      "rationale": "A: Orders endpoint 500 error, checkout broken. B: Card charged twice due to payment confirm retry. Different defects: order creation vs. duplicate charge handling.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0014",
+      "a": "cand-002",
+      "b": "cand-021",
+      "kind": "unrelated",
+      "similarity": 0.367,
+      "is_duplicate": false,
+      "confidence": 0.98,
+      "rationale": "A: Checkout broken, POST /api/orders 500. B: App crashes opening order history with 100+ orders. Different features: checkout vs. order history display.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0015",
+      "a": "cand-002",
+      "b": "cand-023",
+      "kind": "unrelated",
+      "similarity": 0.3198,
+      "is_duplicate": false,
+      "confidence": 0.9,
+      "rationale": "A: Checkout broken, POST /api/orders 500 since deploy. B: Order history closes app on Samsung. Both could be related to release 4.2.0, but different defects: order creation vs. history crash.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0016",
+      "a": "cand-002",
+      "b": "cand-044",
+      "kind": "unrelated",
+      "similarity": 0.3236,
+      "is_duplicate": false,
+      "confidence": 0.85,
+      "rationale": "A: Checkout broken, POST /api/orders 500 since deploy. B: No webhooks for order.created since 2 days. Both related to order processing but different symptoms: order creation vs. webhook delivery.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0017",
+      "a": "cand-002",
+      "b": "cand-045",
+      "kind": "unrelated",
+      "similarity": 0.3226,
+      "is_duplicate": false,
+      "confidence": 0.8,
+      "rationale": "A: POST /api/orders 500, checkout broken since deploy. B: No order.created webhooks since 4.2.0 deploy. Related timing but different issues: order API vs. webhook dispatcher.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0018",
+      "a": "cand-002",
+      "b": "cand-101",
+      "kind": "unrelated",
+      "similarity": 0.3501,
+      "is_duplicate": false,
+      "confidence": 0.98,
+      "rationale": "A: Checkout broken, orders endpoint 500. B: Customer sees another's cart at checkout. Different defects: order creation failure vs. cart caching/auth issue.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0019",
+      "a": "cand-002",
+      "b": "hand-007",
+      "kind": "unrelated",
+      "similarity": 0.3176,
+      "is_duplicate": false,
+      "confidence": 0.93,
+      "rationale": "A: Checkout broken, POST /api/orders 500 since deploy. B: Expired card accepted, fails at payment with generic error. Different defects: order endpoint crash vs. card validation bypass.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0020",
+      "a": "cand-003",
+      "b": "cand-007",
+      "kind": "unrelated",
+      "similarity": 0.4705,
+      "is_duplicate": false,
+      "confidence": 0.92,
+      "rationale": "A: Place order 500 error, no order created post-4.2.0, all platforms. B: Card charged twice, payment retry issue. Different root causes: order endpoint failure vs. duplicate capture on retry.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0021",
+      "a": "cand-003",
+      "b": "cand-015",
+      "kind": "unrelated",
+      "similarity": 0.3871,
+      "is_duplicate": false,
+      "confidence": 0.95,
+      "rationale": "A: Order creation fails with HTTP 500 at Place order. B: Push notification sent twice for order shipment. Different defects in order flow.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0022",
+      "a": "cand-003",
+      "b": "cand-021",
+      "kind": "unrelated",
+      "similarity": 0.5495,
+      "is_duplicate": false,
+      "confidence": 0.95,
+      "rationale": "A: Order creation fails with HTTP 500 at checkout. B: App crashes viewing order history with 100+ orders. Different defects, different stages.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0023",
+      "a": "cand-003",
+      "b": "cand-023",
+      "kind": "unrelated",
+      "similarity": 0.4093,
+      "is_duplicate": false,
+      "confidence": 0.92,
+      "rationale": "A: Order creation fails with HTTP 500 at checkout. B: App crashes opening order history. Different defects: creation vs viewing orders.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0024",
+      "a": "cand-003",
+      "b": "cand-044",
+      "kind": "unrelated",
+      "similarity": 0.3726,
+      "is_duplicate": false,
+      "confidence": 0.85,
+      "rationale": "A: Order creation fails with HTTP 500 at checkout. B: Missing webhooks for new-order events. Related but different: UI failure vs backend event delivery.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0025",
+      "a": "cand-003",
+      "b": "cand-045",
+      "kind": "unrelated",
+      "similarity": 0.3503,
+      "is_duplicate": true,
+      "confidence": 0.92,
+      "rationale": "A: Order creation fails with HTTP 500 at checkout in 4.2.0. B: Webhook dispatcher shows 0 deliveries for order.created since 4.2.0. Same root cause: broken order creation.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0026",
+      "a": "cand-003",
+      "b": "cand-075",
+      "kind": "unrelated",
+      "similarity": 0.3809,
+      "is_duplicate": false,
+      "confidence": 0.95,
+      "rationale": "A: Order creation fails with HTTP 500 at checkout. B: Admin button 'Mark as sent' gives error. Different defects in different features.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0027",
+      "a": "cand-003",
+      "b": "cand-108",
+      "kind": "unrelated",
+      "similarity": 0.3203,
+      "is_duplicate": false,
+      "confidence": 0.98,
+      "rationale": "A: Order creation fails with HTTP 500 at checkout. B: Search shows unavailable products for user's region. Different defects: checkout vs search.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0028",
+      "a": "cand-003",
+      "b": "cand-110",
+      "kind": "unrelated",
+      "similarity": 0.3001,
+      "is_duplicate": false,
+      "confidence": 0.9,
+      "rationale": "A: Order creation fails with HTTP 500 at checkout. B: iOS app crashes with saved payment card. Different failures in checkout: backend vs payment UI.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0029",
+      "a": "cand-003",
+      "b": "cand-118",
+      "kind": "unrelated",
+      "similarity": 0.489,
+      "is_duplicate": false,
+      "confidence": 0.96,
+      "rationale": "A: Order creation fails with HTTP 500 at checkout. B: Cancellation email not sent. Different defects: order creation vs post-order email.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0030",
+      "a": "cand-006",
+      "b": "cand-007",
+      "kind": "duplicate_cross_language",
+      "similarity": 0.4863,
+      "is_duplicate": true,
+      "confidence": 0.95,
+      "rationale": "A: Customers charged twice with Mastercard, single order in system (Spanish). B: Card charged twice, payment confirm retried after timeout. Same defect: duplicate charges from payment retry.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0031",
+      "a": "cand-006",
+      "b": "cand-008",
+      "kind": "duplicate_same_language",
+      "similarity": 0.4713,
+      "is_duplicate": true,
+      "confidence": 0.95,
+      "rationale": "A: Card charged twice, single order in system. B: Same—two identical charges per order. Both Mastercard/bank level, one order shown in account.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0032",
+      "a": "cand-006",
+      "b": "cand-014",
+      "kind": "unrelated",
+      "similarity": 0.4669,
+      "is_duplicate": false,
+      "confidence": 0.98,
+      "rationale": "A: Double charge on Mastercard for one order. B: Duplicate push notification on shipment. Different features—payment vs. notifications.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0033",
+      "a": "cand-006",
+      "b": "cand-015",
+      "kind": "unrelated",
+      "similarity": 0.3561,
+      "is_duplicate": false,
+      "confidence": 0.98,
+      "rationale": "A: Double charge on Mastercard for one order. B: Duplicate 'order shipped' push notification. Different features—payment vs. push notifications.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0034",
+      "a": "cand-006",
+      "b": "cand-041",
+      "kind": "unrelated",
+      "similarity": 0.3719,
+      "is_duplicate": false,
+      "confidence": 0.99,
+      "rationale": "A: Double charge on card for one order. B: Saved addresses duplicated on edit. Different features—payment vs. address management.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0035",
+      "a": "cand-007",
+      "b": "cand-008",
+      "kind": "duplicate_cross_language",
+      "similarity": 0.4848,
+      "is_duplicate": true,
+      "confidence": 0.96,
+      "rationale": "A: Card charged twice, single order, payment confirm retry after timeout. B: Same—two charges, one order visible, identical root cause.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0036",
+      "a": "cand-007",
+      "b": "cand-014",
+      "kind": "unrelated",
+      "similarity": 0.3248,
+      "is_duplicate": false,
+      "confidence": 0.98,
+      "rationale": "A: Double charge on payment retry timeout. B: Duplicate shipment push notification. Different features—payment vs. push messaging.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0037",
+      "a": "cand-007",
+      "b": "cand-015",
+      "kind": "unrelated",
+      "similarity": 0.4903,
+      "is_duplicate": false,
+      "confidence": 0.98,
+      "rationale": "A: Double charge on card payment. B: Duplicate 'order shipped' push notification. Different features—payment vs. notifications.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0038",
+      "a": "cand-007",
+      "b": "cand-101",
+      "kind": "unrelated",
+      "similarity": 0.3787,
+      "is_duplicate": false,
+      "confidence": 0.99,
+      "rationale": "A: Double charge on payment. B: Customer sees another's cart on shared network. Different features—payment vs. data visibility/caching.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0039",
+      "a": "cand-007",
+      "b": "cand-118",
+      "kind": "unrelated",
+      "similarity": 0.4147,
+      "is_duplicate": false,
+      "confidence": 0.99,
+      "rationale": "A: Double charge on payment. B: Order cancellation email not sent. Different features—payment vs. email notifications.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0040",
+      "a": "cand-007",
+      "b": "hand-007",
+      "kind": "unrelated",
+      "similarity": 0.3572,
+      "is_duplicate": false,
+      "confidence": 0.97,
+      "rationale": "A: Double charge on payment. B: Expired card accepted until final payment. Both involve payment, but different defects—duplicate charge vs. validation bypass.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0041",
+      "a": "cand-008",
+      "b": "cand-014",
+      "kind": "unrelated",
+      "similarity": 0.375,
+      "is_duplicate": false,
+      "confidence": 0.98,
+      "rationale": "A: Double bank charge for single order. B: Duplicate push notification on shipment. Different defects: billing vs. notification.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0042",
+      "a": "cand-008",
+      "b": "cand-015",
+      "kind": "unrelated",
+      "similarity": 0.3154,
+      "is_duplicate": false,
+      "confidence": 0.98,
+      "rationale": "A: Double bank charge for single order. B: Duplicate push notification on shipment. Different defects: billing vs. notification.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0043",
+      "a": "cand-014",
+      "b": "cand-015",
+      "kind": "duplicate_cross_language",
+      "similarity": 0.7032,
+      "is_duplicate": true,
+      "confidence": 0.99,
+      "rationale": "Both reports: users receive 'order shipped' push notification twice for every shipment. Same defect, same platforms, different languages.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0044",
+      "a": "cand-014",
+      "b": "cand-041",
+      "kind": "unrelated",
+      "similarity": 0.3395,
+      "is_duplicate": false,
+      "confidence": 0.99,
+      "rationale": "A: Duplicate push notifications on shipment. B: Duplicate saved addresses when editing (web, address feature). Different features and platforms.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0045",
+      "a": "cand-015",
+      "b": "cand-021",
+      "kind": "unrelated",
+      "similarity": 0.4171,
+      "is_duplicate": false,
+      "confidence": 0.99,
+      "rationale": "A: Duplicate push notification on shipment. B: App crash opening order history with 100+ orders. Different defects: notification vs. crash.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0046",
+      "a": "cand-015",
+      "b": "cand-101",
+      "kind": "unrelated",
+      "similarity": 0.3448,
+      "is_duplicate": false,
+      "confidence": 0.99,
+      "rationale": "A: Duplicate push notification on shipment. B: Cart visibility issue between customers on same network. Different defects: notification vs. data privacy.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0047",
+      "a": "cand-015",
+      "b": "cand-127",
+      "kind": "unrelated",
+      "similarity": 0.3689,
+      "is_duplicate": false,
+      "confidence": 0.99,
+      "rationale": "A: Duplicate push notification on shipment. B: Push shows wrong currency label (USD vs MXN). Different defects: duplication vs. localization.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0048",
+      "a": "cand-019",
+      "b": "cand-020",
+      "kind": "duplicate_cross_language",
+      "similarity": 0.5966,
+      "is_duplicate": true,
+      "confidence": 0.99,
+      "rationale": "Both reports: 'Save' button untranslated on Spanish profile page, stays in English. Same defect, same feature, different languages.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0049",
+      "a": "cand-019",
+      "b": "cand-092",
+      "kind": "unrelated",
+      "similarity": 0.3716,
+      "is_duplicate": false,
+      "confidence": 0.98,
+      "rationale": "A: Untranslated 'Save' button on Spanish profile page. B: Untranslated login error on Spanish app. Different screens and features.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0050",
+      "a": "cand-020",
+      "b": "cand-092",
+      "kind": "unrelated",
+      "similarity": 0.3365,
+      "is_duplicate": false,
+      "confidence": 0.98,
+      "rationale": "A: Untranslated 'Save' button on Spanish profile page (web). B: Untranslated login error on Spanish app. Different screens and platforms.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0051",
+      "a": "cand-020",
+      "b": "cand-128",
+      "kind": "unrelated",
+      "similarity": 0.3159,
+      "is_duplicate": false,
+      "confidence": 0.99,
+      "rationale": "A: Spanish profile page 'Save' button untranslated. B: Product title truncation with no tooltip. Different features and defects.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0052",
+      "a": "cand-021",
+      "b": "cand-022",
+      "kind": "duplicate_same_language",
+      "similarity": 0.4695,
+      "is_duplicate": true,
+      "confidence": 0.98,
+      "rationale": "A: Order history crashes for 100+ orders. B: IndexOutOfBoundsException at index 100 in OrderAdapter on order history. Same defect, crash root cause.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0053",
+      "a": "cand-021",
+      "b": "cand-023",
+      "kind": "duplicate_same_language",
+      "similarity": 0.6908,
+      "is_duplicate": true,
+      "confidence": 0.92,
+      "rationale": "A: Order history crashes with 100+ orders on Android 13/14. B: Order list closes app on Samsung phone, user has many orders. Same crash defect.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0054",
+      "a": "cand-021",
+      "b": "cand-044",
+      "kind": "unrelated",
+      "similarity": 0.3168,
+      "is_duplicate": false,
+      "confidence": 0.99,
+      "rationale": "A: Order history app crash on Android. B: Missing webhooks for order.created events. Different systems and defects.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0055",
+      "a": "cand-021",
+      "b": "cand-110",
+      "kind": "unrelated",
+      "similarity": 0.3715,
+      "is_duplicate": false,
+      "confidence": 0.99,
+      "rationale": "A: Order history crash on Android. B: iOS payment step crash with saved card. Different platforms, screens, and defects.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0056",
+      "a": "cand-021",
+      "b": "cand-118",
+      "kind": "unrelated",
+      "similarity": 0.4115,
+      "is_duplicate": false,
+      "confidence": 0.99,
+      "rationale": "A: Order history app crash on Android. B: Order cancellation email not sent. Different features and defects.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0057",
+      "a": "cand-021",
+      "b": "cand-124",
+      "kind": "unrelated",
+      "similarity": 0.322,
+      "is_duplicate": false,
+      "confidence": 0.99,
+      "rationale": "A: Order history crash on Android. B: Search autocomplete lag on older iPhones. Different features, platforms, and defects.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0058",
+      "a": "cand-021",
+      "b": "cand-128",
+      "kind": "unrelated",
+      "similarity": 0.3209,
+      "is_duplicate": false,
+      "confidence": 0.99,
+      "rationale": "A: Order history crash on Android. B: Product title truncation on web. Different platforms, screens, and defects.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0059",
+      "a": "cand-022",
+      "b": "cand-023",
+      "kind": "duplicate_same_language",
+      "similarity": 0.306,
+      "is_duplicate": true,
+      "confidence": 0.93,
+      "rationale": "A: IndexOutOfBoundsException crash at index 100 in OrderAdapter on order history. B: Order list closes app for user with many orders on Samsung. Same defect.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0060",
+      "a": "cand-023",
+      "b": "cand-062",
+      "kind": "unrelated",
+      "similarity": 0.3271,
+      "is_duplicate": false,
+      "confidence": 0.85,
+      "rationale": "A: Order list closes app on Samsung after opening. B: Order history empty after database migration, 2,310 users affected. Different defects: crash vs. empty data.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0061",
+      "a": "cand-023",
+      "b": "cand-068",
+      "kind": "unrelated",
+      "similarity": 0.3121,
+      "is_duplicate": false,
+      "confidence": 0.98,
+      "rationale": "A: app crashes when opening order history on mobile. B: app shows old prices different from web. Different defects, different features.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0062",
+      "a": "cand-028",
+      "b": "cand-029",
+      "kind": "duplicate_same_language",
+      "similarity": 0.5403,
+      "is_duplicate": true,
+      "confidence": 0.85,
+      "rationale": "A: product images appear pixelated/blurry on iPad Pro, loading thumbnail instead of full image. B: product images low quality on Galaxy Tab vs phone. Same defect: incorrect image resolution on tablets.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0063",
+      "a": "cand-028",
+      "b": "cand-079",
+      "kind": "unrelated",
+      "similarity": 0.3259,
+      "is_duplicate": false,
+      "confidence": 0.9,
+      "rationale": "A: product images pixelated on iPad, loads thumbnail instead of full image. B: product images load slowly on 3G. Different defects: display quality vs slow loading.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0064",
+      "a": "cand-028",
+      "b": "cand-128",
+      "kind": "unrelated",
+      "similarity": 0.305,
+      "is_duplicate": false,
+      "confidence": 0.99,
+      "rationale": "A: product images pixelated on iPad, thumbnail loaded instead of full. B: long product titles truncated without tooltip. Different features: image display vs text truncation.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0065",
+      "a": "cand-029",
+      "b": "cand-077",
+      "kind": "unrelated",
+      "similarity": 0.3711,
+      "is_duplicate": false,
+      "confidence": 0.95,
+      "rationale": "A: product images low quality on tablet. B: size table not visible on mobile web. Different defects: image quality vs missing UI element.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0066",
+      "a": "cand-032",
+      "b": "cand-033",
+      "kind": "duplicate_same_language",
+      "similarity": 0.7176,
+      "is_duplicate": true,
+      "confidence": 0.92,
+      "rationale": "A: search takes 6-8 seconds on app with 4G. B: search hangs for a long time on app. Same defect: slow search on app, different phrasing.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0067",
+      "a": "cand-032",
+      "b": "cand-034",
+      "kind": "duplicate_same_language",
+      "similarity": 0.7182,
+      "is_duplicate": true,
+      "confidence": 0.95,
+      "rationale": "A: search takes 6-8 seconds on app. B: search endpoint responds in 7.8s on mobile vs 300ms on web, app uses old index. Same defect with technical details added.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0068",
+      "a": "cand-032",
+      "b": "cand-068",
+      "kind": "unrelated",
+      "similarity": 0.3225,
+      "is_duplicate": false,
+      "confidence": 0.98,
+      "rationale": "A: search slow on app (6-8 seconds). B: prices wrong in app vs web. Different defects: performance vs pricing data.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0069",
+      "a": "cand-032",
+      "b": "cand-079",
+      "kind": "unrelated",
+      "similarity": 0.4146,
+      "is_duplicate": false,
+      "confidence": 0.9,
+      "rationale": "A: search slow on app (6-8 seconds with 4G). B: product images load slowly on 3G. Different defects: search performance vs image loading.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0070",
+      "a": "cand-032",
+      "b": "cand-085",
+      "kind": "unrelated",
+      "similarity": 0.3874,
+      "is_duplicate": false,
+      "confidence": 0.88,
+      "rationale": "A: search slow on app (6-8 seconds, user-facing). B: search slow in admin backend (15 seconds, different feature/module). Different defects in different systems.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0071",
+      "a": "cand-032",
+      "b": "cand-124",
+      "kind": "unrelated",
+      "similarity": 0.3968,
+      "is_duplicate": false,
+      "confidence": 0.85,
+      "rationale": "A: search takes 6-8s on app with 4G vs instant on web. B: typing lags ~1s per keystroke on older iPhones. Different issues: response latency vs keystroke lag.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0072",
+      "a": "cand-033",
+      "b": "cand-034",
+      "kind": "duplicate_same_language",
+      "similarity": 0.5919,
+      "is_duplicate": true,
+      "confidence": 0.92,
+      "rationale": "A: app search very slow, instant on web. B: search endpoint responds in 7.8s (p95) vs 300ms on web, app uses old index. Same root cause (app search performance), same context.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0073",
+      "a": "cand-033",
+      "b": "cand-068",
+      "kind": "unrelated",
+      "similarity": 0.359,
+      "is_duplicate": false,
+      "confidence": 0.95,
+      "rationale": "A: app search takes long time to load. B: app shows old lower prices vs web, charges web price at checkout. Different defects: performance vs pricing inconsistency.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0074",
+      "a": "cand-033",
+      "b": "cand-079",
+      "kind": "unrelated",
+      "similarity": 0.38,
+      "is_duplicate": false,
+      "confidence": 0.9,
+      "rationale": "A: app search very slow. B: product images take 10+ seconds on 3G. Different components affected: search vs image loading.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0075",
+      "a": "cand-033",
+      "b": "cand-085",
+      "kind": "unrelated",
+      "similarity": 0.448,
+      "is_duplicate": false,
+      "confidence": 0.88,
+      "rationale": "A: app search very slow, instant on web. B: admin customer search takes 15 seconds. Different modules: customer app search vs admin interface.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0076",
+      "a": "cand-033",
+      "b": "cand-124",
+      "kind": "unrelated",
+      "similarity": 0.303,
+      "is_duplicate": false,
+      "confidence": 0.8,
+      "rationale": "A: app search takes long time. B: search box typing lags ~1s per keystroke on older iPhones. Different symptoms: overall search latency vs keystroke input lag.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0077",
+      "a": "cand-034",
+      "b": "cand-079",
+      "kind": "unrelated",
+      "similarity": 0.3173,
+      "is_duplicate": false,
+      "confidence": 0.92,
+      "rationale": "A: search endpoint latency 7.8s on app vs 300ms web. B: images load slow on 3G (10+ seconds). Different features: search performance vs image loading.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0078",
+      "a": "cand-034",
+      "b": "cand-085",
+      "kind": "unrelated",
+      "similarity": 0.3838,
+      "is_duplicate": false,
+      "confidence": 0.9,
+      "rationale": "A: app search endpoint 7.8s vs web 300ms, uses old index. B: admin customer search 15s. Different modules: customer app vs admin interface.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0079",
+      "a": "cand-034",
+      "b": "cand-108",
+      "kind": "unrelated",
+      "similarity": 0.3212,
+      "is_duplicate": false,
+      "confidence": 0.93,
+      "rationale": "A: app search endpoint latency issue, uses old index. B: search shows unavailable region products, fails at checkout. Different defects: backend latency vs search filtering logic.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0080",
+      "a": "cand-034",
+      "b": "cand-124",
+      "kind": "unrelated",
+      "similarity": 0.3646,
+      "is_duplicate": false,
+      "confidence": 0.85,
+      "rationale": "A: search endpoint latency 7.8s p95 on app, uses old index. B: typing lags ~1s per keystroke on older iPhones. Different issues: backend response latency vs client-side keystroke processing.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0081",
+      "a": "cand-035",
+      "b": "cand-036",
+      "kind": "duplicate_same_language",
+      "similarity": 0.6039,
+      "is_duplicate": true,
+      "confidence": 0.98,
+      "rationale": "A: Password reset email not arriving for Hotmail/Outlook users. B: Same issue - Outlook user didn't receive reset email after 3 attempts. Same defect, different detail levels.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0082",
+      "a": "cand-035",
+      "b": "cand-113",
+      "kind": "unrelated",
+      "similarity": 0.332,
+      "is_duplicate": false,
+      "confidence": 0.95,
+      "rationale": "A: Password reset email not arriving for Hotmail/Outlook. B: Can't change account email - old email persists after save. Different defects in different features.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0083",
+      "a": "cand-035",
+      "b": "cand-118",
+      "kind": "unrelated",
+      "similarity": 0.3659,
+      "is_duplicate": false,
+      "confidence": 0.97,
+      "rationale": "A: Password reset email not arriving for Hotmail/Outlook. B: Order cancellation email not sent. Different email types, different scenarios.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0084",
+      "a": "cand-036",
+      "b": "cand-113",
+      "kind": "unrelated",
+      "similarity": 0.3015,
+      "is_duplicate": false,
+      "confidence": 0.96,
+      "rationale": "A: Outlook user not receiving reset email. B: Can't save new email in profile - old email persists. Different features and defects.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0085",
+      "a": "cand-041",
+      "b": "cand-042",
+      "kind": "duplicate_same_language",
+      "similarity": 0.596,
+      "is_duplicate": true,
+      "confidence": 0.96,
+      "rationale": "A: Saved addresses duplicate when edited on web. B: Same addresses duplicated on Android app. Same defect across platforms.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0086",
+      "a": "cand-044",
+      "b": "cand-045",
+      "kind": "duplicate_same_language",
+      "similarity": 0.5901,
+      "is_duplicate": true,
+      "confidence": 0.94,
+      "rationale": "A: Partner reports no new-order webhooks for 2 days. B: Webhook dispatcher shows 0 deliveries for order.created since 4.2.0 deploy. Same root cause and defect.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0087",
+      "a": "cand-044",
+      "b": "cand-062",
+      "kind": "unrelated",
+      "similarity": 0.3152,
+      "is_duplicate": false,
+      "confidence": 0.89,
+      "rationale": "A: Missing order.created webhooks. B: Order history empty after database migration, thousands affected. Different defects - webhook delivery vs data visibility.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0088",
+      "a": "cand-044",
+      "b": "cand-118",
+      "kind": "unrelated",
+      "similarity": 0.3697,
+      "is_duplicate": false,
+      "confidence": 0.96,
+      "rationale": "A: Missing order.created webhooks for 2 days. B: Order cancellation email not sent. Different notification mechanisms and scenarios.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0089",
+      "a": "cand-045",
+      "b": "cand-075",
+      "kind": "unrelated",
+      "similarity": 0.3222,
+      "is_duplicate": false,
+      "confidence": 0.93,
+      "rationale": "A: Webhook dispatcher shows 0 order.created deliveries since 4.2.0. B: Admin 'Mark as sent' button errors. Different features - webhooks vs admin order updates.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0090",
+      "a": "cand-060",
+      "b": "cand-075",
+      "kind": "unrelated",
+      "similarity": 0.3667,
+      "is_duplicate": false,
+      "confidence": 0.96,
+      "rationale": "A: Blank screen at shipping step with 'zones' error, checkout blocked. B: Admin 'Mark as sent' button errors. Different features and surfaces.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0091",
+      "a": "cand-060",
+      "b": "cand-096",
+      "kind": "unrelated",
+      "similarity": 0.329,
+      "is_duplicate": false,
+      "confidence": 0.95,
+      "rationale": "A: blank screen in shipping step with TypeError on zones. B: missing accents in 'Dirección de envío' text. Different defects: runtime error vs UI text issue.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0092",
+      "a": "cand-062",
+      "b": "cand-073",
+      "kind": "unrelated",
+      "similarity": 0.3569,
+      "is_duplicate": false,
+      "confidence": 0.95,
+      "rationale": "A: order history empty after DB migration. B: cart empties after logout. Different features and causes: data visibility vs session persistence.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0093",
+      "a": "cand-062",
+      "b": "cand-075",
+      "kind": "unrelated",
+      "similarity": 0.443,
+      "is_duplicate": false,
+      "confidence": 0.9,
+      "rationale": "A: order history empty post-migration, users can't see orders. B: admin can't mark orders shipped. Different defects: read access vs update functionality.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0094",
+      "a": "cand-062",
+      "b": "cand-083",
+      "kind": "unrelated",
+      "similarity": 0.3097,
+      "is_duplicate": false,
+      "confidence": 0.92,
+      "rationale": "A: order history empty post-migration. B: sales report excludes coupon orders. Different defects: user order visibility vs report calculation.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0095",
+      "a": "cand-068",
+      "b": "cand-127",
+      "kind": "unrelated",
+      "similarity": 0.4215,
+      "is_duplicate": false,
+      "confidence": 0.88,
+      "rationale": "A: app shows old lower price than web. B: push notifications show USD label for MXN prices. Different features/symptoms: price sync issue vs currency label issue.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0096",
+      "a": "cand-075",
+      "b": "cand-083",
+      "kind": "unrelated",
+      "similarity": 0.3128,
+      "is_duplicate": false,
+      "confidence": 0.93,
+      "rationale": "A: admin can't mark orders shipped. B: sales report excludes coupon orders. Different defects: order update vs report calculation.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0097",
+      "a": "cand-075",
+      "b": "cand-096",
+      "kind": "unrelated",
+      "similarity": 0.3371,
+      "is_duplicate": false,
+      "confidence": 0.98,
+      "rationale": "A: admin button error marking orders shipped. B: missing accents in checkout text. Completely different features: order management vs UI text.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0098",
+      "a": "cand-075",
+      "b": "cand-108",
+      "kind": "unrelated",
+      "similarity": 0.3088,
+      "is_duplicate": false,
+      "confidence": 0.97,
+      "rationale": "A: admin can't mark orders shipped. B: search shows unavailable regional products. Different features: admin order status vs search filtering.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0099",
+      "a": "cand-075",
+      "b": "cand-118",
+      "kind": "unrelated",
+      "similarity": 0.3584,
+      "is_duplicate": false,
+      "confidence": 0.97,
+      "rationale": "A: admin button error marking orders shipped. B: cancellation email not sent. Different features: order UI vs email delivery.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0100",
+      "a": "cand-079",
+      "b": "hand-006",
+      "kind": "unrelated",
+      "similarity": 0.3848,
+      "is_duplicate": true,
+      "confidence": 0.75,
+      "rationale": "A: product images slow on 3G. B: category page takes 11-14s on 50Mbps. Same defect: initial page/category load slow, different connection types.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0101",
+      "a": "cand-085",
+      "b": "cand-116",
+      "kind": "unrelated",
+      "similarity": 0.3036,
+      "is_duplicate": false,
+      "confidence": 0.95,
+      "rationale": "A: slow customer search in admin (15s). B: admin order list time display timezone issue. Different defects.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0102",
+      "a": "cand-094",
+      "b": "cand-096",
+      "kind": "unrelated",
+      "similarity": 0.3058,
+      "is_duplicate": false,
+      "confidence": 0.98,
+      "rationale": "A: stretched logo in Outlook emails. B: missing accents in checkout text. Different defects, different environments.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0103",
+      "a": "cand-094",
+      "b": "cand-140",
+      "kind": "unrelated",
+      "similarity": 0.3163,
+      "is_duplicate": false,
+      "confidence": 0.96,
+      "rationale": "A: stretched logo in Outlook emails. B: payment card logos have inconsistent sizes. Different defects, different components.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0104",
+      "a": "cand-096",
+      "b": "cand-108",
+      "kind": "unrelated",
+      "similarity": 0.3168,
+      "is_duplicate": false,
+      "confidence": 0.97,
+      "rationale": "A: missing accents in 'Dirección de envío' text. B: search shows region-unavailable products. Different defects.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0105",
+      "a": "cand-096",
+      "b": "cand-136",
+      "kind": "unrelated",
+      "similarity": 0.3618,
+      "is_duplicate": true,
+      "confidence": 0.75,
+      "rationale": "A: missing accents 'Dirección de envío'. B: typo 'Adress' in shipping form. Both text/spelling issues in checkout shipping, likely same defect.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0106",
+      "a": "cand-098",
+      "b": "cand-116",
+      "kind": "unrelated",
+      "similarity": 0.3014,
+      "is_duplicate": false,
+      "confidence": 0.96,
+      "rationale": "A: amounts left-aligned in admin tables. B: admin order list shows UTC times. Different UI/display defects.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0107",
+      "a": "cand-098",
+      "b": "cand-133",
+      "kind": "unrelated",
+      "similarity": 0.3781,
+      "is_duplicate": false,
+      "confidence": 0.95,
+      "rationale": "A: amounts left-aligned in admin tables. B: sidebar Reports icon misaligned by 3px. Different alignment issues in different components.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0108",
+      "a": "cand-108",
+      "b": "cand-127",
+      "kind": "unrelated",
+      "similarity": 0.4023,
+      "is_duplicate": false,
+      "confidence": 0.96,
+      "rationale": "A: search shows region-unavailable products. B: push notifications show wrong currency label. Different defects, different features.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0109",
+      "a": "cand-108",
+      "b": "cand-128",
+      "kind": "unrelated",
+      "similarity": 0.3005,
+      "is_duplicate": false,
+      "confidence": 0.97,
+      "rationale": "A: search shows region-unavailable products. B: long product titles truncated without tooltip. Different defects.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0110",
+      "a": "cand-110",
+      "b": "hand-007",
+      "kind": "unrelated",
+      "similarity": 0.4631,
+      "is_duplicate": false,
+      "confidence": 0.85,
+      "rationale": "A: iOS app crashes selecting saved card. B: expired saved card accepted at checkout. Both saved card issues but different defects: crash vs validation.",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0111",
+      "a": "cand-116",
+      "b": "cand-127",
+      "kind": "unrelated",
+      "similarity": 0.3531,
+      "is_duplicate": false,
+      "confidence": 0.98,
+      "rationale": "A: Order times shown in UTC instead of Mexico City time. B: Push notification prices labeled USD instead of MXN. Different features (admin orders vs push notifications), different issues (timezone vs currency).",
+      "reason": null
+    },
+    {
+      "pair_id": "p-0112",
+      "a": "cand-140",
+      "b": "hand-007",
+      "kind": "unrelated",
+      "similarity": 0.3004,
+      "is_duplicate": false,
+      "confidence": 0.97,
+      "rationale": "A: Card logos have inconsistent sizes on payment step. B: Expired saved card accepted until final payment, fails with generic error. Different defects: UI layout vs validation logic.",
+      "reason": null
+    }
+  ],
+  "clusters": {
+    "threshold_only": [
+      [
+        "cand-001",
+        "cand-002",
+        "cand-003",
+        "cand-021",
+        "cand-023",
+        "cand-060",
+        "cand-062",
+        "cand-075"
+      ],
+      [
+        "cand-006",
+        "cand-007",
+        "cand-008",
+        "cand-014",
+        "cand-015",
+        "cand-041"
+      ],
+      [
+        "cand-019",
+        "cand-020",
+        "cand-092"
+      ],
+      [
+        "cand-028",
+        "cand-029",
+        "cand-128"
+      ],
+      [
+        "cand-032",
+        "cand-033",
+        "cand-034",
+        "cand-068",
+        "cand-079",
+        "cand-085",
+        "cand-124"
+      ],
+      [
+        "cand-035",
+        "cand-036",
+        "cand-113"
+      ],
+      [
+        "cand-044",
+        "cand-045",
+        "cand-118"
+      ],
+      [
+        "cand-094",
+        "cand-096",
+        "cand-140"
+      ],
+      [
+        "cand-098",
+        "cand-116",
+        "cand-133"
+      ],
+      [
+        "cand-108",
+        "cand-127"
+      ],
+      [
+        "cand-110",
+        "hand-007"
+      ]
+    ],
+    "threshold_judge": [
+      [
+        "cand-001",
+        "cand-002",
+        "cand-003"
+      ],
+      [
+        "cand-006",
+        "cand-007",
+        "cand-008"
+      ],
+      [
+        "cand-014",
+        "cand-015"
+      ],
+      [
+        "cand-019",
+        "cand-020"
+      ],
+      [
+        "cand-021",
+        "cand-022",
+        "cand-023"
+      ],
+      [
+        "cand-028",
+        "cand-029"
+      ],
+      [
+        "cand-032",
+        "cand-033",
+        "cand-034"
+      ],
+      [
+        "cand-035",
+        "cand-036"
+      ],
+      [
+        "cand-041",
+        "cand-042"
+      ],
+      [
+        "cand-044",
+        "cand-045"
+      ],
+      [
+        "cand-079",
+        "hand-006"
+      ],
+      [
+        "cand-096",
+        "cand-136"
+      ]
+    ]
+  },
+  "titles": {
+    "cand-001": "Error 500 al pagar el pedido",
+    "cand-002": "checkout broken!!!",
+    "cand-003": "Order confirmation returns HTTP 500",
+    "cand-006": "Cobro duplicado con tarjeta",
+    "cand-007": "Customers charged twice for one order",
+    "cand-008": "me cobraron 2 veces!!",
+    "cand-014": "Notificación push duplicada",
+    "cand-015": "Duplicate 'order shipped' push",
+    "cand-019": "Botón Guardar aparece en inglés",
+    "cand-020": "Untranslated 'Save' button on Spanish profile page",
+    "cand-021": "App crashes opening order history",
+    "cand-022": "Crash: IndexOutOfBoundsException in OrderAdapter",
+    "cand-023": "order history closes the app",
+    "cand-028": "Imagen de producto pixelada en iPad",
+    "cand-029": "fotos borrosas en tablet",
+    "cand-032": "Búsqueda muy lenta en la app",
+    "cand-033": "buscar tarda muchisimo",
+    "cand-034": "Latencia alta en /search desde móvil",
+    "cand-035": "Password reset email not arriving for Hotmail users",
+    "cand-036": "No reset email (outlook)",
+    "cand-041": "Direcciones guardadas se duplican al editar",
+    "cand-042": "Se repiten mis direcciones",
+    "cand-044": "Partner reports missing webhooks",
+    "cand-045": "Webhook delivery queue empty for order events",
+    "cand-060": "Pantalla en blanco en el paso de envío",
+    "cand-062": "Historial de pedidos vacío después de la migración",
+    "cand-068": "Precio en la app distinto al de la web",
+    "cand-069": "No llega el código de verificación por SMS",
+    "cand-071": "No acepta tarjetas American Express",
+    "cand-073": "El carrito se vacía al cerrar sesión",
+    "cand-075": "No se pueden marcar pedidos como enviados",
+    "cand-077": "No se ve la tabla de tallas en móvil",
+    "cand-079": "Imágenes de productos tardan mucho en 3G",
+    "cand-083": "Reporte de ventas no incluye pedidos con cupón",
+    "cand-085": "Buscar clientes en el admin tarda 15 segundos",
+    "cand-088": "El cupón de primera compra se puede usar varias veces",
+    "cand-092": "Mensaje de error del login en inglés",
+    "cand-094": "Logo estirado en los correos",
+    "cand-096": "Texto 'Direccion de envio' sin acentos",
+    "cand-098": "Montos alineados a la izquierda en tablas del admin",
+    "cand-099": "Session token in URL leaks to analytics",
+    "cand-101": "User sees another customer's cart",
+    "cand-108": "Search shows products that can't ship to the user's region",
+    "cand-110": "iOS app crashes on payment step with saved card",
+    "cand-113": "Can't change account email",
+    "cand-116": "Admin order list shows times in UTC",
+    "cand-118": "Order cancellation email not sent",
+    "cand-122": "API returns 200 with empty body for unknown product",
+    "cand-124": "Autocomplete lags on older iPhones",
+    "cand-127": "Push shows price in USD instead of MXN",
+    "cand-128": "Long product titles truncated with no tooltip",
+    "cand-131": "Avatar not round on Firefox",
+    "cand-133": "Admin sidebar icon misaligned",
+    "cand-136": "Typo 'Adress' in shipping form",
+    "cand-138": "API docs example uses an old field name",
+    "cand-140": "Card brand logos have different sizes",
+    "hand-003": "Read-only staff account can export customer data",
+    "hand-006": "Category page takes over ten seconds to load",
+    "hand-007": "Expired saved card is accepted until final payment",
+    "hand-010": "Unread notification badge does not clear immediately"
+  },
+  "llm_calls": 12,
+  "judge_valid_first_try": 1.0,
+  "fresh_llm_calls": 12,
+  "fresh_embed_calls": 0,
+  "judge_cost_usd": 0.08473,
+  "cost_usd": 0.08477452,
+  "cost_per_100_incidents_usd": 0.14129086666666668
+}

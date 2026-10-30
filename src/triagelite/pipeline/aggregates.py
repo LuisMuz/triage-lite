@@ -70,7 +70,10 @@ def compute_facts(
     row_errors: int,
     config: ReportConfig,
 ) -> ReportFacts:
-    """Counts by severity, category and component, duplicates, and the incidents worth naming."""
+    """Counts by severity, category and component, duplicates, and the incidents worth naming.
+
+    The top components also get their severity mix, so the report can ground claims about it.
+    """
     labels = {r.incident_id: r.classification for r in results if r.classification}
     classified = len(labels)
     severities = Counter(label.severity for label in labels.values())
@@ -122,9 +125,18 @@ def compute_facts(
                 f"reports of the bug {representative.incident_id}, duplicates included",
             )
     top = sorted(components.items(), key=lambda item: (-item[1], item[0]))
+    top_components = [component for component, _ in top[: config.top_components]]
+    mix = Counter((label.component, label.severity) for label in labels.values())
+    for component in top_components:
+        for severity in Severity:
+            if mix[component, severity]:
+                aggregates[f"component.{component}.severity.{severity}.count"] = _count(
+                    mix[component, severity],
+                    f"incidents in the {component} component classified as {severity}",
+                )
     return ReportFacts(
         aggregates=aggregates,
-        top_components=[component for component, _ in top[: config.top_components]],
+        top_components=top_components,
         representatives=representatives,
     )
 

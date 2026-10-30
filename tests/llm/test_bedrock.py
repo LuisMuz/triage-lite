@@ -12,7 +12,7 @@ from anthropic import AnthropicBedrock
 
 from tests.llm.conftest import TOOL, valid_payload
 from triagelite.domain.errors import LLMProviderError, LLMRateLimitError
-from triagelite.llm.bedrock import BedrockLLMClient, to_domain_error
+from triagelite.llm.bedrock import AnthropicMessagesClient, to_domain_error
 from triagelite.llm.types import ModelRequest, ToolSpec
 from triagelite.settings import Settings
 
@@ -22,6 +22,7 @@ Handler = Callable[[httpx2.Request], httpx2.Response]
 
 REQUEST = ModelRequest(
     model_id="global.anthropic.claude-haiku-4-5-20251001-v1:0",
+    api="messages",
     max_tokens=512,
     system="You label bug reports.",
     user="<incidents>...</incidents>",
@@ -43,7 +44,7 @@ def message_body(content: list[dict[str, Any]], stop_reason: str = "tool_use") -
     }
 
 
-def bedrock_client(handler: Handler) -> BedrockLLMClient:
+def bedrock_client(handler: Handler) -> AnthropicMessagesClient:
     sdk = AnthropicBedrock(
         aws_region="us-east-1",
         # Dummy values: SigV4 signing needs *some* credentials; nothing leaves the process.
@@ -52,7 +53,7 @@ def bedrock_client(handler: Handler) -> BedrockLLMClient:
         max_retries=0,
         http_client=httpx2.Client(transport=httpx2.MockTransport(handler)),
     )
-    return BedrockLLMClient(sdk)
+    return AnthropicMessagesClient(sdk)
 
 
 def capture(sent: list[dict[str, Any]], response: httpx2.Response) -> Handler:
@@ -142,6 +143,6 @@ def test_missing_credentials_are_not_retryable() -> None:
 
 def test_from_settings_disables_sdk_retries() -> None:
     # TL-15: hidden SDK retries would be attempts without an LLMCallRecord.
-    client = BedrockLLMClient.from_settings(Settings(config_dir=REPO_CONFIG))
+    client = AnthropicMessagesClient.from_settings(Settings(config_dir=REPO_CONFIG))
 
     assert client._sdk.max_retries == 0

@@ -9,12 +9,63 @@ from triagelite.pipeline.aggregates import Aggregate, ReportFacts
 
 PLACEHOLDER = re.compile(r"\{\{\s*([a-z0-9_]+(?:\.[a-z0-9_]+)*)\s*\}\}")
 BRACES = re.compile(r"\{\{|\}\}")
-INCIDENT_REF = re.compile(r"\binc-\d+\b")
+INCIDENT_REF = re.compile(r"\binc-\d+\b", re.IGNORECASE)
 VERSION = re.compile(r"^(?:v\d+(?:\.\d+)*|\d+\.\d+\.\d+)$", re.IGNORECASE)
 DIGIT_TOKEN = re.compile(r"\S*\d\S*")
+WORD = re.compile(r"[^\W\d_]+")
 WRAPPING_PUNCTUATION = "()[]{}<>.,;:!?¡¿\"'`*_«»"
 NBSP = "\u00a0"
 
+NUMBER_WORDS: dict[Language, frozenset[str]] = {
+    "es": frozenset(
+        [
+            "dos",
+            "tres",
+            "cuatro",
+            "cinco",
+            "seis",
+            "siete",
+            "ocho",
+            "nueve",
+            "diez",
+            "doce",
+            "quince",
+            "veinte",
+            "treinta",
+            "cien",
+            "ciento",
+            "cientos",
+            "mil",
+            "docena",
+            "docenas",
+        ]
+    ),
+    "en": frozenset(
+        [
+            "two",
+            "three",
+            "four",
+            "five",
+            "six",
+            "seven",
+            "eight",
+            "nine",
+            "ten",
+            "eleven",
+            "twelve",
+            "fifteen",
+            "twenty",
+            "thirty",
+            "hundred",
+            "hundreds",
+            "thousand",
+            "thousands",
+            "dozen",
+            "dozens",
+        ]
+    ),
+}
+ALL_NUMBER_WORDS = NUMBER_WORDS["es"] | NUMBER_WORDS["en"]
 TITLES: dict[Language, str] = {"es": "Informe de triage QA", "en": "QA triage report"}
 SEVERITY_NAMES: dict[Language, dict[Severity, str]] = {
     "es": {
@@ -102,7 +153,7 @@ def _bare_tokens(text: str) -> Iterable[str]:
 
 
 def data_tokens(texts: Iterable[str], min_digits: int) -> set[str]:
-    """Digit-bearing words from incident text that may be quoted: `3G`, `iOS17`, `500`.
+    """Words from incident titles that may be quoted: `3G`, `iOS17`, `500`, `Two`-factor.
 
     Short pure numbers (`3`, `13`) are excluded because they look exactly like a count.
     """
@@ -111,6 +162,7 @@ def data_tokens(texts: Iterable[str], min_digits: int) -> set[str]:
         for token in _bare_tokens(text):
             if any(c.isalpha() for c in token) or sum(c.isdigit() for c in token) >= min_digits:
                 allowed.add(token.casefold())
+        allowed |= {word for word in WORD.findall(text.casefold()) if word in ALL_NUMBER_WORDS}
     return allowed
 
 
@@ -128,13 +180,14 @@ def grounding_problems(
     for section in output.sections:
         where = f"section '{section.heading}'"
         for text in (section.heading, section.body):
-            problems += _text_problems(text, where, aggregates, incident_ids, allowed_tokens)
+            problems += _text_problems(text, where, lang, aggregates, incident_ids, allowed_tokens)
     return list(dict.fromkeys(problems))
 
 
 def _text_problems(
     text: str,
     where: str,
+    lang: Language,
     aggregates: Mapping[str, Aggregate],
     incident_ids: set[str],
     allowed_tokens: set[str],
@@ -150,12 +203,18 @@ def _text_problems(
     problems += [
         f"{ref} in {where} is not an incident in <incidents>"
         for ref in INCIDENT_REF.findall(prose)
-        if ref not in incident_ids
+        if ref.lower() not in incident_ids
     ]
     problems += [
         f"bare number '{token}' in {where}: write every number as a placeholder from <aggregates>"
         for token in _bare_tokens(INCIDENT_REF.sub(" ", prose))
         if not VERSION.match(token) and token.casefold() not in allowed_tokens
+    ]
+    problems += [
+        f"number word '{word}' in {where}: use a placeholder from <aggregates>, "
+        "or say it without a number"
+        for word in WORD.findall(prose.casefold())
+        if word in NUMBER_WORDS[lang] and word not in allowed_tokens
     ]
     return problems
 

@@ -45,7 +45,7 @@ def models() -> ModelsConfig:
     return ModelsConfig.model_validate(
         {
             "client": {"timeout_seconds": 30},
-            "stages": {"classify": {"model_id": MODEL_ID, "max_tokens": 4096}},
+            "stages": {"classify": {"model_id": MODEL_ID, "api": "messages", "max_tokens": 4096}},
             "embedding": EMBEDDING,
         }
     )

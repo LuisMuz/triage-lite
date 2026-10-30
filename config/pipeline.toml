@@ -3,9 +3,9 @@ chunk_size = 10
 min_language_confidence = 0.7
 
 [prompts]
-classify = 1
-dedupe_judge = 1
-summarize = 1
+classify = 3
+dedupe_judge = 3
+summarize = 2
 
 [local_retry]
 max_attempts = 4

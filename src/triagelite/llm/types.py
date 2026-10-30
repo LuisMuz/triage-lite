@@ -3,7 +3,7 @@
 from pydantic import JsonValue, NonNegativeInt, PositiveFloat, PositiveInt
 
 from triagelite.domain.models import NonEmptyStr, StrictModel
-from triagelite.llm.config import Effort, EmbeddingDimensions, Thinking
+from triagelite.llm.config import Effort, EmbeddingDimensions, ModelApi, Thinking
 
 
 class ToolSpec(StrictModel):
@@ -18,6 +18,7 @@ class ModelRequest(StrictModel):
     """Everything needed for one model call."""
 
     model_id: NonEmptyStr
+    api: ModelApi
     max_tokens: PositiveInt
     system: NonEmptyStr
     user: NonEmptyStr

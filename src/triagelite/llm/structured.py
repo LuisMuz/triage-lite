@@ -99,6 +99,7 @@ class StructuredLLM:
         rendered = prompt.render(variables)
         request = ModelRequest(
             model_id=stage.model_id,
+            api=stage.api,
             max_tokens=stage.max_tokens,
             system=rendered.system,
             user=append_feedback(rendered.user, feedback) if feedback else rendered.user,

@@ -10,7 +10,7 @@ from collections.abc import Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 
-from pydantic import NonNegativeInt, PositiveInt
+from pydantic import NonNegativeInt, PositiveInt, field_validator
 
 from evals.dataset import (
     DATASETS_DIR,
@@ -38,7 +38,7 @@ from triagelite.domain.models import (
 from triagelite.domain.taxonomy import Taxonomy
 from triagelite.llm.bedrock import BedrockLLMClient
 from triagelite.llm.client import LLMClient
-from triagelite.llm.config import StageModelConfig
+from triagelite.llm.config import ModelApi, StageModelConfig
 from triagelite.llm.prompts import PromptFile
 from triagelite.llm.structured import StructuredLLM
 from triagelite.pipeline.backoff import Sleep
@@ -81,11 +81,20 @@ class EvalResult(StrictModel):
     model_id: NonEmptyStr
     model: StageModelConfig
     repeat: PositiveInt
+    chunk_size: PositiveInt
     fresh_calls: NonNegativeInt
     cached_chunks: NonNegativeInt
     metrics: ClassifyMetrics
     labels: list[EvalLabel]
     predictions: list[ItemPrediction]
+
+    @field_validator("model", mode="before")
+    @classmethod
+    def _results_before_api_used_messages(cls, value: object) -> object:
+        """Results written before `api` existed were all produced with the Messages API."""
+        if isinstance(value, dict) and "api" not in value:
+            return {**value, "api": "messages"}
+        return value
 
 
 def parse_prompt_id(prompt_id: str) -> tuple[Stage, int]:
@@ -148,25 +157,38 @@ def run_eval(
     repeat: int,
     settings: Settings,
     client: LLMClient,
+    chunk_size: int | None = None,
+    model_id: str | None = None,
+    api: ModelApi | None = None,
     datasets_dir: Path = DATASETS_DIR,
     cache_dir: Path = CACHE_DIR,
     sleep: Sleep = time.sleep,
 ) -> EvalResult:
-    """Normalize and classify every item of `split`, `repeat` times, then compute metrics."""
+    """Normalize and classify every item of `split`, `repeat` times, then compute metrics.
+
+    `chunk_size` overrides the configured number of incidents per call; `model_id` and `api`
+    swap the stage's model (thinking and effort are cleared, max_tokens is kept).
+    """
     taxonomy = load_taxonomy(settings)
     models, prices = load_llm_config(settings)
     pipeline = load_pipeline_config(settings)
     stage, version = parse_prompt_id(prompt_id)
     prompt = load_stage_prompt(settings, stage, version)
     model = models.for_stage(stage)
+    if model_id:
+        model = StageModelConfig(
+            model_id=model_id, api=api or model.api, max_tokens=model.max_tokens
+        )
+        models = models.model_copy(update={"stages": {**models.stages, stage: model}})
     raw, labels, manifest = load_split(datasets_dir / dataset, split, taxonomy)
     incidents = normalize_rows(raw, pipeline.normalize).incidents
+    size = chunk_size or pipeline.normalize.chunk_size
 
     predictions: list[ItemPrediction] = []
     records: list[LLMCallRecord] = []
     fresh_calls = cached_chunks = 0
     for run in range(repeat):
-        for chunk in chunked(incidents, pipeline.normalize.chunk_size):
+        for chunk in chunked(incidents, size):
             key = cache_key(prompt, model, taxonomy, render_incidents(chunk), run)
             path = cache_dir / f"{key}.json"
             if path.exists():
@@ -200,6 +222,7 @@ def run_eval(
         model_id=model.model_id,
         model=model,
         repeat=repeat,
+        chunk_size=size,
         fresh_calls=fresh_calls,
         cached_chunks=cached_chunks,
         metrics=compute_metrics(labels, predictions, records),
@@ -233,14 +256,22 @@ def _to_predictions(
     return predictions
 
 
-def write_result(result: EvalResult, results_dir: Path = RESULTS_DIR) -> tuple[Path, Path]:
-    """Write `<date>-<prompt>-<model>-<split>.json` and a matching Markdown report."""
-    date = result.created_at[:10]
+def result_stem(result: EvalResult) -> str:
+    """`<prompt>-<model>-<split>-c<chunk size>[-x<repeat>]`, e.g. `classify-v2-…-tuning-c10-x3`."""
     stem = "-".join(
-        [date, result.prompt.replace("/", "-"), model_slug(result.model_id), result.split.value]
+        [
+            result.prompt.replace("/", "-"),
+            model_slug(result.model_id),
+            result.split.value,
+            f"c{result.chunk_size}",
+        ]
     )
-    if result.repeat > 1:
-        stem += f"-x{result.repeat}"
+    return stem + (f"-x{result.repeat}" if result.repeat > 1 else "")
+
+
+def write_result(result: EvalResult, results_dir: Path = RESULTS_DIR) -> tuple[Path, Path]:
+    """Write `<date>-<stem>.json` and a matching Markdown report."""
+    stem = f"{result.created_at[:10]}-{result_stem(result)}"
     results_dir.mkdir(parents=True, exist_ok=True)
     json_path, md_path = results_dir / f"{stem}.json", results_dir / f"{stem}.md"
     json_path.write_text(result.model_dump_json(indent=2) + "\n", encoding="utf-8")
@@ -249,6 +280,7 @@ def write_result(result: EvalResult, results_dir: Path = RESULTS_DIR) -> tuple[P
             title=f"{result.prompt} · {result.model_id} · {result.dataset}/{result.split}",
             subtitle=(
                 f"Run {result.created_at} · repeat {result.repeat} · "
+                f"{result.chunk_size} incidents per call · "
                 f"{result.metrics.items} items · {result.metrics.llm_calls} calls "
                 f"({result.fresh_calls} fresh, {result.cached_chunks} cached chunks)"
             ),
@@ -272,6 +304,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--prompt", default="classify/v1", help="stage/version, e.g. classify/v1")
     parser.add_argument("--repeat", type=int, default=1)
     parser.add_argument(
+        "--chunk-size", type=int, default=None, help="incidents per call (default: config)"
+    )
+    parser.add_argument("--model", default=None, help="Bedrock model id (default: config)")
+    parser.add_argument("--api", choices=["messages", "converse"], default=None)
+    parser.add_argument(
         "--confirm-holdout",
         action="store_true",
         help="required for --split holdout: the holdout is run once, for the reported number",
@@ -283,7 +320,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args.repeat < 1:
         sys.stderr.write("--repeat must be at least 1\n")
         return 1
+    if args.chunk_size is not None and args.chunk_size < 1:
+        sys.stderr.write("--chunk-size must be at least 1\n")
+        return 1
     settings = get_settings()
+    models, _ = load_llm_config(settings)
     try:
         result = run_eval(
             dataset=args.dataset,
@@ -291,7 +332,10 @@ def main(argv: Sequence[str] | None = None) -> int:
             prompt_id=args.prompt,
             repeat=args.repeat,
             settings=settings,
-            client=BedrockLLMClient.from_settings(settings),
+            client=BedrockLLMClient.from_settings(settings, models.client.timeout_seconds),
+            chunk_size=args.chunk_size,
+            model_id=args.model,
+            api=args.api,
         )
     except EvalError as error:
         sys.stderr.write(f"eval failed: {error}\n")

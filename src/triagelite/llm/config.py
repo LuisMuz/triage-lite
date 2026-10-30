@@ -1,7 +1,7 @@
 import tomllib
 from typing import Literal, Self
 
-from pydantic import PositiveFloat, PositiveInt
+from pydantic import PositiveFloat, PositiveInt, model_validator
 
 from triagelite.domain.enums import Stage
 from triagelite.domain.errors import ConfigError
@@ -9,6 +9,7 @@ from triagelite.domain.models import NonEmptyStr, StrictModel
 
 Effort = Literal["low", "medium", "high", "xhigh", "max"]
 Thinking = Literal["disabled"]
+ModelApi = Literal["messages", "converse"]
 EmbeddingDimensions = Literal[256, 512, 1024]
 
 
@@ -19,12 +20,24 @@ class ClientConfig(StrictModel):
 
 
 class StageModelConfig(StrictModel):
-    """Which model a stage calls and with which generation limits."""
+    """Which model a stage calls, through which Bedrock API, and with which limits.
+
+    `messages` is the Anthropic Messages API (Claude only); `converse` is Bedrock's
+    provider-neutral API for every other model, where `effort` becomes `reasoning_effort`.
+    """
 
     model_id: NonEmptyStr
+    api: ModelApi
     max_tokens: PositiveInt
     thinking: Thinking | None = None
     effort: Effort | None = None
+
+    @model_validator(mode="after")
+    def _thinking_needs_messages(self) -> Self:
+        if self.thinking and self.api != "messages":
+            msg = "`thinking` is only supported with api = 'messages'"
+            raise ValueError(msg)
+        return self
 
 
 class EmbeddingConfig(StrictModel):

@@ -46,13 +46,16 @@ def datasets(tmp_path: Path) -> Path:
     return root / "datasets"
 
 
-def run(datasets: Path, cache: Path, client: FakeLLMClient) -> DedupeEvalResult:
+def run(
+    datasets: Path, cache: Path, client: FakeLLMClient, judge_version: int | None = None
+) -> DedupeEvalResult:
     return run_dedupe_eval(
         dataset="seed-test",
         split=Split.TUNING,
         settings=SETTINGS,
         client=client,
         embedder=SameVector(),
+        judge_version=judge_version,
         datasets_dir=datasets,
         cache_dir=cache,
         sleep=lambda _: None,
@@ -91,7 +94,7 @@ def test_second_run_is_served_from_cache(datasets: Path, tmp_path: Path) -> None
 
 
 def test_writes_json_and_markdown(datasets: Path, tmp_path: Path) -> None:
-    result = run(datasets, tmp_path / "cache", FakeLLMClient([judge_all()] * 10))
+    result = run(datasets, tmp_path / "cache", FakeLLMClient([judge_all()] * 10), judge_version=1)
 
     json_path, md_path = write_result(result, tmp_path / "results")
 
@@ -151,6 +154,7 @@ def test_caching_llm_client_calls_the_model_once_per_request(tmp_path: Path) -> 
     client = CachingLLMClient(inner, tmp_path)
     request = ModelRequest(
         model_id="m",
+        api="converse",
         max_tokens=10,
         system="s",
         user="u",
@@ -160,6 +164,19 @@ def test_caching_llm_client_calls_the_model_once_per_request(tmp_path: Path) -> 
 
     assert client.complete(request) == client.complete(request)
     assert (client.fresh_calls, len(inner.requests)) == (1, 1)
+
+
+def test_judge_version_overrides_the_config(datasets: Path, tmp_path: Path) -> None:
+    client = FakeLLMClient([judge_all(is_duplicate=False)] * 10)
+
+    result = run(datasets, tmp_path / "cache", client, judge_version=2)
+
+    assert result.prompt == "dedupe_judge/v2"
+
+
+def test_prompt_must_be_a_judge_prompt(capsys: pytest.CaptureFixture[str]) -> None:
+    assert main(["--prompt", "classify/v1"]) == 1
+    assert "dedupe_judge prompt" in capsys.readouterr().err
 
 
 def test_holdout_needs_confirmation(capsys: pytest.CaptureFixture[str]) -> None:

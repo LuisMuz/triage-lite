@@ -66,7 +66,11 @@ def test_render_placeholders_substitutes_every_key() -> None:
 def check(body: str, heading: str = "Overview", lang: Language = "en") -> list[str]:
     output = SummaryOutput(lang=lang, sections=[ReportSection(heading=heading, body=body)])
     allowed = data_tokens(["Error 500 al pagar", "Slow on 3G", "Checkout v2 fails 3 times"], 3)
-    return grounding_problems(output, "en", AGGREGATES, {"inc-0003"}, allowed)
+    return [
+        problem
+        for problem in grounding_problems(output, lang, AGGREGATES, {"inc-0003"}, allowed)
+        if not problem.startswith("lang must be")
+    ]
 
 
 class TestGrounding:
@@ -102,13 +106,46 @@ class TestGrounding:
     def test_malformed_placeholder_is_rejected(self) -> None:
         assert "malformed placeholder" in check("{{Total Incidents}} reports.")[0]
 
+    def test_capitalized_incident_id_is_an_incident(self) -> None:
+        assert check("Inc-0003 first.") == []
+
+    def test_capitalized_unknown_incident_is_rejected(self) -> None:
+        assert check("INC-0999 first.") == [
+            "INC-0999 in section 'Overview' is not an incident in <incidents>"
+        ]
+
     def test_unknown_incident_is_rejected(self) -> None:
         assert check("See inc-0999.") == [
             "inc-0999 in section 'Overview' is not an incident in <incidents>"
         ]
 
     def test_wrong_language_is_rejected(self) -> None:
-        assert check("{{total.incidents}}", lang="es") == ["lang must be 'en', got 'es'"]
+        output = SummaryOutput(lang="es", sections=[ReportSection(heading="A", body="b")])
+
+        assert grounding_problems(output, "en", AGGREGATES, set(), set()) == [
+            "lang must be 'en', got 'es'"
+        ]
+
+    def test_number_word_is_rejected(self) -> None:
+        assert check("Start with the three critical incidents.") == [
+            "number word 'three' in section 'Overview': use a placeholder from <aggregates>, "
+            "or say it without a number"
+        ]
+
+    def test_number_words_are_checked_in_the_report_language(self) -> None:
+        assert check("Los tres componentes.") == []
+        assert check("Los tres componentes.", lang="es") != []
+
+    def test_one_is_not_a_number_word(self) -> None:
+        assert check("One bug was reported more than once.") == []
+
+    def test_number_word_from_a_title_passes(self) -> None:
+        output = SummaryOutput(
+            lang="en", sections=[ReportSection(heading="Auth", body="Two-factor codes fail.")]
+        )
+        allowed = data_tokens(["Two-factor code never arrives"], 3)
+
+        assert grounding_problems(output, "en", AGGREGATES, set(), allowed) == []
 
     def test_repeated_problems_are_listed_once(self) -> None:
         assert len(check("13 and 13.")) == 1

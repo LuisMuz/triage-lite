@@ -13,7 +13,14 @@ from pathlib import Path
 from pydantic import NonNegativeInt
 
 from evals.dataset import DATASETS_DIR, LABELS_FILE, EvalLabel, Split
-from evals.harness import CACHE_DIR, RESULTS_DIR, EvalError, load_split, model_slug
+from evals.harness import (
+    CACHE_DIR,
+    RESULTS_DIR,
+    EvalError,
+    load_split,
+    model_slug,
+    parse_prompt_id,
+)
 from evals.metrics import (
     PER_HUNDRED,
     CalibrationBin,
@@ -209,15 +216,21 @@ def run_dedupe_eval(
     settings: Settings,
     client: LLMClient,
     embedder: EmbeddingClient,
+    judge_version: int | None = None,
     datasets_dir: Path = DATASETS_DIR,
     cache_dir: Path = CACHE_DIR,
     sleep: Sleep = time.sleep,
 ) -> DedupeEvalResult:
-    """Run the production dedupe stage over `split`, then score both ablation arms."""
+    """Run the production dedupe stage over `split`, then score both ablation arms.
+
+    `judge_version` overrides the configured `dedupe_judge` prompt version.
+    """
     taxonomy = load_taxonomy(settings)
     models, prices = load_llm_config(settings)
     pipeline = load_pipeline_config(settings)
-    prompt = load_stage_prompt(settings, Stage.DEDUPE_JUDGE, pipeline.prompts.dedupe_judge)
+    prompt = load_stage_prompt(
+        settings, Stage.DEDUPE_JUDGE, judge_version or pipeline.prompts.dedupe_judge
+    )
     raw, labels, manifest = load_split(datasets_dir / dataset, split, taxonomy)
     incidents = normalize_rows(raw, pipeline.normalize).incidents
     external = {incident.incident_id: incident.external_id for incident in incidents}
@@ -423,6 +436,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="python -m evals.dedupe", description=__doc__)
     parser.add_argument("--dataset", default="seed-v1")
     parser.add_argument("--split", type=Split, choices=list(Split), default=Split.TUNING)
+    parser.add_argument("--prompt", default=None, help="e.g. dedupe_judge/v2 (default: config)")
     parser.add_argument(
         "--confirm-holdout",
         action="store_true",
@@ -435,12 +449,18 @@ def main(argv: Sequence[str] | None = None) -> int:
     settings = get_settings()
     models, _ = load_llm_config(settings)
     try:
+        judge_version = None
+        if args.prompt:
+            stage, judge_version = parse_prompt_id(args.prompt)
+            if stage is not Stage.DEDUPE_JUDGE:
+                raise EvalError(f"--prompt must be a dedupe_judge prompt, got {args.prompt!r}")
         result = run_dedupe_eval(
             dataset=args.dataset,
             split=args.split,
             settings=settings,
-            client=BedrockLLMClient.from_settings(settings),
+            client=BedrockLLMClient.from_settings(settings, models.client.timeout_seconds),
             embedder=BedrockEmbeddingClient.from_settings(settings, models.client.timeout_seconds),
+            judge_version=judge_version,
         )
     except EvalError as error:
         sys.stderr.write(f"dedupe eval failed: {error}\n")

@@ -1,10 +1,13 @@
 .DEFAULT_GOAL := help
-.PHONY: help install lint format test check run eval-build eval-validate eval eval-similarity eval-dedupe build deploy
+.PHONY: help install lint format test check run eval-build eval-validate eval eval-compare eval-similarity eval-dedupe build deploy
 
 CSV ?= data/sample.csv
 DATASET ?= seed-v1
 PROMPT ?= classify/v1
 REPEAT ?= 1
+CHUNK ?=
+MODEL ?=
+API ?=
 
 help: ## List targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-15s %s\n", $$1, $$2}'
@@ -36,8 +39,11 @@ eval-build: ## Freeze reviewed candidates into evals/datasets/$(DATASET) (once, 
 eval-validate: ## Check a frozen dataset: hashes, counts, cells, groups, labels
 	uv run python -m evals.validate $(DATASET)
 
-eval: ## Run the eval harness on the tuning split (PROMPT=classify/v1, REPEAT=1)
-	uv run python -m evals.harness --dataset $(DATASET) --split tuning --prompt $(PROMPT) --repeat $(REPEAT)
+eval: ## Run the eval harness on the tuning split (PROMPT=classify/v1, REPEAT=1, CHUNK/MODEL/API=config)
+	uv run python -m evals.harness --dataset $(DATASET) --split tuning --prompt $(PROMPT) --repeat $(REPEAT) $(if $(CHUNK),--chunk-size $(CHUNK)) $(if $(MODEL),--model $(MODEL)) $(if $(API),--api $(API))
+
+eval-compare: ## Paired bootstrap of two harness results (BASE=json CANDIDATE=json)
+	uv run python -m evals.compare $(BASE) $(CANDIDATE)
 
 eval-similarity: ## Embed the tuning split and sweep dedupe thresholds (plot + table)
 	uv run python -m evals.similarity --dataset $(DATASET)

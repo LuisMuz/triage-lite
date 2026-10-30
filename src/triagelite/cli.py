@@ -93,10 +93,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     configure_logging(settings.log_level)
     try:
         models, _ = load_llm_config(settings)
-        embedder = BedrockEmbeddingClient.from_settings(settings, models.client.timeout_seconds)
-        summary, run_dir = run_batch(
-            args.csv, args.out, settings, BedrockLLMClient.from_settings(settings), embedder
-        )
+        timeout = models.client.timeout_seconds
+        embedder = BedrockEmbeddingClient.from_settings(settings, timeout)
+        llm = BedrockLLMClient.from_settings(settings, timeout)
+        summary, run_dir = run_batch(args.csv, args.out, settings, llm, embedder)
     except TriageError as error:
         LOGGER.error(
             "run failed", extra=log_fields(error_type=type(error).__name__, error=str(error))

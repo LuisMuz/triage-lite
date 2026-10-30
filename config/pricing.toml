@@ -8,3 +8,20 @@ output_per_mtok = 5.00
 [models."amazon.titan-embed-text-v2:0"]
 input_per_mtok = 0.02
 output_per_mtok = 0.00
+
+# Converse-API candidates for the model comparison (TL-25), from the AWS Price List API, us-east-1 on-demand.
+[models."moonshotai.kimi-k2.5"]
+input_per_mtok = 0.60
+output_per_mtok = 3.00
+
+[models."amazon.nova-lite-v1:0"]
+input_per_mtok = 0.06
+output_per_mtok = 0.24
+
+[models."openai.gpt-oss-120b-1:0"]
+input_per_mtok = 0.15
+output_per_mtok = 0.60
+
+[models."deepseek.v3.2"]
+input_per_mtok = 0.62
+output_per_mtok = 1.85
