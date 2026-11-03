@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help install lint format test check run eval-build eval-validate eval eval-compare eval-similarity eval-dedupe build deploy
+.PHONY: help install lint format test check run eval-build eval-validate eval eval-compare eval-similarity eval-dedupe infra-check build deploy
 
 CSV ?= data/sample.csv
 DATASET ?= seed-v1
@@ -50,6 +50,14 @@ eval-similarity: ## Embed the tuning split and sweep dedupe thresholds (plot + t
 
 eval-dedupe: ## Dedupe precision/recall on the tuning split, with and without the judge
 	uv run python -m evals.dedupe --dataset $(DATASET) --split tuning
+
+infra-check: ## Terraform fmt check, validate, tflint and checkov
+	terraform fmt -check -recursive infra
+	terraform -chdir=infra/bootstrap validate
+	terraform -chdir=infra/envs/demo validate
+	tflint --chdir=infra/bootstrap --config=$(CURDIR)/infra/.tflint.hcl
+	tflint --chdir=infra/envs/demo --config=$(CURDIR)/infra/.tflint.hcl
+	checkov -d infra --quiet --compact --framework terraform
 
 build: ## Build Lambda packages
 	@echo "build: not implemented yet" >&2; exit 1

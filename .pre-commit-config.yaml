@@ -30,3 +30,9 @@ repos:
         language: system
         types: [python]
         pass_filenames: false
+      - id: terraform-fmt
+        name: terraform fmt
+        entry: terraform fmt -recursive infra
+        language: system
+        files: \.tf$
+        pass_filenames: false
