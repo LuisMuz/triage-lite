@@ -57,6 +57,7 @@ infra-check: ## Terraform fmt check, validate, tflint and checkov
 	terraform -chdir=infra/envs/demo validate
 	tflint --chdir=infra/bootstrap --config=$(CURDIR)/infra/.tflint.hcl
 	tflint --chdir=infra/envs/demo --config=$(CURDIR)/infra/.tflint.hcl
+	tflint --chdir=infra/modules/storage --config=$(CURDIR)/infra/.tflint.hcl
 	checkov -d infra --quiet --compact --framework terraform
 
 build: ## Build Lambda packages

@@ -7,8 +7,7 @@ from collections import Counter
 from collections.abc import Callable, Sequence
 from functools import cache
 
-from lingua import Language as LinguaLanguage
-from lingua import LanguageDetector, LanguageDetectorBuilder
+from py3langid.langid import MODEL_DIR, MODEL_FILE, LanguageIdentifier
 from pydantic import ValidationError
 
 from triagelite.domain.enums import PiiKind
@@ -40,10 +39,8 @@ TOKEN_LIKE = re.compile(
 EMAIL = re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
 PHONE_CANDIDATE = re.compile(r"(?<![\w.])\+?\(?\d[\d\s()-]{6,}\d(?!\w|\.\d)")
 
-LINGUA_TO_CODE: dict[LinguaLanguage, Language] = {
-    LinguaLanguage.ENGLISH: "en",
-    LinguaLanguage.SPANISH: "es",
-}
+DETECTOR_TO_CODE: dict[str, Language] = {"en": "en", "es": "es"}
+NO_LETTERS_LANGUAGE: Language = "en"
 
 
 class NormalizeResult(StrictModel):
@@ -198,8 +195,10 @@ def scrub_pii(text: str) -> tuple[str, Counter[PiiKind]]:
 
 
 @cache
-def _detector() -> LanguageDetector:
-    return LanguageDetectorBuilder.from_languages(*LINGUA_TO_CODE).build()
+def _detector() -> LanguageIdentifier:
+    detector = LanguageIdentifier.from_modelpath(MODEL_DIR / MODEL_FILE, norm_probs=True)
+    detector.set_languages(list(DETECTOR_TO_CODE))
+    return detector
 
 
 def detect_language(text: str) -> tuple[Language, float]:
@@ -207,8 +206,10 @@ def detect_language(text: str) -> tuple[Language, float]:
 
     The confidence is rounded.
     """
-    best = _detector().compute_language_confidence_values(text)[0]
-    return LINGUA_TO_CODE[best.language], round(best.value, CONFIDENCE_DECIMALS)
+    if not any(char.isalpha() for char in text):
+        return NO_LETTERS_LANGUAGE, 0.0
+    code, confidence = _detector().classify(text)
+    return DETECTOR_TO_CODE[code], round(float(confidence), CONFIDENCE_DECIMALS)
 
 
 def resolve_languages(

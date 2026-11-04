@@ -135,6 +135,8 @@ class TestLanguage:
         [
             ("El botón de pagar no responde en iOS", "es"),
             ("Checkout button does nothing on iOS", "en"),
+            ("Falla el login", "es"),
+            ("Login fails", "en"),
         ],
     )
     def test_detects_spanish_and_english(self, text: str, lang: str) -> None:
@@ -143,8 +145,20 @@ class TestLanguage:
         assert detected == lang
         assert confidence > 0.7
 
-    def test_text_without_letters_has_zero_confidence(self) -> None:
-        assert detect_language("500 404 503")[1] == 0.0
+    @pytest.mark.parametrize("text", ["500 404 503", "...", ""])
+    def test_text_without_letters_has_zero_confidence(self, text: str) -> None:
+        assert detect_language(text)[1] == 0.0
+
+    def test_mixed_language_text_gets_a_supported_language(self) -> None:
+        detected, confidence = detect_language("El checkout crashea on submit")
+
+        assert detected in {"es", "en"}
+        assert 0.0 <= confidence <= 1.0
+
+    def test_same_text_gets_the_same_result(self) -> None:
+        text = "El botón de pagar no responde en iOS"
+
+        assert detect_language(text) == detect_language(text)
 
     def test_low_confidence_falls_back_to_majority(self) -> None:
         resolved = resolve_languages([("es", 0.9), ("es", 0.95), ("en", 0.2), ("en", 0.0)], 0.7)
