@@ -17,6 +17,10 @@ class InputValidationError(TriageError):
     """Input data (CSV, event, config) failed validation at a boundary."""
 
 
+class NotFoundError(TriageError):
+    """A stored object or item that should exist does not."""
+
+
 class LLMOutputValidationError(TriageError):
     """The model answered, but the answer is unusable (truncated, no tool call, bad schema).
 

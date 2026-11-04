@@ -54,6 +54,14 @@ class TriageStatus(StrEnum):
     NEEDS_MANUAL = "needs_manual"
 
 
+class BatchStatus(StrEnum):
+    """Where a batch is in the pipeline."""
+
+    RUNNING = "running"
+    DONE = "done"
+    FAILED = "failed"
+
+
 class ReportSource(StrEnum):
     """Who wrote a report's prose: the model, or the deterministic fallback template."""
 

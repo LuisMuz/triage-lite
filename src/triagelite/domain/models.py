@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Annotated, Literal, Self
 
 from pydantic import (
+    AwareDatetime,
     BaseModel,
     ConfigDict,
     Field,
@@ -11,7 +12,15 @@ from pydantic import (
     model_validator,
 )
 
-from triagelite.domain.enums import CallStatus, Category, PiiKind, Severity, Stage, TriageStatus
+from triagelite.domain.enums import (
+    BatchStatus,
+    CallStatus,
+    Category,
+    PiiKind,
+    Severity,
+    Stage,
+    TriageStatus,
+)
 
 RATIONALE_MAX_CHARS = 300
 HEADING_MAX_CHARS = 80
@@ -226,6 +235,15 @@ class IncidentClassification(StrictModel):
         return self
 
 
+class IncidentRecord(IncidentClassification):
+    """One incident as stored for the read API: its outcome plus what a list view shows."""
+
+    external_id: NonEmptyStr
+    title: NonEmptyStr
+    lang: Language
+    cluster_id: NonEmptyStr | None = None
+
+
 class RunSummary(StrictModel):
     """Totals for one batch run, written next to its outputs."""
 
@@ -245,3 +263,29 @@ class RunSummary(StrictModel):
     clusters: NonNegativeInt
     duplicate_incidents: NonNegativeInt
     reports_from_template: list[Language]
+
+
+class BatchMeta(StrictModel):
+    """One batch's state: running, or finished with its totals, or failed with a reason."""
+
+    batch_id: NonEmptyStr
+    status: BatchStatus
+    source_key: NonEmptyStr
+    created_at: AwareDatetime
+    updated_at: AwareDatetime
+    summary: RunSummary | None = None
+    report_keys: dict[Language, NonEmptyStr] = Field(default_factory=dict)
+    error: str | None = None
+
+    @model_validator(mode="after")
+    def _status_matches_payload(self) -> Self:
+        """Done batches carry totals, failed ones a reason, and running ones neither."""
+        ok = {
+            BatchStatus.RUNNING: self.summary is None and self.error is None,
+            BatchStatus.DONE: self.summary is not None and self.error is None,
+            BatchStatus.FAILED: self.summary is None and bool(self.error),
+        }[self.status]
+        if not ok:
+            msg = f"inconsistent {self.status} state for batch {self.batch_id}"
+            raise ValueError(msg)
+        return self
