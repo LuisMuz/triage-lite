@@ -218,6 +218,16 @@ data "aws_iam_policy_document" "finalize" {
   }
 }
 
+data "aws_iam_policy_document" "mark_failed" {
+  source_policy_documents = [data.aws_iam_policy_document.logs["mark_failed"].json]
+
+  statement {
+    sid       = "FailBatch"
+    actions   = ["dynamodb:GetItem", "dynamodb:BatchWriteItem"]
+    resources = [var.table_arn]
+  }
+}
+
 locals {
   policies = {
     normalize      = data.aws_iam_policy_document.normalize.json
@@ -225,6 +235,7 @@ locals {
     dedupe         = data.aws_iam_policy_document.dedupe.json
     summarize      = data.aws_iam_policy_document.summarize.json
     finalize       = data.aws_iam_policy_document.finalize.json
+    mark_failed    = data.aws_iam_policy_document.mark_failed.json
   }
 }
 

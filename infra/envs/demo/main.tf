@@ -23,3 +23,11 @@ module "functions" {
   table_name    = module.storage.table_name
   table_arn     = module.storage.table_arn
 }
+
+module "pipeline" {
+  source = "../../modules/pipeline"
+
+  name_prefix   = local.name_prefix
+  function_arns = module.functions.function_arns
+  bucket_name   = module.storage.bucket_name
+}

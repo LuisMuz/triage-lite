@@ -1,6 +1,6 @@
 # Functions module
 
-Five Lambda functions running Python 3.12 on arm64. They share `code.zip`, and one layer holds the dependencies. Build both with `make build` before `plan`.
+Six Lambda functions running Python 3.12 on arm64. They share `code.zip`, and one layer holds the dependencies. Build both with `make build` before `plan`.
 
 Each function has its own role, inline policy and log group (14 days).
 
@@ -11,6 +11,9 @@ Each function has its own role, inline policy and log group (14 days).
 | `dedupe` | `work/*/normalized.json` | `work/*/dedupe.json`, `work/*/calls/dedupe.jsonl` | None | Judge model, Titan |
 | `summarize` | Normalized batch, dedupe result, chunk results; can list `work/` | Facts, drafts, its calls, `reports/*` | None | Summarize model |
 | `finalize` | All stage outputs and calls; can list `work/` | `work/*/summary.json` | `GetItem`, `Query`, `BatchWriteItem`, `UpdateItem` | None |
+| `mark_failed` | None | None | `GetItem`, `BatchWriteItem` | None |
+
+`mark_failed` runs only when the state machine gives up on a batch. It sets the status to `failed` on both the batch item and its listing copy.
 
 `summarize` and `finalize` can list `work/` because they read files that may not exist. Without list permission, S3 answers a missing key with 403 instead of 404.
 

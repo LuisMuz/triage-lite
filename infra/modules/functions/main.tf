@@ -15,6 +15,7 @@ locals {
     dedupe         = { memory = 1024, timeout = 600 }
     summarize      = { memory = 512, timeout = 180 }
     finalize       = { memory = 512, timeout = 60 }
+    mark_failed    = { memory = 256, timeout = 30 }
   }
 
   stage_sections = {

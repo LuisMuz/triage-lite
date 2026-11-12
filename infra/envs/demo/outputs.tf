@@ -17,3 +17,13 @@ output "bedrock_models" {
   description = "Model IDs the Lambda roles may invoke."
   value       = module.functions.bedrock_models
 }
+
+output "state_machine_arn" {
+  description = "Pipeline state machine; uploads to incoming/ start it."
+  value       = module.pipeline.state_machine_arn
+}
+
+output "alerts_topic_arn" {
+  description = "SNS topic for failed batches."
+  value       = module.pipeline.alerts_topic_arn
+}

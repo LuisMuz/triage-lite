@@ -16,8 +16,21 @@ from triagelite.domain.errors import (
     NotFoundError,
 )
 from triagelite.domain.models import Incident, LLMCallRecord
-from triagelite.handlers import classify_chunk, dedupe, finalize, normalize, summarize
-from triagelite.handlers.events import BatchEvent, ChunkEvent, NormalizeEvent, parse_event
+from triagelite.handlers import (
+    classify_chunk,
+    dedupe,
+    finalize,
+    mark_failed,
+    normalize,
+    summarize,
+)
+from triagelite.handlers.events import (
+    BatchEvent,
+    ChunkEvent,
+    FailedEvent,
+    NormalizeEvent,
+    parse_event,
+)
 from triagelite.handlers.runtime import CallLog
 from triagelite.handlers.work import CHUNK_FAILED_REASON, calls_key, chunk_calls_name
 from triagelite.llm.fake import FakeEmbeddingClient, FakeLLMClient, ScriptStep
@@ -253,3 +266,31 @@ def test_a_chunk_of_another_batch_is_rejected() -> None:
 def test_an_event_with_unknown_fields_is_rejected() -> None:
     with pytest.raises(InputValidationError, match="NormalizeEvent"):
         parse_event(NormalizeEvent, {"source_key": "incoming/a.csv", "extra": 1})
+
+
+def test_a_batch_the_state_machine_gave_up_on_is_failed_in_both_copies(
+    store: S3Store, table: BatchTable
+) -> None:
+    batch = run_normalize(store, table)
+    event = FailedEvent(batch_id=batch.batch_id, failed_state="Dedupe", error="LLMProviderError")
+
+    mark_failed.run(event, table, NOW)
+
+    meta = table.get_batch(batch.batch_id)
+    assert (meta.status, meta.error) == (BatchStatus.FAILED, "Dedupe failed with LLMProviderError")
+    assert [listed.status for listed in table.list_batches(10)] == [BatchStatus.FAILED]
+
+
+def test_marking_a_batch_that_never_started_is_a_typed_error(table: BatchTable) -> None:
+    event = FailedEvent(batch_id="none-1", failed_state="Dedupe", error="States.Timeout")
+
+    with pytest.raises(NotFoundError):
+        mark_failed.run(event, table, NOW)
+
+
+@pytest.mark.parametrize(
+    "error", ["", "LLMProviderError: quota for Pedro exceeded", "Sandbox Timedout"]
+)
+def test_a_failure_carries_only_an_error_name(error: str) -> None:
+    with pytest.raises(InputValidationError, match="FailedEvent"):
+        parse_event(FailedEvent, {"batch_id": "b-1", "failed_state": "Dedupe", "error": error})

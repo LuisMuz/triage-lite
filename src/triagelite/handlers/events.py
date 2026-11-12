@@ -1,14 +1,17 @@
 """What Step Functions passes to each handler and gets back: IDs and S3 keys, never data."""
 
 from collections.abc import Mapping
-from typing import Self
+from typing import Annotated, Self
 
-from pydantic import ValidationError, model_validator
+from pydantic import StringConstraints, ValidationError, model_validator
 
 from triagelite.domain.errors import InputValidationError
 from triagelite.domain.models import NonEmptyStr, StrictModel
 from triagelite.domain.validation import format_validation_errors
 from triagelite.handlers.work import chunks_prefix
+
+StateName = Annotated[str, StringConstraints(pattern=r"^[A-Za-z][A-Za-z0-9]{0,79}$")]
+ErrorName = Annotated[str, StringConstraints(pattern=r"^[A-Za-z][A-Za-z0-9_.]{0,127}$")]
 
 
 class NormalizeEvent(StrictModel):
@@ -37,6 +40,17 @@ class ChunkEvent(StrictModel):
             msg = f"{self.chunk_key} is not a chunk of batch {self.batch_id}"
             raise ValueError(msg)
         return self
+
+
+class FailedEvent(StrictModel):
+    """A batch the state machine gave up on: the state that failed and the error's name.
+
+    Only the name is accepted, never the cause, which can quote incident text.
+    """
+
+    batch_id: NonEmptyStr
+    failed_state: StateName
+    error: ErrorName
 
 
 class StageResult(StrictModel):

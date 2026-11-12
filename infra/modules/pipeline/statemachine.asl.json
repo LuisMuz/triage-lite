@@ -1,0 +1,195 @@
+{
+  "QueryLanguage": "JSONata",
+  "TimeoutSeconds": ${timeout_seconds},
+  "StartAt": "Normalize",
+  "States": {
+    "Normalize": {
+      "Type": "Task",
+      "Resource": "arn:${partition}:states:::lambda:invoke",
+      "Arguments": {
+        "FunctionName": "${functions.normalize}",
+        "Payload": {
+          "source_key": "{% $states.input.source_key %}"
+        }
+      },
+      "Assign": {
+        "source_key": "{% $states.input.source_key %}",
+        "batch_id": "{% $states.result.Payload.batch_id %}",
+        "batch": "{% $states.result.Payload %}"
+      },
+      "Output": "{% $states.result.Payload %}",
+      "Retry": ${lambda_retry},
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "Assign": {
+            "source_key": "{% $states.input.source_key %}",
+            "batch_id": null,
+            "failed_state": "Normalize",
+            "error": "{% $states.errorOutput.Error %}"
+          },
+          "Next": "Notify"
+        }
+      ],
+      "Next": "ClassifyChunks"
+    },
+    "ClassifyChunks": {
+      "Type": "Map",
+      "Items": "{% $batch.chunk_keys %}",
+      "ItemSelector": {
+        "batch_id": "{% $batch.batch_id %}",
+        "chunk_key": "{% $states.context.Map.Item.Value %}"
+      },
+      "MaxConcurrency": ${max_chunk_concurrency},
+      "ItemProcessor": {
+        "ProcessorConfig": {
+          "Mode": "INLINE"
+        },
+        "StartAt": "ClassifyChunk",
+        "States": {
+          "ClassifyChunk": {
+            "Type": "Task",
+            "Resource": "arn:${partition}:states:::lambda:invoke",
+            "Arguments": {
+              "FunctionName": "${functions.classify_chunk}",
+              "Payload": "{% $states.input %}"
+            },
+            "Output": "{% $states.result.Payload %}",
+            "Retry": ${model_retry},
+            "Catch": [
+              {
+                "ErrorEquals": ["States.ALL"],
+                "Output": {
+                  "chunk_key": "{% $states.input.chunk_key %}",
+                  "error": "{% $states.errorOutput.Error %}"
+                },
+                "Next": "ChunkFailed"
+              }
+            ],
+            "End": true
+          },
+          "ChunkFailed": {
+            "Type": "Pass",
+            "End": true
+          }
+        }
+      },
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "Assign": {
+            "failed_state": "ClassifyChunks",
+            "error": "{% $states.errorOutput.Error %}"
+          },
+          "Next": "MarkFailed"
+        }
+      ],
+      "Next": "Dedupe"
+    },
+    "Dedupe": {
+      "Type": "Task",
+      "Resource": "arn:${partition}:states:::lambda:invoke",
+      "Arguments": {
+        "FunctionName": "${functions.dedupe}",
+        "Payload": "{% $batch %}"
+      },
+      "Output": "{% $states.result.Payload %}",
+      "Retry": ${model_retry},
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "Assign": {
+            "failed_state": "Dedupe",
+            "error": "{% $states.errorOutput.Error %}"
+          },
+          "Next": "MarkFailed"
+        }
+      ],
+      "Next": "Summarize"
+    },
+    "Summarize": {
+      "Type": "Task",
+      "Resource": "arn:${partition}:states:::lambda:invoke",
+      "Arguments": {
+        "FunctionName": "${functions.summarize}",
+        "Payload": "{% $batch %}"
+      },
+      "Output": "{% $states.result.Payload %}",
+      "Retry": ${model_retry},
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "Assign": {
+            "failed_state": "Summarize",
+            "error": "{% $states.errorOutput.Error %}"
+          },
+          "Next": "MarkFailed"
+        }
+      ],
+      "Next": "Finalize"
+    },
+    "Finalize": {
+      "Type": "Task",
+      "Resource": "arn:${partition}:states:::lambda:invoke",
+      "Arguments": {
+        "FunctionName": "${functions.finalize}",
+        "Payload": "{% $batch %}"
+      },
+      "Output": "{% $states.result.Payload %}",
+      "Retry": ${lambda_retry},
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "Assign": {
+            "failed_state": "Finalize",
+            "error": "{% $states.errorOutput.Error %}"
+          },
+          "Next": "MarkFailed"
+        }
+      ],
+      "End": true
+    },
+    "MarkFailed": {
+      "Type": "Task",
+      "Resource": "arn:${partition}:states:::lambda:invoke",
+      "Arguments": {
+        "FunctionName": "${functions.mark_failed}",
+        "Payload": {
+          "batch_id": "{% $batch_id %}",
+          "failed_state": "{% $failed_state %}",
+          "error": "{% $error %}"
+        }
+      },
+      "Retry": ${lambda_retry},
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "Next": "Notify"
+        }
+      ],
+      "Next": "Notify"
+    },
+    "Notify": {
+      "Type": "Task",
+      "Resource": "arn:${partition}:states:::sns:publish",
+      "Arguments": {
+        "TopicArn": "${topic_arn}",
+        "Subject": "TriageLite batch failed",
+        "Message": "{% $string({'execution': $states.context.Execution.Name, 'source_key': $source_key, 'batch_id': $batch_id, 'failed_state': $failed_state, 'error': $error}, true) %}"
+      },
+      "Retry": ${notify_retry},
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "Next": "Failed"
+        }
+      ],
+      "Next": "Failed"
+    },
+    "Failed": {
+      "Type": "Fail",
+      "Error": "{% $error %}",
+      "Cause": "{% $failed_state & ' failed' %}"
+    }
+  }
+}
