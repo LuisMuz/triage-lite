@@ -2,6 +2,8 @@
 
 from html import escape
 
+from pydantic import Field, PositiveInt
+
 from triagelite.domain.enums import ReportSource
 from triagelite.domain.errors import LLMOutputValidationError
 from triagelite.domain.models import (
@@ -21,6 +23,14 @@ GROUNDING_ATTEMPTS = 2
 LANGUAGE_NAMES: dict[Language, str] = {"es": "Spanish", "en": "English"}
 
 
+class RejectedDraft(StrictModel):
+    """A model draft that failed the grounding check, kept to tune the prompt against."""
+
+    attempt: PositiveInt
+    sections: list[ReportSection]
+    problems: list[NonEmptyStr]
+
+
 class ReportDraft(StrictModel):
     """The sections chosen for one language, who wrote them, and why model drafts were rejected.
 
@@ -31,6 +41,7 @@ class ReportDraft(StrictModel):
     source: ReportSource
     sections: list[ReportSection]
     problems: list[NonEmptyStr]
+    rejected: list[RejectedDraft] = Field(default_factory=list)
 
 
 def summarize_report(
@@ -50,33 +61,44 @@ def summarize_report(
     incident_ids = {r.incident_id for r in facts.representatives}
     allowed = data_tokens((r.title for r in facts.representatives), config.min_data_token_digits)
     problems: list[str] = []
-    rejected: list[str] = []
-    for _ in range(GROUNDING_ATTEMPTS):
+    rejected: list[RejectedDraft] = []
+    for attempt in range(1, GROUNDING_ATTEMPTS + 1):
         try:
             result = llm.generate_structured(
                 prompt, variables, SummaryOutput, batch_id=batch_id, feedback=problems
             )
         except LLMOutputValidationError as error:
-            return template_draft(facts, lang, [f"model output failed validation twice ({error})"])
+            return template_draft(
+                facts, lang, [f"model output failed validation twice ({error})"], rejected
+            )
         problems = grounding_problems(result.output, lang, facts.aggregates, incident_ids, allowed)
         if not problems:
             return ReportDraft(
                 lang=lang,
                 source=ReportSource.MODEL,
                 sections=result.output.sections,
-                problems=rejected,
+                problems=rejected[-1].problems if rejected else [],
+                rejected=rejected,
             )
-        rejected = problems
-    return template_draft(facts, lang, problems)
+        rejected.append(
+            RejectedDraft(attempt=attempt, sections=result.output.sections, problems=problems)
+        )
+    return template_draft(facts, lang, problems, rejected)
 
 
-def template_draft(facts: ReportFacts, lang: Language, problems: list[str]) -> ReportDraft:
-    """The deterministic fallback, carrying the reasons the model's draft was not used."""
+def template_draft(
+    facts: ReportFacts,
+    lang: Language,
+    problems: list[str],
+    rejected: list[RejectedDraft] | None = None,
+) -> ReportDraft:
+    """The deterministic fallback, carrying the reasons and the drafts that were not used."""
     return ReportDraft(
         lang=lang,
         source=ReportSource.TEMPLATE,
         sections=template_sections(facts, lang),
         problems=problems,
+        rejected=rejected or [],
     )
 
 

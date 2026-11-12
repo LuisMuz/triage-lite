@@ -42,7 +42,7 @@ def test_grounded_draft_is_used(
 
     assert draft.source is ReportSource.MODEL
     assert draft.sections[0].body == "{{total.incidents}} incidents."
-    assert draft.problems == []
+    assert (draft.problems, draft.rejected) == ([], [])
     assert 'set lang to "es"' in client.requests[0].system
     assert "Spanish" in client.requests[0].system
 
@@ -57,6 +57,8 @@ def test_bare_digit_triggers_one_re_ask_with_the_problem(
     assert client.requests[1].system == client.requests[0].system
     assert draft.source is ReportSource.MODEL
     assert "bare number '13'" in draft.problems[0]
+    assert [rejected.attempt for rejected in draft.rejected] == [1]
+    assert "Hay 13 incidentes críticos." in draft.rejected[0].sections[0].body
 
 
 def test_failing_grounding_twice_falls_back_to_the_template(
@@ -68,6 +70,8 @@ def test_failing_grounding_twice_falls_back_to_the_template(
     assert draft.source is ReportSource.TEMPLATE
     assert draft.sections == template_sections(FACTS, "es")
     assert "bare number '13'" in draft.problems[0]
+    assert [rejected.attempt for rejected in draft.rejected] == [1, 2]
+    assert all("bare number '13'" in rejected.problems[0] for rejected in draft.rejected)
 
 
 def test_invalid_output_twice_falls_back_to_the_template(
@@ -78,6 +82,13 @@ def test_invalid_output_twice_falls_back_to_the_template(
     assert len(client.requests) == 2
     assert draft.source is ReportSource.TEMPLATE
     assert "failed validation twice" in draft.problems[0]
+    assert draft.rejected == []
+
+
+def test_a_draft_written_before_rejected_drafts_were_kept_still_reads() -> None:
+    old = '{"lang": "en", "source": "template", "sections": [], "problems": ["x"]}'
+
+    assert ReportDraft.model_validate_json(old).rejected == []
 
 
 def test_the_model_sees_keys_and_descriptions_never_values() -> None:
