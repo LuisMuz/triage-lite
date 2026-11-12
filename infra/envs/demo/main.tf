@@ -31,3 +31,11 @@ module "pipeline" {
   function_arns = module.functions.function_arns
   bucket_name   = module.storage.bucket_name
 }
+
+module "api" {
+  source = "../../modules/api"
+
+  name_prefix         = local.name_prefix
+  function_name       = module.functions.function_names["api"]
+  function_invoke_arn = module.functions.invoke_arns["api"]
+}

@@ -228,6 +228,34 @@ data "aws_iam_policy_document" "mark_failed" {
   }
 }
 
+data "aws_iam_policy_document" "api" {
+  source_policy_documents = [data.aws_iam_policy_document.logs["api"].json]
+
+  statement {
+    sid       = "ReadBatches"
+    actions   = ["dynamodb:GetItem", "dynamodb:Query"]
+    resources = [var.table_arn]
+  }
+
+  statement {
+    sid       = "ReadReports"
+    actions   = ["s3:GetObject"]
+    resources = ["${local.objects}reports/*"]
+  }
+
+  statement {
+    sid       = "TellMissingFromForbidden"
+    actions   = ["s3:ListBucket"]
+    resources = [var.bucket_arn]
+
+    condition {
+      test     = "StringLike"
+      variable = "s3:prefix"
+      values   = ["reports/*"]
+    }
+  }
+}
+
 locals {
   policies = {
     normalize      = data.aws_iam_policy_document.normalize.json
@@ -236,6 +264,7 @@ locals {
     summarize      = data.aws_iam_policy_document.summarize.json
     finalize       = data.aws_iam_policy_document.finalize.json
     mark_failed    = data.aws_iam_policy_document.mark_failed.json
+    api            = data.aws_iam_policy_document.api.json
   }
 }
 

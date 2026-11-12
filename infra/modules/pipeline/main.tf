@@ -12,6 +12,7 @@ locals {
   state_machine_name = "${var.name_prefix}-pipeline"
   state_machine_arn  = "arn:${local.partition}:states:${local.region}:${local.account}:stateMachine:${local.state_machine_name}"
   rule_name          = "${var.name_prefix}-csv-uploaded"
+  stages             = ["normalize", "classify_chunk", "dedupe", "summarize", "finalize", "mark_failed"]
 
   lambda_errors = [
     "Lambda.ServiceException",

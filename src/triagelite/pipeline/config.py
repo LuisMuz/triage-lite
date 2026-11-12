@@ -48,6 +48,12 @@ class ReportConfig(StrictModel):
     min_data_token_digits: PositiveInt
 
 
+class ApiConfig(StrictModel):
+    """Limits of the read API."""
+
+    batch_list_limit: Annotated[int, Field(ge=1, le=100)]
+
+
 class PipelineConfig(StrictModel):
     """Contents of config/pipeline.toml."""
 
@@ -56,6 +62,7 @@ class PipelineConfig(StrictModel):
     chunk_retry: ChunkRetryConfig
     dedupe: DedupeConfig
     report: ReportConfig
+    api: ApiConfig
 
     @classmethod
     def from_toml(cls, text: str) -> Self:

@@ -27,3 +27,8 @@ output "alerts_topic_arn" {
   description = "SNS topic for failed batches."
   value       = module.pipeline.alerts_topic_arn
 }
+
+output "api_url" {
+  description = "Base URL of the read API, e.g. <api_url>batches."
+  value       = module.api.api_url
+}

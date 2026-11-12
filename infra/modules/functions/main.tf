@@ -16,6 +16,7 @@ locals {
     summarize      = { memory = 512, timeout = 180 }
     finalize       = { memory = 512, timeout = 60 }
     mark_failed    = { memory = 256, timeout = 30 }
+    api            = { memory = 512, timeout = 10 }
   }
 
   stage_sections = {

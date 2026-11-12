@@ -24,3 +24,6 @@ max_representative_incidents = 15
 top_components = 3
 percent_decimals = 1
 min_data_token_digits = 3
+
+[api]
+batch_list_limit = 20

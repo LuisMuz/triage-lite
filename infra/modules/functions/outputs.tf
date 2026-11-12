@@ -3,6 +3,11 @@ output "function_arns" {
   value       = { for name, function in aws_lambda_function.function : name => function.arn }
 }
 
+output "invoke_arns" {
+  description = "Invoke ARNs by function, for API Gateway integrations."
+  value       = { for name, function in aws_lambda_function.function : name => function.invoke_arn }
+}
+
 output "function_names" {
   description = "Function names by stage, for aws lambda invoke."
   value       = { for name, function in aws_lambda_function.function : name => function.function_name }

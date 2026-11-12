@@ -30,7 +30,7 @@ data "aws_iam_policy_document" "state_machine" {
   statement {
     sid       = "InvokeStages"
     actions   = ["lambda:InvokeFunction"]
-    resources = flatten([for arn in values(var.function_arns) : [arn, "${arn}:*"]])
+    resources = flatten([for stage in local.stages : [var.function_arns[stage], "${var.function_arns[stage]}:*"]])
   }
 
   statement {

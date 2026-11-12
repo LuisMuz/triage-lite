@@ -17,6 +17,10 @@ class InputValidationError(TriageError):
     """Input data (CSV, event, config) failed validation at a boundary."""
 
 
+class RequestValidationError(InputValidationError):
+    """An API request has a path or query parameter the API does not accept."""
+
+
 class NotFoundError(TriageError):
     """A stored object or item that should exist does not."""
 

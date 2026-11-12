@@ -4,7 +4,7 @@ variable "name_prefix" {
 }
 
 variable "function_arns" {
-  description = "Function ARNs by stage, from the functions module."
+  description = "Function ARNs by name, from the functions module; the state machine may invoke only its stages."
   type        = map(string)
 
   validation {
