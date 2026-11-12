@@ -7,3 +7,13 @@ output "table_name" {
   description = "DynamoDB table with batches, incidents and clusters."
   value       = module.storage.table_name
 }
+
+output "function_names" {
+  description = "Lambda function names by stage."
+  value       = module.functions.function_names
+}
+
+output "bedrock_models" {
+  description = "Model IDs the Lambda roles may invoke."
+  value       = module.functions.bedrock_models
+}
