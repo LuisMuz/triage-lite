@@ -18,7 +18,12 @@ from botocore.exceptions import BotoCoreError, ClientError, HTTPClientError
 from botocore.exceptions import ConnectionError as BotoConnectionError
 from pydantic import BaseModel, ConfigDict, Field, JsonValue
 
-from triagelite.domain.errors import LLMProviderError, LLMRateLimitError, TriageError
+from triagelite.domain.errors import (
+    LLMProviderError,
+    LLMRateLimitError,
+    LLMTransientError,
+    TriageError,
+)
 from triagelite.llm.client import LLMClient
 from triagelite.llm.config import ModelApi
 from triagelite.llm.types import (
@@ -68,7 +73,7 @@ class _BotoErrorMap:
         if isinstance(error, self.throttled):
             return LLMRateLimitError(str(error))
         if isinstance(error, (*self.transient, BotoConnectionError, HTTPClientError)):
-            return LLMProviderError(str(error), retryable=True)
+            return LLMTransientError(str(error))
         return LLMProviderError(str(error), retryable=False)
 
 
@@ -197,10 +202,12 @@ def to_domain_error(error: anthropic.AnthropicError) -> TriageError:
     if isinstance(error, anthropic.RateLimitError):
         return LLMRateLimitError(str(error))
     if isinstance(error, anthropic.APIConnectionError):
-        return LLMProviderError(str(error), retryable=True)
-    if isinstance(error, anthropic.APIStatusError):
-        retryable = error.status_code >= FIRST_SERVER_ERROR_STATUS
-        return LLMProviderError(str(error), retryable=retryable)
+        return LLMTransientError(str(error))
+    if (
+        isinstance(error, anthropic.APIStatusError)
+        and error.status_code >= FIRST_SERVER_ERROR_STATUS
+    ):
+        return LLMTransientError(str(error))
     return LLMProviderError(str(error), retryable=False)
 
 

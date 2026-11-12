@@ -25,7 +25,6 @@ from evals.dataset import (
 from evals.metrics import ClassifyMetrics, ItemPrediction, compute_metrics
 from evals.report import render_markdown
 from evals.validate import validate
-from triagelite.cli import classify_with_backoff
 from triagelite.domain.enums import Stage, TriageStatus
 from triagelite.domain.models import (
     Incident,
@@ -44,6 +43,7 @@ from triagelite.llm.structured import StructuredLLM
 from triagelite.pipeline.backoff import Sleep
 from triagelite.pipeline.classify import render_incidents
 from triagelite.pipeline.normalize import chunked, normalize_rows
+from triagelite.pipeline.stages import classify_with_backoff
 from triagelite.settings import (
     Settings,
     get_settings,
@@ -203,7 +203,7 @@ def run_eval(
                     taxonomy,
                     chunk,
                     batch_id=f"eval-{dataset}-{split}-r{run}",
-                    retry=pipeline.local_retry,
+                    retry=pipeline.chunk_retry,
                     sleep=sleep,
                 )
                 outcome = ChunkOutcome(results=results, records=chunk_records)

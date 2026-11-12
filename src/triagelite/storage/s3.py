@@ -60,6 +60,7 @@ class S3Store:
 
         Raises:
             NotFoundError: the key does not exist.
+            InputValidationError: the content is not UTF-8.
         """
         try:
             response = self.client.get_object(Bucket=self.bucket, Key=key)
@@ -67,7 +68,12 @@ class S3Store:
             msg = f"s3://{self.bucket}/{key} does not exist"
             raise NotFoundError(msg) from None
         with response["Body"] as body:
-            return body.read().decode(TEXT_ENCODING)
+            content = body.read()
+        try:
+            return content.decode(TEXT_ENCODING)
+        except UnicodeDecodeError as error:
+            msg = f"s3://{self.bucket}/{key} is not {TEXT_ENCODING} text"
+            raise InputValidationError(msg) from error
 
     def read_json[T: StrictModel](self, key: str, model: type[T]) -> T:
         """Read and validate one JSON document.

@@ -1,10 +1,10 @@
-"""Exponential backoff with full jitter for local runs, mirroring the Step Functions Retry."""
+"""Exponential backoff with full jitter, for chunks retried inside a process."""
 
 from collections.abc import Callable
 from random import SystemRandom
 
 from triagelite.domain.errors import LLMProviderError, LLMRateLimitError
-from triagelite.pipeline.config import LocalRetryConfig
+from triagelite.pipeline.config import ChunkRetryConfig
 
 type Sleep = Callable[[float], None]
 type AvailabilityError = LLMRateLimitError | LLMProviderError
@@ -15,7 +15,7 @@ _JITTER = SystemRandom()
 def with_backoff[T](
     operation: Callable[[], T],
     *,
-    retry: LocalRetryConfig,
+    retry: ChunkRetryConfig,
     sleep: Sleep,
     exhausted: Callable[[int, AvailabilityError], T],
 ) -> T:

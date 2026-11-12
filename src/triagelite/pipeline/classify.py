@@ -10,6 +10,7 @@ from triagelite.domain.models import (
     ClassifyOutput,
     Incident,
     IncidentClassification,
+    IncidentRecord,
 )
 from triagelite.domain.taxonomy import Taxonomy
 from triagelite.llm.prompts import PromptFile
@@ -42,6 +43,39 @@ def classify_chunk(
         valid |= second.valid
         problems = second.problems
     return [_outcome(incident.incident_id, valid, problems) for incident in incidents]
+
+
+def with_missing_as_manual(
+    incidents: Sequence[Incident], results: Sequence[IncidentClassification], reason: str
+) -> list[IncidentClassification]:
+    """One result per incident, in order; incidents whose chunk produced nothing need a human."""
+    by_id = {result.incident_id: result for result in results}
+    return [
+        by_id.get(incident.incident_id)
+        or IncidentClassification(
+            incident_id=incident.incident_id, status=TriageStatus.NEEDS_MANUAL, reason=reason
+        )
+        for incident in incidents
+    ]
+
+
+def incident_records(
+    incidents: Sequence[Incident], results: Sequence[IncidentClassification]
+) -> list[IncidentRecord]:
+    """Pair each incident with its result, in the shape the read API lists."""
+    by_id = {result.incident_id: result for result in results}
+    return [
+        IncidentRecord(
+            incident_id=incident.incident_id,
+            status=by_id[incident.incident_id].status,
+            classification=by_id[incident.incident_id].classification,
+            reason=by_id[incident.incident_id].reason,
+            external_id=incident.external_id,
+            title=incident.title,
+            lang=incident.lang,
+        )
+        for incident in incidents
+    ]
 
 
 def _ask(

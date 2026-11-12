@@ -93,3 +93,10 @@ def test_malformed_jsonl_names_the_line(store: S3Store) -> None:
 
     with pytest.raises(InputValidationError, match=r"work/b/bad\.jsonl line 2"):
         store.read_jsonl("work/b/bad.jsonl", RowError)
+
+
+def test_text_that_is_not_utf8_is_a_typed_error(store: S3Store, client: "S3Client") -> None:
+    client.put_object(Bucket=BUCKET, Key="incoming/latin1.csv", Body="botón".encode("latin-1"))
+
+    with pytest.raises(InputValidationError, match=r"incoming/latin1\.csv"):
+        store.read_text("incoming/latin1.csv")

@@ -30,7 +30,6 @@ from evals.metrics import (
     first_try_rate,
 )
 from evals.similarity import CachingEmbeddingClient, PairKind, pair_kind
-from triagelite.cli import dedupe_batch
 from triagelite.domain.enums import Stage
 from triagelite.domain.models import LLMCallRecord, NonEmptyStr, PairVerdict, StrictModel
 from triagelite.llm.bedrock import BedrockEmbeddingClient, BedrockLLMClient
@@ -41,6 +40,7 @@ from triagelite.pipeline.backoff import Sleep
 from triagelite.pipeline.config import DedupeConfig
 from triagelite.pipeline.dedupe import star_clusters
 from triagelite.pipeline.normalize import normalize_rows
+from triagelite.pipeline.stages import dedupe_batch
 from triagelite.settings import (
     Settings,
     get_settings,
@@ -246,7 +246,7 @@ def run_dedupe_eval(
         models=models,
         prices=prices,
         config=pipeline.dedupe,
-        retry=pipeline.local_retry,
+        retry=pipeline.chunk_retry,
         recorder=records.append,
         batch_id=f"eval-{dataset}-{split}",
         sleep=sleep,

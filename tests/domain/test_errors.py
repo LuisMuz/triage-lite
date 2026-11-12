@@ -5,6 +5,7 @@ from triagelite.domain.errors import (
     LLMOutputValidationError,
     LLMProviderError,
     LLMRateLimitError,
+    LLMTransientError,
     TriageError,
 )
 
@@ -37,3 +38,11 @@ def test_output_validation_error_keeps_errors_for_the_retry_prompt() -> None:
 @pytest.mark.parametrize("retryable", [True, False])
 def test_provider_error_records_retryability(retryable: bool) -> None:
     assert LLMProviderError("boom", retryable=retryable).retryable is retryable
+
+
+def test_transient_error_is_a_retryable_provider_error_with_its_own_name() -> None:
+    error = LLMTransientError("503")
+
+    assert isinstance(error, LLMProviderError)
+    assert error.retryable is True
+    assert type(error).__name__ == "LLMTransientError"

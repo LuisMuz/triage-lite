@@ -13,16 +13,7 @@ from tests.pipeline.conftest import (
     make_incident,
     write_report,
 )
-from triagelite.cli import (
-    DEFAULT_RUNS_DIR,
-    batch_id_for,
-    build_parser,
-    classify_with_backoff,
-    dedupe_batch,
-    judge_with_backoff,
-    run_batch,
-    summarize_with_backoff,
-)
+from triagelite.cli import DEFAULT_RUNS_DIR, build_parser, run_batch
 from triagelite.domain.enums import PiiKind, ReportSource, Stage, TriageStatus
 from triagelite.domain.errors import LLMProviderError, LLMRateLimitError
 from triagelite.domain.models import (
@@ -34,8 +25,15 @@ from triagelite.domain.models import (
 from triagelite.llm.fake import FakeEmbeddingClient, FakeLLMClient, ScriptStep, tool_response
 from triagelite.llm.structured import StructuredLLM
 from triagelite.pipeline.aggregates import ReportFacts
-from triagelite.pipeline.config import LocalRetryConfig
+from triagelite.pipeline.config import ChunkRetryConfig
 from triagelite.pipeline.embed import embedding_text
+from triagelite.pipeline.stages import (
+    batch_id_for,
+    classify_with_backoff,
+    dedupe_batch,
+    judge_with_backoff,
+    summarize_with_backoff,
+)
 from triagelite.settings import (
     Settings,
     load_llm_config,
@@ -48,7 +46,7 @@ from triagelite.storage.local import LocalRunStore
 REPO = Path(__file__).parents[1]
 SAMPLE = REPO / "data" / "sample.csv"
 SETTINGS = Settings(config_dir=REPO / "config", prompts_dir=REPO / "prompts")
-RETRY = LocalRetryConfig(max_attempts=3, initial_delay_seconds=2.0, backoff_rate=2.0)
+RETRY = ChunkRetryConfig(max_attempts=3, initial_delay_seconds=2.0, backoff_rate=2.0)
 SAMPLE_INCIDENTS = 20
 DUPLICATE_ROWS = [
     ("QA-1", "Checkout returns error 500", "Any order fails with a server error.", "2026-10-02"),

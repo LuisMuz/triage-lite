@@ -60,8 +60,12 @@ infra-check: ## Terraform fmt check, validate, tflint and checkov
 	tflint --chdir=infra/modules/storage --config=$(CURDIR)/infra/.tflint.hcl
 	checkov -d infra --quiet --compact --framework terraform
 
-build: ## Build Lambda packages
-	@echo "build: not implemented yet" >&2; exit 1
+build: ## Build the Lambda code zip and dependency layer for ARM64 into build/lambda
+	rm -rf build/lambda
+	mkdir -p build/lambda
+	uv export --quiet --frozen --no-dev --no-emit-project --format requirements-txt --output-file build/lambda/requirements.txt
+	uv pip install --quiet --python-platform aarch64-manylinux_2_28 --python-version 3.12 --only-binary=:all: --target build/lambda/deps -r build/lambda/requirements.txt
+	uv run python scripts/build_lambda.py
 
 deploy: ## Deploy with Terraform
 	@echo "deploy: not implemented yet" >&2; exit 1

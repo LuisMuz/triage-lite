@@ -42,3 +42,13 @@ class LLMProviderError(TriageError):
     def __init__(self, message: str, *, retryable: bool) -> None:
         super().__init__(message)
         self.retryable = retryable
+
+
+class LLMTransientError(LLMProviderError):
+    """A provider failure backoff can fix (5xx, timeout, connection).
+
+    A class of its own because Step Functions `Retry` matches class names, not attributes.
+    """
+
+    def __init__(self, message: str) -> None:
+        super().__init__(message, retryable=True)

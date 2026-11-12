@@ -21,8 +21,8 @@ class PromptVersions(StrictModel):
     summarize: PositiveInt
 
 
-class LocalRetryConfig(StrictModel):
-    """Backoff for throttled chunks in local runs, mirroring the Step Functions Retry policy."""
+class ChunkRetryConfig(StrictModel):
+    """Backoff for one chunk inside a process, shaped like the Step Functions Retry policy."""
 
     max_attempts: PositiveInt
     initial_delay_seconds: PositiveFloat
@@ -53,7 +53,7 @@ class PipelineConfig(StrictModel):
 
     normalize: NormalizeConfig
     prompts: PromptVersions
-    local_retry: LocalRetryConfig
+    chunk_retry: ChunkRetryConfig
     dedupe: DedupeConfig
     report: ReportConfig
 

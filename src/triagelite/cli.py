@@ -1,51 +1,31 @@
 """`triagelite run data/sample.csv`: the whole local pipeline, with real Bedrock calls."""
 
 import argparse
-import hashlib
 import logging
-import re
 import time
-from collections.abc import Mapping, Sequence
-from dataclasses import dataclass
+from collections.abc import Sequence
 from pathlib import Path
 
-from triagelite.domain.enums import ReportSource, Stage, TriageStatus
+from triagelite.domain.enums import Stage
 from triagelite.domain.errors import TriageError
-from triagelite.domain.models import (
-    CandidatePair,
-    DuplicateCluster,
-    Incident,
-    IncidentClassification,
-    Language,
-    LLMCallRecord,
-    PairVerdict,
-    RunSummary,
-)
-from triagelite.domain.taxonomy import Taxonomy
+from triagelite.domain.models import IncidentClassification, LLMCallRecord, RunSummary
 from triagelite.llm.bedrock import BedrockEmbeddingClient, BedrockLLMClient
-from triagelite.llm.client import CallRecorder, EmbeddingClient, LLMClient
-from triagelite.llm.config import ModelsConfig
-from triagelite.llm.pricing import PriceTable
-from triagelite.llm.prompts import PromptFile
+from triagelite.llm.client import EmbeddingClient, LLMClient
 from triagelite.llm.structured import StructuredLLM
 from triagelite.logs import configure_logging, log_fields
 from triagelite.metrics import log_call_record
-from triagelite.pipeline.aggregates import ReportFacts, compute_facts
-from triagelite.pipeline.backoff import AvailabilityError, Sleep, with_backoff
-from triagelite.pipeline.classify import classify_chunk
-from triagelite.pipeline.config import DedupeConfig, LocalRetryConfig, ReportConfig
-from triagelite.pipeline.dedupe import (
-    CandidateSet,
-    candidate_pairs,
-    judge_chunk,
-    report_order,
-    star_clusters,
-    unjudged,
+from triagelite.pipeline.aggregates import compute_facts
+from triagelite.pipeline.backoff import Sleep
+from triagelite.pipeline.normalize import chunked, normalize
+from triagelite.pipeline.stages import (
+    REPORT_LANGUAGES,
+    batch_id_for,
+    classify_with_backoff,
+    dedupe_batch,
+    render_draft,
+    summarize,
+    summarize_with_backoff,
 )
-from triagelite.pipeline.embed import EmbeddingMatrix, embed_incidents
-from triagelite.pipeline.normalize import NormalizeResult, chunked, normalize
-from triagelite.pipeline.render import render_report
-from triagelite.pipeline.summarize import ReportDraft, summarize_report, template_draft
 from triagelite.settings import (
     Settings,
     get_settings,
@@ -58,7 +38,6 @@ from triagelite.storage.local import LocalRunStore
 
 LOGGER = logging.getLogger("triagelite.cli")
 DEFAULT_RUNS_DIR = Path("runs")
-BATCH_HASH_CHARS = 8
 INCIDENTS_FILE = "incidents.jsonl"
 CLASSIFICATIONS_FILE = "classifications.jsonl"
 ROW_ERRORS_FILE = "row_errors.jsonl"
@@ -68,22 +47,9 @@ CLUSTERS_FILE = "clusters.jsonl"
 FACTS_FILE = "report_facts.json"
 DRAFTS_FILE = "report_drafts.jsonl"
 REPORT_FILE = "report.{lang}.md"
-REPORT_LANGUAGES: tuple[Language, ...] = ("es", "en")
 SUMMARY_FILE = "summary.json"
-PER_HUNDRED = 100
 EXIT_OK = 0
 EXIT_FAILED = 1
-
-
-@dataclass(frozen=True)
-class DedupeResult:
-    """Everything the dedupe stage produced for one batch."""
-
-    matrix: EmbeddingMatrix
-    order: list[str]
-    candidates: CandidateSet
-    verdicts: list[PairVerdict]
-    clusters: list[DuplicateCluster]
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -164,7 +130,7 @@ def run_batch(
     results: list[IncidentClassification] = []
     for chunk in chunked(normalized.incidents, pipeline.normalize.chunk_size):
         results += classify_with_backoff(
-            llm, prompt, taxonomy, chunk, batch_id=batch_id, retry=pipeline.local_retry, sleep=sleep
+            llm, prompt, taxonomy, chunk, batch_id=batch_id, retry=pipeline.chunk_retry, sleep=sleep
         )
     store.write_jsonl(CLASSIFICATIONS_FILE, results)
 
@@ -176,7 +142,7 @@ def run_batch(
         models=models,
         prices=prices,
         config=pipeline.dedupe,
-        retry=pipeline.local_retry,
+        retry=pipeline.chunk_retry,
         recorder=record,
         batch_id=batch_id,
         sleep=sleep,
@@ -201,7 +167,7 @@ def run_batch(
             lang,
             pipeline.report,
             batch_id=batch_id,
-            retry=pipeline.local_retry,
+            retry=pipeline.chunk_retry,
             sleep=sleep,
         )
         for lang in REPORT_LANGUAGES
@@ -210,192 +176,16 @@ def run_batch(
     for draft in drafts:
         store.write_text(
             REPORT_FILE.format(lang=draft.lang),
-            render_report(
-                draft.sections,
+            render_draft(
+                draft,
                 facts,
-                draft.lang,
                 batch_id=batch_id,
-                source=draft.source,
-                model_id=models.for_stage(Stage.SUMMARIZE).model_id,
-                prompt_id=summary_prompt.id,
-                percent_decimals=pipeline.report.percent_decimals,
+                models=models,
+                prompt=summary_prompt,
+                config=pipeline.report,
             ),
         )
 
-    summary = summarize(batch_id, normalized, results, records, dedupe, drafts)
+    summary = summarize(batch_id, normalized, results, records, dedupe.outcome(), drafts)
     store.write_json(SUMMARY_FILE, summary)
     return summary, store.run_dir
-
-
-def classify_with_backoff(
-    llm: StructuredLLM,
-    prompt: PromptFile,
-    taxonomy: Taxonomy,
-    chunk: Sequence[Incident],
-    *,
-    batch_id: str,
-    retry: LocalRetryConfig,
-    sleep: Sleep,
-) -> list[IncidentClassification]:
-    """Classify a chunk, backing off on availability errors; exhausted chunks need a human."""
-
-    def exhausted(attempts: int, error: AvailabilityError) -> list[IncidentClassification]:
-        reason = _unavailable(Stage.CLASSIFY, batch_id, attempts, error)
-        return [
-            IncidentClassification(
-                incident_id=incident.incident_id, status=TriageStatus.NEEDS_MANUAL, reason=reason
-            )
-            for incident in chunk
-        ]
-
-    return with_backoff(
-        lambda: classify_chunk(llm, prompt, taxonomy, chunk, batch_id=batch_id),
-        retry=retry,
-        sleep=sleep,
-        exhausted=exhausted,
-    )
-
-
-def judge_with_backoff(
-    llm: StructuredLLM,
-    prompt: PromptFile,
-    pairs: Sequence[CandidatePair],
-    incidents: Mapping[str, Incident],
-    *,
-    batch_id: str,
-    retry: LocalRetryConfig,
-    sleep: Sleep,
-) -> list[PairVerdict]:
-    """Judge a chunk of pairs, backing off on availability errors; exhausted pairs stay apart."""
-
-    def exhausted(attempts: int, error: AvailabilityError) -> list[PairVerdict]:
-        return unjudged(pairs, _unavailable(Stage.DEDUPE_JUDGE, batch_id, attempts, error))
-
-    return with_backoff(
-        lambda: judge_chunk(llm, prompt, pairs, incidents, batch_id=batch_id),
-        retry=retry,
-        sleep=sleep,
-        exhausted=exhausted,
-    )
-
-
-def summarize_with_backoff(
-    llm: StructuredLLM,
-    prompt: PromptFile,
-    facts: ReportFacts,
-    lang: Language,
-    config: ReportConfig,
-    *,
-    batch_id: str,
-    retry: LocalRetryConfig,
-    sleep: Sleep,
-) -> ReportDraft:
-    """Write one language's report with backoff; when retries run out, use the template."""
-
-    def exhausted(attempts: int, error: AvailabilityError) -> ReportDraft:
-        return template_draft(
-            facts, lang, [_unavailable(Stage.SUMMARIZE, batch_id, attempts, error)]
-        )
-
-    return with_backoff(
-        lambda: summarize_report(llm, prompt, facts, lang, config, batch_id=batch_id),
-        retry=retry,
-        sleep=sleep,
-        exhausted=exhausted,
-    )
-
-
-def _unavailable(stage: Stage, batch_id: str, attempts: int, error: AvailabilityError) -> str:
-    LOGGER.warning(
-        "chunk failed",
-        extra=log_fields(
-            batch_id=batch_id, stage=stage, attempts=attempts, error_type=type(error).__name__
-        ),
-    )
-    return f"model unavailable after {attempts} attempts ({type(error).__name__})"
-
-
-def dedupe_batch(
-    llm: StructuredLLM,
-    prompt: PromptFile,
-    embedder: EmbeddingClient,
-    incidents: Sequence[Incident],
-    *,
-    models: ModelsConfig,
-    prices: PriceTable,
-    config: DedupeConfig,
-    retry: LocalRetryConfig,
-    recorder: CallRecorder,
-    batch_id: str,
-    sleep: Sleep,
-) -> DedupeResult:
-    """Embed, pick candidate pairs, judge them in chunks, and build star clusters."""
-    matrix = embed_incidents(
-        embedder, incidents, models.embedding, prices, recorder, batch_id=batch_id
-    )
-    order = report_order(incidents)
-    candidates = candidate_pairs(matrix, order, config)
-    if candidates.dropped:
-        LOGGER.warning(
-            "pair cap hit",
-            extra=log_fields(
-                batch_id=batch_id,
-                stage=Stage.DEDUPE_JUDGE,
-                max_pairs=config.max_pairs,
-                dropped=candidates.dropped,
-            ),
-        )
-    by_id = {incident.incident_id: incident for incident in incidents}
-    verdicts: list[PairVerdict] = []
-    for chunk in chunked(candidates.pairs, config.judge_chunk_size):
-        verdicts += judge_with_backoff(
-            llm, prompt, chunk, by_id, batch_id=batch_id, retry=retry, sleep=sleep
-        )
-    confirmed = [verdict.pair for verdict in verdicts if verdict.is_duplicate]
-    return DedupeResult(
-        matrix=matrix,
-        order=order,
-        candidates=candidates,
-        verdicts=verdicts,
-        clusters=star_clusters(order, confirmed, config.max_cluster_size),
-    )
-
-
-def batch_id_for(csv_path: Path, content: str) -> str:
-    """Stable ID from the file name and content: re-running the same CSV overwrites its run."""
-    stem = re.sub(r"[^a-z0-9]+", "-", csv_path.stem.lower()).strip("-") or "batch"
-    digest = hashlib.sha256(content.encode("utf-8")).hexdigest()[:BATCH_HASH_CHARS]
-    return f"{stem}-{digest}"
-
-
-def summarize(
-    batch_id: str,
-    normalized: NormalizeResult,
-    results: Sequence[IncidentClassification],
-    records: Sequence[LLMCallRecord],
-    dedupe: DedupeResult,
-    drafts: Sequence[ReportDraft],
-) -> RunSummary:
-    """Counts and cost for one run; cost per 100 incidents is the README's headline number."""
-    cost = sum(record.cost_usd for record in records)
-    classified = sum(result.status is TriageStatus.CLASSIFIED for result in results)
-    return RunSummary(
-        batch_id=batch_id,
-        incidents=len(normalized.incidents),
-        row_errors=len(normalized.row_errors),
-        classified=classified,
-        needs_manual=len(results) - classified,
-        llm_calls=len(records),
-        cost_usd=cost,
-        cost_per_100_incidents_usd=(
-            cost / len(normalized.incidents) * PER_HUNDRED if normalized.incidents else 0.0
-        ),
-        pii_redactions=normalized.pii_redactions,
-        candidate_pairs=len(dedupe.candidates.pairs),
-        pairs_dropped_by_cap=dedupe.candidates.dropped,
-        confirmed_pairs=sum(verdict.is_duplicate for verdict in dedupe.verdicts),
-        unjudged_pairs=sum(verdict.judgement is None for verdict in dedupe.verdicts),
-        clusters=len(dedupe.clusters),
-        duplicate_incidents=sum(len(cluster.member_ids) - 1 for cluster in dedupe.clusters),
-        reports_from_template=[d.lang for d in drafts if d.source is ReportSource.TEMPLATE],
-    )

@@ -13,6 +13,7 @@ from triagelite.domain.errors import (
     LLMOutputValidationError,
     LLMProviderError,
     LLMRateLimitError,
+    LLMTransientError,
     TriageError,
 )
 from triagelite.domain.models import LLMCallRecord
@@ -35,6 +36,7 @@ _STATUS_BY_ERROR: dict[type[TriageError], CallStatus] = {
     LLMOutputValidationError: CallStatus.VALIDATION_ERROR,
     LLMRateLimitError: CallStatus.RATE_LIMITED,
     LLMProviderError: CallStatus.PROVIDER_ERROR,
+    LLMTransientError: CallStatus.PROVIDER_ERROR,
 }
 
 
