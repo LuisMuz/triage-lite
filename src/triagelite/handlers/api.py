@@ -105,7 +105,7 @@ def _params[T: StrictModel](model: type[T], values: Mapping[str, str] | None) ->
     try:
         return model.model_validate(values or {})
     except ValidationError as error:
-        raise RequestValidationError(format_validation_errors(error)) from error
+        raise RequestValidationError("; ".join(format_validation_errors(error))) from error
 
 
 def list_batches(

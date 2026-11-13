@@ -183,6 +183,15 @@ def test_bad_parameters_are_a_400_in_the_error_shape(
     assert error_of(body) == "bad_request"
 
 
+def test_a_bad_parameter_is_named_in_plain_text(store: S3Store, table: BatchTable) -> None:
+    _, body = call(table, store, request("GET /batches/{id}/report", "b-1", {"lang": "fr"}))
+
+    assert body["error"] == {
+        "code": "bad_request",
+        "message": "lang: Input should be 'es' or 'en'",
+    }
+
+
 def test_a_route_the_api_does_not_serve_is_not_found(store: S3Store, table: BatchTable) -> None:
     status, body = call(table, store, request("DELETE /batches/{id}", "b-1"))
 
