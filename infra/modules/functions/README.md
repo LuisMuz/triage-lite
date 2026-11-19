@@ -21,3 +21,5 @@ Each function has its own role, inline policy and log group (14 days).
 Bedrock permissions follow the model IDs in `config/models.toml`, so changing a model means editing that file, running `make build` and applying. Claude stages must use a `global.` inference profile. Each one gets the three statements AWS documents for global cross-Region inference.
 
 If a work file is renamed in `src/triagelite/handlers/work.py`, the patterns in `iam.tf` must change too.
+
+The functions that call models write EMF metric lines into the namespace in `TRIAGELITE_METRICS_NAMESPACE`, and `finalize` writes one per batch. CloudWatch Logs extracts the metrics from the log group, so no role needs `cloudwatch:PutMetricData`.

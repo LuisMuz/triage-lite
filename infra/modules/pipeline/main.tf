@@ -62,7 +62,7 @@ resource "aws_sns_topic" "alerts" {
 }
 
 resource "aws_sfn_state_machine" "pipeline" {
-  #checkov:skip=CKV_AWS_284:Tracing waits for the observability work, like the functions
+  #checkov:skip=CKV_AWS_284:No X-Ray (TL-35); the execution history and the ExecutionsFailed alarm show where a run stopped
   #checkov:skip=CKV_AWS_285:Standard workflows keep 90 days of execution history; CloudWatch log delivery needs a Resource "*" policy and could carry error causes that quote incident text
   name       = local.state_machine_name
   type       = "STANDARD"

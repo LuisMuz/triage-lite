@@ -13,6 +13,11 @@ output "function_names" {
   value       = { for name, function in aws_lambda_function.function : name => function.function_name }
 }
 
+output "log_group_names" {
+  description = "Log group names by function, for saved queries and dashboard log widgets."
+  value       = { for name, group in aws_cloudwatch_log_group.function : name => group.name }
+}
+
 output "bedrock_models" {
   description = "Model IDs read from config/models.toml that the IAM policies allow."
   value       = merge(local.stage_models, { embedding = local.embedding_model })

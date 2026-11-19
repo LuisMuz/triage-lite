@@ -32,3 +32,8 @@ output "api_url" {
   description = "Base URL of the read API, e.g. <api_url>batches."
   value       = module.api.api_url
 }
+
+output "dashboard_url" {
+  description = "CloudWatch dashboard with cost, tokens, runs and errors."
+  value       = module.observability.dashboard_url
+}

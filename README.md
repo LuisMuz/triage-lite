@@ -29,3 +29,11 @@ curl "${API}batches/<batch_id>/report?lang=es"
 | `GET /batches/{id}/report?lang=es\|en` | The Markdown report, inline |
 
 Every error has the same shape: `{"error": {"code": "not_found", "message": "..."}}`. The codes are `bad_request` (400), `not_found` (404, including a report that isn't ready yet) and `internal` (500).
+
+**Monitoring.** A CloudWatch dashboard shows cost per batch, tokens by stage, validation errors, runs and function errors:
+
+```bash
+terraform -chdir=infra/envs/demo output -raw dashboard_url
+```
+
+Three alarms email the address in `alert_email`: a run failed or timed out, functions raised 3 or more errors in 5 minutes, and model calls cost USD 0.50 or more in 24 hours. Details are in `infra/modules/observability/README.md`.

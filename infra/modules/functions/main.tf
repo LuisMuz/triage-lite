@@ -77,7 +77,7 @@ resource "aws_iam_role" "function" {
 }
 
 resource "aws_lambda_function" "function" {
-  #checkov:skip=CKV_AWS_50:Tracing waits for the observability work; structured logs carry batch_id and call_id meanwhile
+  #checkov:skip=CKV_AWS_50:No X-Ray (TL-35); structured logs carry batch_id and call_id, and EMF metrics with alarms cover latency, cost and errors
   #checkov:skip=CKV_AWS_115:Step Functions caps the fan-out; reserving concurrency would eat into a small new-account quota
   #checkov:skip=CKV_AWS_116:Step Functions invokes synchronously and handles failures, so a dead-letter queue would never receive anything
   #checkov:skip=CKV_AWS_117:No VPC by design (TL-01); the functions only call AWS APIs, and a VPC would need NAT or endpoints
@@ -98,11 +98,12 @@ resource "aws_lambda_function" "function" {
 
   environment {
     variables = {
-      TRIAGELITE_DATA_BUCKET = var.bucket_name
-      TRIAGELITE_TABLE_NAME  = var.table_name
-      TRIAGELITE_AWS_REGION  = local.region
-      TRIAGELITE_LOG_LEVEL   = var.log_level
-      OPENBLAS_CORETYPE      = "NEOVERSEN1"
+      TRIAGELITE_DATA_BUCKET       = var.bucket_name
+      TRIAGELITE_TABLE_NAME        = var.table_name
+      TRIAGELITE_AWS_REGION        = local.region
+      TRIAGELITE_LOG_LEVEL         = var.log_level
+      TRIAGELITE_METRICS_NAMESPACE = var.metrics_namespace
+      OPENBLAS_CORETYPE            = "NEOVERSEN1"
     }
   }
 

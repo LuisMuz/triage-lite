@@ -61,6 +61,7 @@ infra-check: ## Terraform fmt check, validate, tflint and checkov
 	tflint --chdir=infra/modules/functions --config=$(CURDIR)/infra/.tflint.hcl
 	tflint --chdir=infra/modules/pipeline --config=$(CURDIR)/infra/.tflint.hcl
 	tflint --chdir=infra/modules/api --config=$(CURDIR)/infra/.tflint.hcl
+	tflint --chdir=infra/modules/observability --config=$(CURDIR)/infra/.tflint.hcl
 	checkov -d infra --quiet --compact --framework terraform
 
 build: ## Build the Lambda code zip and dependency layer for ARM64 into build/lambda

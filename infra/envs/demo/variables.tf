@@ -15,3 +15,10 @@ variable "owner" {
   type        = string
   default     = "luis"
 }
+
+variable "alert_email" {
+  description = "Address that receives alarm and failed-batch emails; set it in the gitignored terraform.tfvars."
+  type        = string
+  default     = null
+  sensitive   = true
+}

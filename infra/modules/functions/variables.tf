@@ -44,6 +44,11 @@ variable "log_level" {
   }
 }
 
+variable "metrics_namespace" {
+  description = "CloudWatch namespace of the EMF metrics the functions write."
+  type        = string
+}
+
 variable "log_retention_days" {
   description = "Days CloudWatch keeps function logs."
   type        = number
