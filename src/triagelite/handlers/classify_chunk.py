@@ -60,7 +60,7 @@ def handler(event: Mapping[str, object], _context: object) -> dict[str, object]:
     """Lambda entry point."""
     settings = lambda_settings()
     models, prices = llm_config()
-    calls = CallLog()
+    calls = CallLog(settings.metrics_namespace)
     return run(
         parse_event(ChunkEvent, event),
         data_store(),

@@ -53,6 +53,7 @@ def run(
     models: ModelsConfig,
     prices: PriceTable,
     pipeline: PipelineConfig,
+    calls: CallLog,
     sleep: Sleep = time.sleep,
 ) -> StageResult:
     """Write the facts, drafts and reports; an unavailable model falls back to the template."""
@@ -68,7 +69,6 @@ def run(
         pipeline.report,
     )
     store.write_json(work_key(batch_id, FACTS_FILE), facts)
-    calls = CallLog()
     llm = StructuredLLM(client, models, prices, recorder=calls)
     try:
         drafts = [
@@ -108,14 +108,16 @@ def run(
 
 def handler(event: Mapping[str, object], _context: object) -> dict[str, object]:
     """Lambda entry point."""
+    settings = lambda_settings()
     models, prices = llm_config()
     pipeline = pipeline_config()
     return run(
         parse_event(BatchEvent, event),
         data_store(),
         llm_client(),
-        load_stage_prompt(lambda_settings(), Stage.SUMMARIZE, pipeline.prompts.summarize),
+        load_stage_prompt(settings, Stage.SUMMARIZE, pipeline.prompts.summarize),
         models,
         prices,
         pipeline,
+        CallLog(settings.metrics_namespace),
     ).model_dump(mode="json")

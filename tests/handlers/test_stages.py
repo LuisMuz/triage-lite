@@ -1,3 +1,4 @@
+import logging
 from datetime import UTC, datetime
 
 import pytest
@@ -31,6 +32,7 @@ from triagelite.handlers.runtime import CallLog
 from triagelite.handlers.work import CHUNK_FAILED_REASON, calls_key, chunk_calls_name
 from triagelite.llm.fake import FakeEmbeddingClient, FakeLLMClient, ScriptStep
 from triagelite.llm.structured import StructuredLLM
+from triagelite.metrics import METRICS_LOGGER, METRICS_MESSAGE, Metric
 from triagelite.settings import (
     Settings,
     load_llm_config,
@@ -45,6 +47,7 @@ SETTINGS = Settings(config_dir=REPO / "config", prompts_dir=REPO / "prompts")
 MODELS, PRICES = load_llm_config(SETTINGS)
 PIPELINE = load_pipeline_config(SETTINGS)
 NOW = datetime(2026, 11, 3, 12, 0, tzinfo=UTC)
+NAMESPACE = "TriageLiteTest"
 SAMPLE_INCIDENTS = 20
 
 
@@ -55,7 +58,7 @@ def run_normalize(store: S3Store, table: BatchTable) -> BatchEvent:
 
 
 def run_classify(store: S3Store, batch: BatchEvent, key: str, script: list[ScriptStep]) -> None:
-    calls = CallLog()
+    calls = CallLog(NAMESPACE)
     classify_chunk.run(
         ChunkEvent(batch_id=batch.batch_id, chunk_key=key),
         store,
@@ -76,6 +79,7 @@ def run_after_classify(store: S3Store, table: BatchTable, batch: BatchEvent) -> 
         MODELS,
         PRICES,
         PIPELINE,
+        CallLog(NAMESPACE),
         sleep=lambda _: None,
     )
     summarize.run(
@@ -86,9 +90,10 @@ def run_after_classify(store: S3Store, table: BatchTable, batch: BatchEvent) -> 
         MODELS,
         PRICES,
         PIPELINE,
+        CallLog(NAMESPACE),
         sleep=lambda _: None,
     )
-    finalize.run(batch, store, table, NOW)
+    finalize.run(batch, store, table, NOW, NAMESPACE)
 
 
 def test_a_batch_goes_from_csv_to_done(store: S3Store, table: BatchTable) -> None:
@@ -113,6 +118,29 @@ def test_a_batch_goes_from_csv_to_done(store: S3Store, table: BatchTable) -> Non
     assert store.read_text(report_key(batch.batch_id, "es")).startswith("# Informe de triage QA")
     assert store.read_text(report_key(batch.batch_id, "en")).startswith("# QA triage report")
     assert len(table.list_incidents(batch.batch_id)) == SAMPLE_INCIDENTS
+
+
+def test_every_model_call_and_the_finished_batch_publish_metrics(
+    store: S3Store, table: BatchTable, caplog: pytest.LogCaptureFixture
+) -> None:
+    batch = run_normalize(store, table)
+    run_classify(store, batch, batch.chunk_keys[0], [answer_all()])
+
+    with caplog.at_level(logging.INFO, logger=METRICS_LOGGER.name):
+        run_after_classify(store, table, batch)
+
+    lines = [
+        vars(record)["fields"]
+        for record in caplog.records
+        if record.getMessage() == METRICS_MESSAGE
+    ]
+    batch_lines = [line for line in lines if Metric.NEEDS_MANUAL.value in line]
+    call_lines = [line for line in lines if Metric.COST_USD.value in line]
+    assert len(batch_lines) == 1
+    assert batch_lines[0][Metric.NEEDS_MANUAL.value] == PIPELINE.normalize.chunk_size
+    assert len(call_lines) == len(lines) - 1
+    assert {line["batch_id"] for line in lines} == {batch.batch_id}
+    assert {line["_aws"]["CloudWatchMetrics"][0]["Namespace"] for line in lines} == {NAMESPACE}
 
 
 def test_a_chunk_that_never_finished_needs_a_human(store: S3Store, table: BatchTable) -> None:

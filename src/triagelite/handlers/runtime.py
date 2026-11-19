@@ -1,5 +1,6 @@
 """What every handler needs, built once per Lambda container and reused by warm invocations."""
 
+from datetime import UTC, datetime
 from functools import lru_cache
 from typing import TYPE_CHECKING
 
@@ -9,7 +10,7 @@ from triagelite.domain.models import LLMCallRecord, NonEmptyStr
 from triagelite.llm.config import ModelsConfig
 from triagelite.llm.pricing import PriceTable
 from triagelite.logs import configure_logging
-from triagelite.metrics import log_call_record
+from triagelite.metrics import call_metrics, emit_metrics, log_call_record
 from triagelite.pipeline.config import PipelineConfig
 from triagelite.settings import Settings, load_llm_config, load_pipeline_config
 from triagelite.storage.dynamo import BatchTable
@@ -25,18 +26,29 @@ class LambdaSettings(Settings):
 
     data_bucket: NonEmptyStr
     table_name: NonEmptyStr
+    metrics_namespace: NonEmptyStr
 
 
 class CallLog:
-    """A `CallRecorder` that logs each call and keeps it for the batch's cost total."""
+    """A `CallRecorder` that logs each call, publishes its metrics and keeps it for the batch."""
 
-    def __init__(self) -> None:
+    def __init__(self, metrics_namespace: str) -> None:
+        self.metrics_namespace = metrics_namespace
         self.records: list[LLMCallRecord] = []
 
     def __call__(self, record: LLMCallRecord, /) -> None:
-        """Log and keep `record`."""
+        """Log `record`, publish its usage and keep it for the batch's cost total."""
         self.records.append(record)
         log_call_record(record)
+        emit_metrics(
+            self.metrics_namespace,
+            call_metrics(record),
+            datetime.now(UTC),
+            batch_id=record.batch_id,
+            stage=record.stage,
+            call_id=record.call_id,
+            model_id=record.model_id,
+        )
 
 
 @lru_cache(maxsize=1)

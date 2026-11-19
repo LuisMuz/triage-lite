@@ -40,11 +40,11 @@ def run(
     models: ModelsConfig,
     prices: PriceTable,
     pipeline: PipelineConfig,
+    calls: CallLog,
     sleep: Sleep = time.sleep,
 ) -> StageResult:
     """Write the batch's verdicts and clusters; the calls are kept even if it fails."""
     normalized = store.read_json(work_key(event.batch_id, NORMALIZED_FILE), NormalizeResult)
-    calls = CallLog()
     try:
         result = dedupe_batch(
             StructuredLLM(client, models, prices, recorder=calls),
@@ -74,6 +74,7 @@ def run(
 
 def handler(event: Mapping[str, object], _context: object) -> dict[str, object]:
     """Lambda entry point."""
+    settings = lambda_settings()
     models, prices = llm_config()
     pipeline = pipeline_config()
     return run(
@@ -81,8 +82,9 @@ def handler(event: Mapping[str, object], _context: object) -> dict[str, object]:
         data_store(),
         llm_client(),
         embedding_client(),
-        load_stage_prompt(lambda_settings(), Stage.DEDUPE_JUDGE, pipeline.prompts.dedupe_judge),
+        load_stage_prompt(settings, Stage.DEDUPE_JUDGE, pipeline.prompts.dedupe_judge),
         models,
         prices,
         pipeline,
+        CallLog(settings.metrics_namespace),
     ).model_dump(mode="json")
