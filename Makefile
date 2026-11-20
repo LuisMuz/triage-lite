@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help install lint format test check run eval-build eval-validate eval eval-compare eval-similarity eval-dedupe infra-check build deploy
+.PHONY: help install lint format test check run eval-build eval-validate eval eval-compare eval-similarity eval-dedupe eval-summarize infra-check build deploy
 
 CSV ?= data/sample.csv
 DATASET ?= seed-v1
@@ -8,6 +8,9 @@ REPEAT ?= 1
 CHUNK ?=
 MODEL ?=
 API ?=
+RUN ?= runs/sample-497c47c8
+SUMMARY_PROMPT ?=
+SUMMARY_REPEAT ?= 10
 
 help: ## List targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-15s %s\n", $$1, $$2}'
@@ -50,6 +53,9 @@ eval-similarity: ## Embed the tuning split and sweep dedupe thresholds (plot + t
 
 eval-dedupe: ## Dedupe precision/recall on the tuning split, with and without the judge
 	uv run python -m evals.dedupe --dataset $(DATASET) --split tuning
+
+eval-summarize: ## Re-run only summarize on a local run and count template fallbacks (RUN=runs/<id>, SUMMARY_PROMPT=config, SUMMARY_REPEAT=10)
+	uv run python -m evals.summarize --run $(RUN) --repeat $(SUMMARY_REPEAT) $(if $(SUMMARY_PROMPT),--prompt $(SUMMARY_PROMPT))
 
 infra-check: ## Terraform fmt check, validate, tflint and checkov
 	terraform fmt -check -recursive infra
