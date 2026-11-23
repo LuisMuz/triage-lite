@@ -17,6 +17,7 @@ from triagelite.domain.models import NonEmptyStr, StrictModel
 
 REGRESSION_DROP = 0.05
 COST_INCREASE_LIMIT = 0.15
+EXIT_REGRESSION = 2
 MAJORITY = 0.5
 LABEL_FIELDS = ("severity", "component", "category")
 
@@ -289,6 +290,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("base", type=Path)
     parser.add_argument("candidate", type=Path)
     parser.add_argument("--results-dir", type=Path, default=RESULTS_DIR)
+    parser.add_argument(
+        "--fail-on-regression",
+        action="store_true",
+        help=f"exit {EXIT_REGRESSION} on a regression verdict or a failed cost gate (CI)",
+    )
     args = parser.parse_args(argv)
     try:
         base, candidate = (
@@ -306,7 +312,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         f"[{d.low:+.3f}, {d.high:+.3f}] · {comparison.verdict} · "
         f"{len(comparison.fixed)} fixed, {len(comparison.broken)} broken\nwrote {path}\n"
     )
-    return 0
+    failed = comparison.verdict is Verdict.REGRESSION or comparison.cost_gate_failed
+    return EXIT_REGRESSION if args.fail_on_regression and failed else 0
 
 
 if __name__ == "__main__":

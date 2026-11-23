@@ -4,6 +4,7 @@ from pathlib import Path
 import pytest
 
 from evals.compare import (
+    EXIT_REGRESSION,
     CompareError,
     PairedDelta,
     Verdict,
@@ -243,3 +244,27 @@ def test_main_reports_incomparable_runs(tmp_path: Path, capsys: pytest.CaptureFi
     assert main([str(base), str(candidate), "--results-dir", str(tmp_path)]) == 1
 
     assert "compare failed" in capsys.readouterr().err
+
+
+def write_pair(tmp_path: Path, base: EvalResult, candidate: EvalResult) -> list[str]:
+    base_path, candidate_path = tmp_path / "base.json", tmp_path / "candidate.json"
+    base_path.write_text(base.model_dump_json(), encoding="utf-8")
+    candidate_path.write_text(candidate.model_dump_json(), encoding="utf-8")
+    return [str(base_path), str(candidate_path), "--results-dir", str(tmp_path / "out")]
+
+
+@pytest.mark.parametrize(
+    ("candidate", "code"),
+    [
+        (result([with_errors(0)], prompt="classify/v2"), 0),
+        (result([with_errors(5)], prompt="classify/v2"), EXIT_REGRESSION),
+        (result([with_errors(0)], prompt="classify/v2", cost=0.02), EXIT_REGRESSION),
+    ],
+)
+def test_the_gate_fails_on_a_regression_or_a_cost_increase(
+    tmp_path: Path, candidate: EvalResult, code: int
+) -> None:
+    args = write_pair(tmp_path, result([with_errors(0)]), candidate)
+
+    assert main(args) == 0
+    assert main([*args, "--fail-on-regression"]) == code

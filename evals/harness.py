@@ -8,10 +8,12 @@ import sys
 import time
 from collections.abc import Sequence
 from datetime import UTC, datetime
+from functools import partial
 from pathlib import Path
 
 from pydantic import NonNegativeInt, PositiveInt, field_validator
 
+import triagelite
 from evals.dataset import (
     DATASETS_DIR,
     INCIDENTS_FILE,
@@ -40,10 +42,9 @@ from triagelite.llm.client import LLMClient
 from triagelite.llm.config import ModelApi, StageModelConfig
 from triagelite.llm.prompts import PromptFile
 from triagelite.llm.structured import StructuredLLM
-from triagelite.pipeline.backoff import Sleep
-from triagelite.pipeline.classify import render_incidents
+from triagelite.pipeline.backoff import AvailabilityError, Sleep, with_backoff
+from triagelite.pipeline.classify import classify_chunk, render_incidents
 from triagelite.pipeline.normalize import chunked, normalize_rows
-from triagelite.pipeline.stages import classify_with_backoff
 from triagelite.settings import (
     Settings,
     get_settings,
@@ -55,12 +56,18 @@ from triagelite.settings import (
 
 RESULTS_DIR = Path(__file__).parent / "results"
 CACHE_DIR = Path(__file__).parent / "cache"
+PACKAGE_DIR = Path(triagelite.__file__).parent
+EXIT_UNAVAILABLE = 3
 PROMPT_ID_PATTERN = re.compile(r"^(?P<stage>[a-z_]+)/v(?P<version>\d+)$")
 MODEL_SLUG_PATTERN = re.compile(r"claude-[a-z]+-\d+(?:-\d+)?")
 
 
 class EvalError(Exception):
     """The eval can't run as requested; the message says why."""
+
+
+class EvalUnavailableError(Exception):
+    """Bedrock stayed unavailable for a chunk after backoff; rerun later, the cache resumes."""
 
 
 class ChunkOutcome(StrictModel):
@@ -111,16 +118,34 @@ def model_slug(model_id: str) -> str:
     return match.group() if match else re.sub(r"[^a-z0-9]+", "-", model_id.lower()).strip("-")
 
 
+def code_fingerprint(package_dir: Path) -> str:
+    """Hash of every Python file's path and contents, so a code change misses the cache."""
+    digest = hashlib.sha256()
+    for path in sorted(package_dir.rglob("*.py")):
+        digest.update(path.relative_to(package_dir).as_posix().encode("utf-8") + b"\0")
+        digest.update(path.read_bytes() + b"\0")
+    return digest.hexdigest()
+
+
 def cache_key(
-    prompt: PromptFile, model: StageModelConfig, taxonomy: Taxonomy, chunk_text: str, repeat: int
+    prompt: PromptFile,
+    model: StageModelConfig,
+    taxonomy: Taxonomy,
+    chunk_text: str,
+    repeat: int,
+    code: str,
 ) -> str:
-    """Identical prompt, model settings, taxonomy and input give the same key."""
+    """Identical prompt, model settings, taxonomy, input and pipeline code give the same key.
+
+    The cache holds validated outcomes, so code that parses or checks the answer is part of it.
+    """
     payload = {
         "prompt": prompt.model_dump(mode="json"),
         "model": model.model_dump(mode="json"),
         "taxonomy": taxonomy.model_dump(mode="json"),
         "input": chunk_text,
         "repeat": repeat,
+        "code": code,
     }
     return hashlib.sha256(json.dumps(payload, sort_keys=True).encode("utf-8")).hexdigest()
 
@@ -162,12 +187,15 @@ def run_eval(
     api: ModelApi | None = None,
     datasets_dir: Path = DATASETS_DIR,
     cache_dir: Path = CACHE_DIR,
+    code_dir: Path = PACKAGE_DIR,
     sleep: Sleep = time.sleep,
 ) -> EvalResult:
     """Normalize and classify every item of `split`, `repeat` times, then compute metrics.
 
     `chunk_size` overrides the configured number of incidents per call; `model_id` and `api`
-    swap the stage's model (thinking and effort are cleared, max_tokens is kept).
+    swap the stage's model (thinking and effort are cleared, max_tokens is kept). A chunk still
+    unavailable after backoff raises `EvalUnavailableError` instead of scoring as needs_manual,
+    so throttling never reads as a quality drop and is never cached.
     """
     taxonomy = load_taxonomy(settings)
     models, prices = load_llm_config(settings)
@@ -183,13 +211,14 @@ def run_eval(
     raw, labels, manifest = load_split(datasets_dir / dataset, split, taxonomy)
     incidents = normalize_rows(raw, pipeline.normalize).incidents
     size = chunk_size or pipeline.normalize.chunk_size
+    code = code_fingerprint(code_dir)
 
     predictions: list[ItemPrediction] = []
     records: list[LLMCallRecord] = []
     fresh_calls = cached_chunks = 0
     for run in range(repeat):
         for chunk in chunked(incidents, size):
-            key = cache_key(prompt, model, taxonomy, render_incidents(chunk), run)
+            key = cache_key(prompt, model, taxonomy, render_incidents(chunk), run, code)
             path = cache_dir / f"{key}.json"
             if path.exists():
                 outcome = ChunkOutcome.model_validate_json(path.read_text("utf-8"))
@@ -197,14 +226,12 @@ def run_eval(
             else:
                 chunk_records: list[LLMCallRecord] = []
                 llm = StructuredLLM(client, models, prices, recorder=chunk_records.append)
-                results = classify_with_backoff(
-                    llm,
-                    prompt,
-                    taxonomy,
-                    chunk,
-                    batch_id=f"eval-{dataset}-{split}-r{run}",
+                batch_id = f"eval-{dataset}-{split}-r{run}"
+                results = with_backoff(
+                    partial(classify_chunk, llm, prompt, taxonomy, chunk, batch_id=batch_id),
                     retry=pipeline.chunk_retry,
                     sleep=sleep,
+                    exhausted=_unavailable,
                 )
                 outcome = ChunkOutcome(results=results, records=chunk_records)
                 fresh_calls += len(chunk_records)
@@ -228,6 +255,13 @@ def run_eval(
         metrics=compute_metrics(labels, predictions, records),
         labels=[labels[external_id] for external_id in sorted(labels)],
         predictions=predictions,
+    )
+
+
+def _unavailable(attempts: int, error: AvailabilityError) -> list[IncidentClassification]:
+    raise EvalUnavailableError(
+        f"a chunk was still unavailable after {attempts} attempts ({type(error).__name__}: "
+        f"{error}); completed chunks are cached, so rerunning resumes"
     )
 
 
@@ -301,13 +335,16 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="python -m evals.harness", description=__doc__)
     parser.add_argument("--dataset", default="seed-v1")
     parser.add_argument("--split", type=Split, choices=list(Split), default=Split.TUNING)
-    parser.add_argument("--prompt", default="classify/v1", help="stage/version, e.g. classify/v1")
+    parser.add_argument(
+        "--prompt", default=None, help="stage/version, e.g. classify/v1 (default: config)"
+    )
     parser.add_argument("--repeat", type=int, default=1)
     parser.add_argument(
         "--chunk-size", type=int, default=None, help="incidents per call (default: config)"
     )
     parser.add_argument("--model", default=None, help="Bedrock model id (default: config)")
     parser.add_argument("--api", choices=["messages", "converse"], default=None)
+    parser.add_argument("--results-dir", type=Path, default=RESULTS_DIR)
     parser.add_argument(
         "--confirm-holdout",
         action="store_true",
@@ -325,11 +362,14 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 1
     settings = get_settings()
     models, _ = load_llm_config(settings)
+    prompt_id = (
+        args.prompt or f"{Stage.CLASSIFY}/v{load_pipeline_config(settings).prompts.classify}"
+    )
     try:
         result = run_eval(
             dataset=args.dataset,
             split=args.split,
-            prompt_id=args.prompt,
+            prompt_id=prompt_id,
             repeat=args.repeat,
             settings=settings,
             client=BedrockLLMClient.from_settings(settings, models.client.timeout_seconds),
@@ -340,7 +380,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     except EvalError as error:
         sys.stderr.write(f"eval failed: {error}\n")
         return 1
-    json_path, md_path = write_result(result)
+    except EvalUnavailableError as error:
+        sys.stderr.write(f"eval unavailable: {error}\n")
+        return EXIT_UNAVAILABLE
+    json_path, md_path = write_result(result, args.results_dir)
     metrics = result.metrics
     f1 = metrics.severity_macro_f1
     sys.stdout.write(

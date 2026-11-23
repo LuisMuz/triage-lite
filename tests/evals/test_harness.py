@@ -3,11 +3,15 @@ from pathlib import Path
 
 import pytest
 
+from evals import harness
 from evals.build import build
 from evals.dataset import Split
 from evals.harness import (
+    EXIT_UNAVAILABLE,
     EvalError,
     EvalResult,
+    EvalUnavailableError,
+    code_fingerprint,
     main,
     model_slug,
     parse_prompt_id,
@@ -17,9 +21,10 @@ from evals.harness import (
 from tests.evals.test_dataset import base_rows, write_work
 from tests.pipeline.conftest import answer_all
 from triagelite.domain.enums import Stage
+from triagelite.domain.errors import LLMRateLimitError
 from triagelite.domain.taxonomy import Taxonomy
-from triagelite.llm.fake import FakeLLMClient
-from triagelite.settings import Settings
+from triagelite.llm.fake import FakeLLMClient, ScriptStep
+from triagelite.settings import Settings, get_settings, load_pipeline_config
 
 REPO = Path(__file__).parents[2]
 SETTINGS = Settings(config_dir=REPO / "config", prompts_dir=REPO / "prompts")
@@ -40,6 +45,7 @@ def run(
     repeat: int = 1,
     chunk_size: int | None = None,
     model_id: str | None = None,
+    code_dir: Path | None = None,
 ) -> EvalResult:
     return run_eval(
         dataset="seed-test",
@@ -53,6 +59,7 @@ def run(
         api="converse" if model_id else None,
         datasets_dir=datasets,
         cache_dir=cache,
+        code_dir=code_dir or harness.PACKAGE_DIR,
         sleep=lambda _: None,
     )
 
@@ -178,3 +185,78 @@ def test_results_written_before_the_api_field_load_as_messages(
     del data["model"]["api"]
 
     assert EvalResult.model_validate(data).model.api == "messages"
+
+
+def test_a_chunk_still_throttled_after_backoff_stops_the_run_uncached(
+    datasets: Path, tmp_path: Path
+) -> None:
+    throttled: list[ScriptStep] = [LLMRateLimitError("429")] * 4
+
+    with pytest.raises(EvalUnavailableError, match="4 attempts"):
+        run(datasets, tmp_path / "cache", FakeLLMClient(throttled))
+
+    assert not (tmp_path / "cache").exists()
+
+
+def test_a_chunk_that_recovers_from_throttling_is_scored(datasets: Path, tmp_path: Path) -> None:
+    result = run(
+        datasets, tmp_path / "cache", FakeLLMClient([LLMRateLimitError("429"), answer_all()])
+    )
+
+    assert all(p.severity is not None for p in result.predictions)
+    assert result.fresh_calls == 2
+
+
+def test_changed_code_misses_the_cache(datasets: Path, tmp_path: Path) -> None:
+    code = tmp_path / "code"
+    code.mkdir()
+    (code / "classify.py").write_text("A = 1\n", encoding="utf-8")
+    run(datasets, tmp_path / "cache", FakeLLMClient([answer_all()]), code_dir=code)
+    (code / "classify.py").write_text("A = 2\n", encoding="utf-8")
+    client = FakeLLMClient([answer_all()])
+
+    result = run(datasets, tmp_path / "cache", client, code_dir=code)
+
+    assert (result.fresh_calls, result.cached_chunks) == (1, 0)
+
+
+def test_code_fingerprint_covers_names_and_contents(tmp_path: Path) -> None:
+    (tmp_path / "a.py").write_text("x = 1\n", encoding="utf-8")
+    first = code_fingerprint(tmp_path)
+    (tmp_path / "notes.txt").write_text("ignored", encoding="utf-8")
+    assert code_fingerprint(tmp_path) == first
+    (tmp_path / "a.py").rename(tmp_path / "b.py")
+    assert code_fingerprint(tmp_path) != first
+
+
+def test_the_package_fingerprint_is_stable() -> None:
+    assert code_fingerprint(harness.PACKAGE_DIR) == code_fingerprint(harness.PACKAGE_DIR)
+
+
+def test_throttling_exits_with_its_own_code(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    def unavailable(**_: object) -> EvalResult:
+        raise EvalUnavailableError("chunk 1 still throttled after 4 attempts")
+
+    monkeypatch.setattr(harness, "run_eval", unavailable)
+
+    assert main([]) == EXIT_UNAVAILABLE
+    assert "still throttled" in capsys.readouterr().err
+
+
+def test_without_prompt_the_configured_one_runs(
+    monkeypatch: pytest.MonkeyPatch, datasets: Path, tmp_path: Path
+) -> None:
+    seen: list[str] = []
+
+    def fake_run(**kwargs: object) -> EvalResult:
+        seen.append(str(kwargs["prompt_id"]))
+        return run(datasets, tmp_path / "cache", FakeLLMClient([answer_all()]))
+
+    monkeypatch.setattr(harness, "run_eval", fake_run)
+
+    assert main(["--results-dir", str(tmp_path / "out")]) == 0
+    configured = load_pipeline_config(get_settings()).prompts.classify
+    assert seen == [f"classify/v{configured}"]
+    assert len(list((tmp_path / "out").glob("*.json"))) == 1

@@ -3,7 +3,7 @@
 
 CSV ?= data/sample.csv
 DATASET ?= seed-v1
-PROMPT ?= classify/v1
+PROMPT ?=
 REPEAT ?= 1
 CHUNK ?=
 MODEL ?=
@@ -42,8 +42,8 @@ eval-build: ## Freeze reviewed candidates into evals/datasets/$(DATASET) (once, 
 eval-validate: ## Check a frozen dataset: hashes, counts, cells, groups, labels
 	uv run python -m evals.validate $(DATASET)
 
-eval: ## Run the eval harness on the tuning split (PROMPT=classify/v1, REPEAT=1, CHUNK/MODEL/API=config)
-	uv run python -m evals.harness --dataset $(DATASET) --split tuning --prompt $(PROMPT) --repeat $(REPEAT) $(if $(CHUNK),--chunk-size $(CHUNK)) $(if $(MODEL),--model $(MODEL)) $(if $(API),--api $(API))
+eval: ## Run the eval harness on the tuning split (PROMPT=config, REPEAT=1, CHUNK/MODEL/API=config)
+	uv run python -m evals.harness --dataset $(DATASET) --split tuning $(if $(PROMPT),--prompt $(PROMPT)) --repeat $(REPEAT) $(if $(CHUNK),--chunk-size $(CHUNK)) $(if $(MODEL),--model $(MODEL)) $(if $(API),--api $(API))
 
 eval-compare: ## Paired bootstrap of two harness results (BASE=json CANDIDATE=json)
 	uv run python -m evals.compare $(BASE) $(CANDIDATE)
@@ -68,6 +68,7 @@ infra-check: ## Terraform fmt check, validate, tflint and checkov
 	tflint --chdir=infra/modules/pipeline --config=$(CURDIR)/infra/.tflint.hcl
 	tflint --chdir=infra/modules/api --config=$(CURDIR)/infra/.tflint.hcl
 	tflint --chdir=infra/modules/observability --config=$(CURDIR)/infra/.tflint.hcl
+	tflint --chdir=infra/modules/bedrock_invoke --config=$(CURDIR)/infra/.tflint.hcl
 	checkov -d infra --quiet --compact --framework terraform
 
 build: ## Build the Lambda code zip and dependency layer for ARM64 into build/lambda
