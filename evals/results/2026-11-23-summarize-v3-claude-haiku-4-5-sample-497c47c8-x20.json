@@ -1,0 +1,1399 @@
+{
+  "created_at": "2026-11-23T18:26:22+00:00",
+  "batch_id": "sample-497c47c8",
+  "prompt": "summarize/v3",
+  "model_id": "global.anthropic.claude-haiku-4-5-20251001-v1:0",
+  "repeat": 20,
+  "trials": [
+    {
+      "repeat": 1,
+      "lang": "es",
+      "source": "model",
+      "drafts": 1,
+      "problems": [],
+      "fallback_reason": [],
+      "rejected": [],
+      "calls": 1,
+      "cost_usd": 0.006013,
+      "report": "# Informe de triage QA\n\nLote `sample-497c47c8` \u00b7 redactado por el modelo global.anthropic.claude-haiku-4-5-20251001-v1:0 con el prompt summarize/v3\n\n## Resumen general\n\nSe procesaron 20 incidentes en esta tanda. 20 fueron clasificados autom\u00e1ticamente y 0 requieren revisi\u00f3n manual. Despu\u00e9s de agrupar reportes duplicados, se identificaron 17 bugs distintos, con 3 bugs reportados m\u00e1s de una vez (3 reportes duplicados en total).\n\n## Severidad\n\nDe los incidentes clasificados: 5 son cr\u00edticos (25,0\u00a0%), 5 tienen severidad alta (25,0\u00a0%), 7 son medios (35,0\u00a0%) y 3 son bajos (15,0\u00a0%).\n\n## Componentes m\u00e1s afectados\n\nLos 3 componentes con m\u00e1s incidentes son:\n- Checkout: 2 cr\u00edticos, 1 altos\n- Notifications: 2 medios, 1 bajos\n- Search: 1 altos, 2 medios\n\n## Reportes duplicados\n\nLos siguientes bugs fueron reportados m\u00faltiples veces:\n- inc-0003: 2 reportes\n- inc-0006: 2 reportes\n- inc-0009: 2 reportes\n\n## Qu\u00e9 reparar primero\n\nPriorizar estos incidentes cr\u00edticos y de alto impacto:\n- inc-0003: Error 500 al confirmar el pedido\n- inc-0005: Pago con tarjeta se cobra dos veces\n- inc-0010: API returns other user's addresses\n- inc-0016: Contrase\u00f1a visible en logs del admin\n- inc-0006: Search ignores accents\n- inc-0019: El cup\u00f3n de env\u00edo gratis se aplica a pedidos internacionales"
+    },
+    {
+      "repeat": 1,
+      "lang": "en",
+      "source": "model",
+      "drafts": 2,
+      "problems": [
+        [
+          "number word 'three' in section 'Most Affected Components': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number",
+          "number word 'three' in section 'Duplicates': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number"
+        ]
+      ],
+      "fallback_reason": [],
+      "rejected": [
+        [
+          {
+            "heading": "Overview",
+            "body": "The batch contains {{total.incidents}} incidents, of which {{total.classified}} were automatically classified and {{total.needs_manual}} require manual review. After deduplication, {{clusters.unique_bugs}} distinct bugs were identified, with {{clusters.duplicate_groups}} bugs reported multiple times across {{clusters.duplicate_reports}} reports."
+          },
+          {
+            "heading": "Severity",
+            "body": "{{severity.critical.count}} incidents are critical ({{severity.critical.pct}}), {{severity.high.count}} are high ({{severity.high.pct}}), {{severity.medium.count}} are medium ({{severity.medium.pct}}), and {{severity.low.count}} are low ({{severity.low.pct}}). Critical issues span security, data, and crash categories, requiring immediate action."
+          },
+          {
+            "heading": "Most Affected Components",
+            "body": "Three components dominate the incident load:\n- Checkout: {{component.checkout.count}} incidents, including {{component.checkout.severity.critical.count}} critical\n- Notifications: {{component.notifications.count}} incidents ({{component.notifications.severity.medium.count}} medium, {{component.notifications.severity.low.count}} low)\n- Search: {{component.search.count}} incidents ({{component.search.severity.high.count}} high, {{component.search.severity.medium.count}} medium)"
+          },
+          {
+            "heading": "Duplicates",
+            "body": "Three bugs were reported multiple times: inc-0003 appears in {{reports.inc_0003}} reports, inc-0006 in {{reports.inc_0006}} reports, and inc-0009 in {{reports.inc_0009}} reports."
+          },
+          {
+            "heading": "What to Fix First",
+            "body": "Address critical security and payment issues immediately: inc-0010 (API leaks user addresses), inc-0016 (admin logs expose passwords), and inc-0005 (double charging on card payments). Follow with the checkout crash (inc-0003) and high-priority functional failures: inc-0001 (Google login broken), inc-0002 (discount codes ignored), and inc-0019 (free shipping coupon misapplied internationally)."
+          }
+        ]
+      ],
+      "calls": 2,
+      "cost_usd": 0.011531,
+      "report": "# QA triage report\n\nBatch `sample-497c47c8` \u00b7 written by model global.anthropic.claude-haiku-4-5-20251001-v1:0 with prompt summarize/v3\n\n## Overview\n\n20 incidents were submitted for triage, of which 20 were automatically classified and 0 require manual review. 17 distinct bugs were identified after merging duplicate reports.\n\n## Severity Breakdown\n\n5 incidents are critical (25.0%), 5 are high (25.0%), 7 are medium (35.0%), and 3 are low (15.0%).\n\n## Most Affected Components\n\nThe 3 most affected components are:\n- Checkout: 2 critical, 1 high\n- Notifications: 2 medium, 1 low\n- Search: 1 high, 2 medium\n\n## Duplicates\n\n3 bugs were reported more than once, accounting for 3 duplicate reports. The most-reported issues are inc-0003 (2 reports), inc-0006 (2 reports), and inc-0009 (2 reports).\n\n## What to Fix First\n\nAddress the critical incidents immediately:\n- inc-0003: Checkout crash on order confirmation\n- inc-0005: Payment charged twice\n- inc-0010: API exposes other users' addresses\n- inc-0016: Admin passwords visible in logs\n\nThen tackle the high-severity checkout and search issues: inc-0019, inc-0006, and inc-0001."
+    },
+    {
+      "repeat": 2,
+      "lang": "es",
+      "source": "model",
+      "drafts": 2,
+      "problems": [
+        [
+          "number word 'tres' in section 'Reportes duplicados': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number",
+          "number word 'cuatro' in section 'Qu\u00e9 arreglar primero': keys with this value are {{representatives.severity.critical.count}} (incidents listed in <incidents> classified as critical); write the one you mean, or say it without a number"
+        ]
+      ],
+      "fallback_reason": [],
+      "rejected": [
+        [
+          {
+            "heading": "Resumen general",
+            "body": "Se procesaron {{total.incidents}} incidentes en esta tanda. {{total.classified}} fueron clasificados autom\u00e1ticamente y {{total.needs_manual}} requieren revisi\u00f3n manual. Despu\u00e9s de agrupar reportes duplicados, se identificaron {{clusters.unique_bugs}} bugs \u00fanicos. {{clusters.duplicate_groups}} bugs fueron reportados m\u00e1s de una vez, con {{clusters.duplicate_reports}} reportes duplicados en total."
+          },
+          {
+            "heading": "Severidad",
+            "body": "La clasificaci\u00f3n de severidad muestra: {{severity.critical.count}} incidentes cr\u00edticos ({{severity.critical.pct}}), {{severity.high.count}} altos ({{severity.high.pct}}), {{severity.medium.count}} medios ({{severity.medium.pct}}) y {{severity.low.count}} bajos ({{severity.low.pct}})."
+          },
+          {
+            "heading": "Componentes m\u00e1s afectados",
+            "body": "Los {{top_components.count}} componentes con m\u00e1s incidentes son:\n- Checkout: {{component.checkout.severity.critical.count}} cr\u00edticos, {{component.checkout.severity.high.count}} altos\n- Notifications: {{component.notifications.severity.medium.count}} medios, {{component.notifications.severity.low.count}} bajos\n- Search: {{component.search.severity.high.count}} altos, {{component.search.severity.medium.count}} medios"
+          },
+          {
+            "heading": "Reportes duplicados",
+            "body": "Tres bugs fueron reportados m\u00faltiples veces: inc-0003 ({{reports.inc_0003}} reportes), inc-0006 ({{reports.inc_0006}} reportes) e inc-0009 ({{reports.inc_0009}} reportes). Estos n\u00fameros indican prioridad seg\u00fan la frecuencia de reporte."
+          },
+          {
+            "heading": "Qu\u00e9 arreglar primero",
+            "body": "Comenzar por los cuatro incidentes cr\u00edticos: inc-0003 (error al confirmar pedido), inc-0005 (cargo duplicado), inc-0010 (exposici\u00f3n de direcciones) e inc-0016 (contrase\u00f1a en logs). Luego, abordar los incidentes altos de checkout: inc-0019 (cup\u00f3n de env\u00edo gratis mal aplicado) e inc-0002 (descuento ignorado en carrito)."
+          }
+        ]
+      ],
+      "calls": 2,
+      "cost_usd": 0.01214,
+      "report": "# Informe de triage QA\n\nLote `sample-497c47c8` \u00b7 redactado por el modelo global.anthropic.claude-haiku-4-5-20251001-v1:0 con el prompt summarize/v3\n\n## Resumen general\n\nSe procesaron 20 reportes en esta tanda de triaje. 20 incidentes fueron clasificados autom\u00e1ticamente por el modelo, mientras que 0 requieren clasificaci\u00f3n manual. Tras consolidar reportes duplicados, se identificaron 17 bugs \u00fanicos.\n\n## Severidad\n\nLa distribuci\u00f3n de severidad entre los incidentes clasificados es: 5 cr\u00edticos (25,0\u00a0%), 5 altos (25,0\u00a0%), 7 medios (35,0\u00a0%) y 3 bajos (15,0\u00a0%).\n\n## Componentes m\u00e1s afectados\n\nLos 3 componentes con m\u00e1s incidentes son:\n- Checkout: 2 cr\u00edticos, 1 altos\n- Notifications: 2 medios, 1 bajos\n- Search: 1 altos, 2 medios\n\n## Reportes duplicados\n\nSe encontraron 3 bugs reportados m\u00faltiples veces: inc-0003 (2 reportes), inc-0006 (2 reportes) e inc-0009 (2 reportes). En total, 3 reportes son duplicados de bugs ya conocidos.\n\n## Qu\u00e9 arreglar primero\n\nPriorizar los siguientes 4 incidentes cr\u00edticos:\n- inc-0003: Error 500 al confirmar pedido\n- inc-0005: Pago con tarjeta se cobra dos veces\n- inc-0010: API devuelve direcciones de otros usuarios\n- inc-0016: Contrase\u00f1a visible en logs del admin"
+    },
+    {
+      "repeat": 2,
+      "lang": "en",
+      "source": "model",
+      "drafts": 2,
+      "problems": [
+        [
+          "number word 'three' in section 'Most affected components': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number",
+          "number word 'three' in section 'Duplicates': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number",
+          "number word 'four' in section 'What to fix first': keys with this value are {{representatives.severity.critical.count}} (incidents listed in <incidents> classified as critical); write the one you mean, or say it without a number"
+        ]
+      ],
+      "fallback_reason": [],
+      "rejected": [
+        [
+          {
+            "heading": "Overview",
+            "body": "{{total.incidents}} incidents entered the triage system. {{total.classified}} were automatically classified; {{total.needs_manual}} require manual review. After deduplication, {{clusters.unique_bugs}} distinct bugs remain. {{clusters.duplicate_groups}} bugs were reported multiple times, accounting for {{clusters.duplicate_reports}} duplicate reports."
+          },
+          {
+            "heading": "Severity breakdown",
+            "body": "{{severity.critical.count}} incidents are critical ({{severity.critical.pct}} of classified). {{severity.high.count}} are high ({{severity.high.pct}}), {{severity.medium.count}} are medium ({{severity.medium.pct}}), and {{severity.low.count}} are low ({{severity.low.pct}})."
+          },
+          {
+            "heading": "Most affected components",
+            "body": "Three components dominate the incident count:\n- Checkout: {{component.checkout.severity.critical.count}} critical, {{component.checkout.severity.high.count}} high\n- Notifications: {{component.notifications.severity.medium.count}} medium, {{component.notifications.severity.low.count}} low\n- Search: {{component.search.severity.high.count}} high, {{component.search.severity.medium.count}} medium"
+          },
+          {
+            "heading": "Duplicates",
+            "body": "Three bugs received multiple reports: inc-0003 ({{reports.inc_0003}} reports), inc-0006 ({{reports.inc_0006}} reports), and inc-0009 ({{reports.inc_0009}} reports)."
+          },
+          {
+            "heading": "What to fix first",
+            "body": "Four security and payment failures demand immediate attention:\n- inc-0010: API exposes other users' addresses\n- inc-0005: Payment charged twice per transaction\n- inc-0016: Admin logs contain plaintext passwords\n- inc-0003: Checkout crashes on order confirmation\n\nThen address high-severity functional issues: inc-0001 (Google sign-in broken), inc-0002 (discount codes ignored in cart total), and inc-0019 (free shipping coupon applies incorrectly to international orders)."
+          }
+        ]
+      ],
+      "calls": 2,
+      "cost_usd": 0.011424,
+      "report": "# QA triage report\n\nBatch `sample-497c47c8` \u00b7 written by model global.anthropic.claude-haiku-4-5-20251001-v1:0 with prompt summarize/v3\n\n## Overview\n\n20 incidents were reported in this batch, of which 20 were automatically classified. 0 incidents require manual triage. After merging duplicate reports, 17 distinct bugs remain, with 3 bugs reported multiple times and 3 duplicate reports in total.\n\n## Severity breakdown\n\nOf classified incidents, 5 are critical (25.0%), 5 are high (25.0%), 7 are medium (35.0%), and 3 are low (15.0%).\n\n## Most affected components\n\nThe top affected components are:\n- Checkout: 2 critical, 1 high\n- Notifications: 2 medium, 1 low\n- Search: 1 high, 2 medium\n\n## Duplicates\n\nSeveral bugs were reported multiple times. inc-0003 has 2 reports, inc-0006 has 2 reports, and inc-0009 has 2 reports.\n\n## What to fix first\n\nAddress these critical incidents immediately:\n- inc-0003: Checkout returns 500 error when confirming order\n- inc-0005: Payment card is charged twice\n- inc-0010: API exposes other users' addresses\n- inc-0016: Admin logs contain plaintext passwords"
+    },
+    {
+      "repeat": 3,
+      "lang": "es",
+      "source": "model",
+      "drafts": 1,
+      "problems": [],
+      "fallback_reason": [],
+      "rejected": [],
+      "calls": 1,
+      "cost_usd": 0.006223,
+      "report": "# Informe de triage QA\n\nLote `sample-497c47c8` \u00b7 redactado por el modelo global.anthropic.claude-haiku-4-5-20251001-v1:0 con el prompt summarize/v3\n\n## Resumen general\n\nSe procesaron 20 incidentes en esta ronda de pruebas. 20 fueron clasificados autom\u00e1ticamente y 0 requieren revisi\u00f3n manual. Despu\u00e9s de agrupar reportes duplicados, se identificaron 17 bugs distintos, siendo 3 reportes de bugs ya conocidos.\n\n## Severidad de los incidentes\n\nDe los incidentes clasificados: 5 son cr\u00edticos (25,0\u00a0%), 5 tienen severidad alta (25,0\u00a0%), 7 son medio (35,0\u00a0%) y 3 son bajos (15,0\u00a0%).\n\n## Componentes m\u00e1s afectados\n\nLos 3 componentes con m\u00e1s incidentes son checkout, notifications y search. Checkout tiene 2 incidentes cr\u00edticos y 1 de severidad alta. Notifications contiene 2 de severidad media y 1 bajos. Search presenta 1 de severidad alta y 2 de severidad media.\n\n## Incidentes duplicados\n\nSe encontraron 3 bugs reportados m\u00faltiples veces: inc-0003 con 2 reportes, inc-0006 con 2 reportes e inc-0009 con 2 reportes.\n\n## Qu\u00e9 reparar primero\n\nLos 4 incidentes cr\u00edticos deben abordarse inmediatamente:\n- inc-0003: Error 500 al confirmar el pedido (checkout)\n- inc-0005: Pago con tarjeta se cobra dos veces (payments)\n- inc-0010: API devuelve direcciones de otros usuarios (api)\n- inc-0016: Contrase\u00f1a visible en logs del admin (admin)\n\nLuego abordar los 5 de severidad alta, comenzando con inc-0006, inc-0001, inc-0002, inc-0012 e inc-0019."
+    },
+    {
+      "repeat": 3,
+      "lang": "en",
+      "source": "template",
+      "drafts": 2,
+      "problems": [
+        [
+          "number word 'three' in section 'Most affected components': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number",
+          "number word 'four' in section 'What to fix first': keys with this value are {{representatives.severity.critical.count}} (incidents listed in <incidents> classified as critical); write the one you mean, or say it without a number"
+        ],
+        [
+          "number word 'three' in section 'Most affected components': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number",
+          "number word 'three' in section 'Duplicates': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number"
+        ]
+      ],
+      "fallback_reason": [
+        "number word 'three' in section 'Most affected components': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number",
+        "number word 'three' in section 'Duplicates': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number"
+      ],
+      "rejected": [
+        [
+          {
+            "heading": "Overview",
+            "body": "{{total.incidents}} incidents were submitted for triage, with {{total.classified}} classified by the model and {{total.needs_manual}} requiring manual review. The batch identified {{clusters.unique_bugs}} distinct bugs after deduplication. {{clusters.duplicate_reports}} reports were duplicates, spread across {{clusters.duplicate_groups}} bugs with multiple reports."
+          },
+          {
+            "heading": "Severity breakdown",
+            "body": "Of classified incidents, {{severity.critical.count}} are critical ({{severity.critical.pct}}), {{severity.high.count}} are high ({{severity.high.pct}}), {{severity.medium.count}} are medium ({{severity.medium.pct}}), and {{severity.low.count}} are low ({{severity.low.pct}})."
+          },
+          {
+            "heading": "Most affected components",
+            "body": "Three components account for the most incidents:\n- Checkout: {{component.checkout.severity.critical.count}} critical, {{component.checkout.severity.high.count}} high\n- Notifications: {{component.notifications.severity.medium.count}} medium, {{component.notifications.severity.low.count}} low\n- Search: {{component.search.severity.high.count}} high, {{component.search.severity.medium.count}} medium"
+          },
+          {
+            "heading": "What to fix first",
+            "body": "Four critical issues require immediate attention:\n- inc-0003: checkout crashes on order confirmation ({{reports.inc_0003}} reports)\n- inc-0005: payments system charges twice per card transaction\n- inc-0010: API exposes other users' addresses\n- inc-0016: admin logs contain visible passwords\n\nFollowed by high-severity issues in checkout and authentication (inc-0019, inc-0001), and duplicate reports of search accent handling (inc-0006, {{reports.inc_0006}} reports) and push notifications (inc-0009, {{reports.inc_0009}} reports)."
+          }
+        ],
+        [
+          {
+            "heading": "Overview",
+            "body": "{{total.incidents}} incidents were submitted for triage, with {{total.classified}} automatically classified and {{total.needs_manual}} requiring manual review. After deduplication, {{clusters.unique_bugs}} distinct bugs were identified, with {{clusters.duplicate_groups}} bugs reported multiple times ({{clusters.duplicate_reports}} duplicate reports total)."
+          },
+          {
+            "heading": "Severity breakdown",
+            "body": "Critical incidents dominate the batch: {{severity.critical.count}} are critical ({{severity.critical.pct}}), followed by {{severity.high.count}} high ({{severity.high.pct}}), {{severity.medium.count}} medium ({{severity.medium.pct}}), and {{severity.low.count}} low ({{severity.low.pct}})."
+          },
+          {
+            "heading": "Most affected components",
+            "body": "Three components account for the majority of incidents:\n- Checkout: {{component.checkout.count}} incidents, including {{component.checkout.severity.critical.count}} critical and {{component.checkout.severity.high.count}} high\n- Notifications: {{component.notifications.count}} incidents, including {{component.notifications.severity.medium.count}} medium and {{component.notifications.severity.low.count}} low\n- Search: {{component.search.count}} incidents, including {{component.search.severity.high.count}} high and {{component.search.severity.medium.count}} medium"
+          },
+          {
+            "heading": "Duplicates",
+            "body": "Three bugs were reported multiple times: inc-0003 ({{reports.inc_0003}} reports), inc-0006 ({{reports.inc_0006}} reports), and inc-0009 ({{reports.inc_0009}} reports)."
+          },
+          {
+            "heading": "What to fix first",
+            "body": "Address the {{representatives.severity.critical.count}} critical incidents immediately:\n- inc-0003: checkout service crashes during order confirmation\n- inc-0005: duplicate payment charges on card transactions\n- inc-0010: API exposes other users' stored addresses\n- inc-0016: admin passwords leak into system logs"
+          }
+        ]
+      ],
+      "calls": 2,
+      "cost_usd": 0.011178,
+      "report": "# QA triage report\n\nBatch `sample-497c47c8` \u00b7 deterministic template: the model's text failed validation\n\n## Overview\n\n20 incidents were received (0 CSV rows rejected). 20 were classified automatically and 0 need manual review. After merging duplicates there are 17 distinct bugs.\n\n## Severity\n\n- Critical: 5 (25.0%)\n- High: 5 (25.0%)\n- Medium: 7 (35.0%)\n- Low: 3 (15.0%)\n\n## Most affected components\n\n- checkout: 3\n- notifications: 3\n- search: 3\n\n## Duplicates\n\n3 bugs were reported more than once, with 3 repeated reports."
+    },
+    {
+      "repeat": 4,
+      "lang": "es",
+      "source": "model",
+      "drafts": 1,
+      "problems": [],
+      "fallback_reason": [],
+      "rejected": [],
+      "calls": 1,
+      "cost_usd": 0.005848,
+      "report": "# Informe de triage QA\n\nLote `sample-497c47c8` \u00b7 redactado por el modelo global.anthropic.claude-haiku-4-5-20251001-v1:0 con el prompt summarize/v3\n\n## Resumen general\n\nSe procesaron 20 reportes de incidentes. 20 fueron clasificados autom\u00e1ticamente y 0 requieren triaje manual. Tras agrupar duplicados, se identificaron 17 bugs distintos, con 3 bugs reportados m\u00faltiples veces.\n\n## Severidad\n\nLa distribuci\u00f3n de severidad es:\n- 5 cr\u00edticos (25,0\u00a0% de los clasificados)\n- 5 altos (25,0\u00a0% de los clasificados)\n- 7 medios (35,0\u00a0% de los clasificados)\n- 3 bajos (15,0\u00a0% de los clasificados)\n\n## Componentes m\u00e1s afectados\n\nLos 3 componentes con m\u00e1s incidentes son:\n- Checkout: 2 cr\u00edticos, 1 altos\n- Notifications: 2 medios, 1 bajos\n- Search: 1 altos, 2 medios\n\n## Duplicados\n\nSe encontraron 3 reportes duplicados en 3 bugs: inc-0003 con 2 reportes, inc-0006 con 2 reportes, e inc-0009 con 2 reportes.\n\n## Qu\u00e9 arreglar primero\n\nPriorizar estos incidentes cr\u00edticos:\n- inc-0003: aplicaci\u00f3n se cuelga al confirmar pedido\n- inc-0005: cobros duplicados en transacciones con tarjeta\n- inc-0010: API expone direcciones de otros usuarios\n- inc-0016: contrase\u00f1as visibles en logs administrativos"
+    },
+    {
+      "repeat": 4,
+      "lang": "en",
+      "source": "model",
+      "drafts": 2,
+      "problems": [
+        [
+          "number word 'three' in section 'Most affected components': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number",
+          "number word 'three' in section 'Duplicates': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number",
+          "number word 'four' in section 'What to fix first': keys with this value are {{representatives.severity.critical.count}} (incidents listed in <incidents> classified as critical); write the one you mean, or say it without a number"
+        ]
+      ],
+      "fallback_reason": [],
+      "rejected": [
+        [
+          {
+            "heading": "Overview",
+            "body": "The batch contains {{total.incidents}} incidents, of which {{total.classified}} were automatically classified and {{total.needs_manual}} require manual review. After deduplication, {{clusters.unique_bugs}} distinct bugs remain. {{clusters.duplicate_groups}} bugs were reported multiple times, accounting for {{clusters.duplicate_reports}} duplicate reports."
+          },
+          {
+            "heading": "Severity",
+            "body": "{{severity.critical.count}} incidents are critical ({{severity.critical.pct}} of classified incidents), {{severity.high.count}} are high ({{severity.high.pct}}), {{severity.medium.count}} are medium ({{severity.medium.pct}}), and {{severity.low.count}} are low ({{severity.low.pct}})."
+          },
+          {
+            "heading": "Most affected components",
+            "body": "Three components dominate the report:\n- Checkout: {{component.checkout.severity.critical.count}} critical incidents, {{component.checkout.severity.high.count}} high\n- Notifications: {{component.notifications.severity.medium.count}} medium incidents, {{component.notifications.severity.low.count}} low\n- Search: {{component.search.severity.high.count}} high incidents, {{component.search.severity.medium.count}} medium"
+          },
+          {
+            "heading": "Duplicates",
+            "body": "Three incidents were reported multiple times: inc-0003 ({{reports.inc_0003}} reports), inc-0006 ({{reports.inc_0006}} reports), and inc-0009 ({{reports.inc_0009}} reports)."
+          },
+          {
+            "heading": "What to fix first",
+            "body": "Start with the four critical security and data issues before addressing checkout crashes and functional problems:\n- inc-0010: API exposes other users' addresses\n- inc-0016: Admin logs contain plaintext passwords\n- inc-0005: Payment duplicate charging\n- inc-0003: Checkout crash on order confirmation\n- inc-0019: Free shipping coupon applied internationally\n- inc-0006: Search ignores accents"
+          }
+        ]
+      ],
+      "calls": 2,
+      "cost_usd": 0.011339,
+      "report": "# QA triage report\n\nBatch `sample-497c47c8` \u00b7 written by model global.anthropic.claude-haiku-4-5-20251001-v1:0 with prompt summarize/v3\n\n## Overview\n\n20 incidents were submitted for triage, with 20 classified by the model and 0 requiring manual review. 3 bugs were reported more than once, accounting for 3 duplicate reports. After deduplication, 17 distinct bugs remain.\n\n## Severity distribution\n\n5 incidents are critical (25.0% of classified), 5 are high (25.0%), 7 are medium (35.0%), and 3 are low (15.0%).\n\n## Most affected components\n\n- Checkout: 2 critical, 1 high\n- Notifications: 2 medium, 1 low\n- Search: 1 high, 2 medium\n\n## Duplicates\n\ninc-0003 was reported 2 times, inc-0006 2 times, and inc-0009 2 times. Consolidate these duplicate reports to focus investigation on the underlying bugs.\n\n## What to fix first\n\nAddress the 4 critical incidents immediately: inc-0003 (500 error on checkout), inc-0005 (double charge on card payments), inc-0010 (API leaking user addresses), and inc-0016 (password exposed in admin logs). These pose the highest risk to users and the platform."
+    },
+    {
+      "repeat": 5,
+      "lang": "es",
+      "source": "model",
+      "drafts": 2,
+      "problems": [
+        [
+          "number word 'tres' in section 'Incidentes duplicados': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number"
+        ]
+      ],
+      "fallback_reason": [],
+      "rejected": [
+        [
+          {
+            "heading": "Resumen general",
+            "body": "Se procesaron {{total.incidents}} incidentes en esta ronda de triage. {{total.classified}} fueron clasificados autom\u00e1ticamente y {{total.needs_manual}} requieren revisi\u00f3n manual. Despu\u00e9s de agrupar reportes duplicados, se identificaron {{clusters.unique_bugs}} bugs distintos. {{clusters.duplicate_groups}} bugs fueron reportados m\u00e1s de una vez, con {{clusters.duplicate_reports}} reportes duplicados en total."
+          },
+          {
+            "heading": "Severidad de los incidentes",
+            "body": "La distribuci\u00f3n de severidad entre los incidentes clasificados es:\n- {{severity.critical.count}} cr\u00edticos ({{severity.critical.pct}})\n- {{severity.high.count}} altos ({{severity.high.pct}})\n- {{severity.medium.count}} medios ({{severity.medium.pct}})\n- {{severity.low.count}} bajos ({{severity.low.pct}})"
+          },
+          {
+            "heading": "Componentes m\u00e1s afectados",
+            "body": "Los {{top_components.count}} componentes con m\u00e1s incidentes son:\n- Checkout: {{component.checkout.severity.critical.count}} cr\u00edticos, {{component.checkout.severity.high.count}} altos\n- Notifications: {{component.notifications.severity.medium.count}} medios, {{component.notifications.severity.low.count}} bajos\n- Search: {{component.search.severity.high.count}} altos, {{component.search.severity.medium.count}} medios"
+          },
+          {
+            "heading": "Incidentes duplicados",
+            "body": "Se detectaron reportes duplicados en tres bugs:\n- inc-0003 tiene {{reports.inc_0003}} reportes\n- inc-0006 tiene {{reports.inc_0006}} reportes\n- inc-0009 tiene {{reports.inc_0009}} reportes"
+          },
+          {
+            "heading": "Qu\u00e9 arreglar primero",
+            "body": "Se recomienda priorizar estos incidentes cr\u00edticos que afectan funcionalidad esencial:\n- inc-0003: La app falla al confirmar pedidos en checkout\n- inc-0005: Los pagos se cobran dos veces\n- inc-0010: La API expone direcciones de otros usuarios\n- inc-0016: Las contrase\u00f1as quedan visibles en logs de administrador"
+          }
+        ]
+      ],
+      "calls": 2,
+      "cost_usd": 0.011977,
+      "report": "# Informe de triage QA\n\nLote `sample-497c47c8` \u00b7 redactado por el modelo global.anthropic.claude-haiku-4-5-20251001-v1:0 con el prompt summarize/v3\n\n## Resumen general\n\nSe procesaron 20 incidentes en esta tanda. 20 fueron clasificados autom\u00e1ticamente y 0 requieren clasificaci\u00f3n manual. Tras agrupar reportes duplicados, se identificaron 17 bugs distintos.\n\n## Severidad\n\nLa distribuci\u00f3n de severidad entre incidentes clasificados es: 5 cr\u00edticos (25,0\u00a0%), 5 altos (25,0\u00a0%), 7 medios (35,0\u00a0%) y 3 bajos (15,0\u00a0%).\n\n## Componentes m\u00e1s afectados\n\nLos 3 componentes con m\u00e1s incidentes son:\n- Checkout: 2 cr\u00edticos, 1 altos\n- Notifications: 2 medios, 1 bajos\n- Search: 1 altos, 2 medios\n\n## Incidentes duplicados\n\nSe encontraron 3 bugs reportados m\u00faltiples veces, generando 3 reportes duplicados. Los bugs inc-0003, inc-0006 e inc-0009 concentran la mayor\u00eda de estas repeticiones.\n\n## Qu\u00e9 reparar primero\n\nPriorizar estos incidentes cr\u00edticos y de alto impacto:\n- inc-0003: Error cr\u00edtico en confirmaci\u00f3n de pedidos\n- inc-0005: Cargo duplicado en pagos\n- inc-0010: Exposici\u00f3n de direcciones de otros usuarios\n- inc-0016: Credenciales visibles en logs\n- inc-0001: Fallo en autenticaci\u00f3n con Google\n- inc-0019: Cup\u00f3n de env\u00edo gratis aplicado incorrectamente"
+    },
+    {
+      "repeat": 5,
+      "lang": "en",
+      "source": "model",
+      "drafts": 2,
+      "problems": [
+        [
+          "number word 'three' in section 'Most affected components': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number",
+          "number word 'three' in section 'Duplicates': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number"
+        ]
+      ],
+      "fallback_reason": [],
+      "rejected": [
+        [
+          {
+            "heading": "Overview",
+            "body": "This batch contains {{total.incidents}} incidents, of which {{total.classified}} were automatically classified and {{total.needs_manual}} require manual review. After merging duplicates, there are {{clusters.unique_bugs}} distinct bugs. {{clusters.duplicate_groups}} bugs were reported multiple times, accounting for {{clusters.duplicate_reports}} duplicate reports."
+          },
+          {
+            "heading": "Severity",
+            "body": "{{severity.critical.count}} incidents are critical ({{severity.critical.pct}}), {{severity.high.count}} are high ({{severity.high.pct}}), {{severity.medium.count}} are medium ({{severity.medium.pct}}), and {{severity.low.count}} are low ({{severity.low.pct}})."
+          },
+          {
+            "heading": "Most affected components",
+            "body": "Three components dominate the report:\n- Checkout: {{component.checkout.severity.critical.count}} critical incidents, {{component.checkout.severity.high.count}} high\n- Notifications: {{component.notifications.severity.medium.count}} medium incidents, {{component.notifications.severity.low.count}} low\n- Search: {{component.search.severity.high.count}} high incidents, {{component.search.severity.medium.count}} medium"
+          },
+          {
+            "heading": "Duplicates",
+            "body": "Three bugs received multiple reports: inc-0003 ({{reports.inc_0003}} reports), inc-0006 ({{reports.inc_0006}} reports), and inc-0009 ({{reports.inc_0009}} reports). This indicates these issues have high visibility among users."
+          },
+          {
+            "heading": "What to fix first",
+            "body": "Start with the critical security and crash issues:\n- inc-0010: API exposes other users' addresses\n- inc-0016: Admin passwords visible in logs\n- inc-0005: Duplicate charges on card payments\n- inc-0003: Checkout crash on order confirmation\n\nThen address high-priority functional issues in checkout and search:\n- inc-0019: Free shipping coupon applied to international orders\n- inc-0006: Search ignores accents (reported {{reports.inc_0006}} times)\n- inc-0001: Google authentication fails\n- inc-0002: Cart discounts not calculated\n- inc-0012: Profile app crash on order history"
+          }
+        ]
+      ],
+      "calls": 2,
+      "cost_usd": 0.011984999999999999,
+      "report": "# QA triage report\n\nBatch `sample-497c47c8` \u00b7 written by model global.anthropic.claude-haiku-4-5-20251001-v1:0 with prompt summarize/v3\n\n## Overview\n\nThe batch contains 20 incidents, of which 20 were automatically classified and 0 require manual review. 17 distinct bugs were identified after merging duplicates.\n\n## Severity breakdown\n\n- 5 critical (25.0%)\n- 5 high (25.0%)\n- 7 medium (35.0%)\n- 3 low (15.0%)\n\n## Most affected components\n\nThe 3 components with the most incidents are checkout, notifications, and search. Checkout has 2 critical and 1 high severity incidents. Search has 1 high and 2 medium severity incidents. Notifications has 2 medium and 1 low severity incidents.\n\n## Duplicates\n\n3 bugs were reported multiple times, accounting for 3 duplicate reports. The most reported incidents are inc-0003 (2 reports), inc-0006 (2 reports), and inc-0009 (2 reports).\n\n## What to fix first\n\nAddress the 5 critical incidents immediately: inc-0003 (checkout crash on order confirmation), inc-0005 (double charge on card payments), inc-0010 (API exposing other users' addresses), and inc-0016 (admin logs showing passwords). Then tackle the 5 high severity issues: inc-0006 (search ignoring accents), inc-0001 (Google login failure), inc-0002 (cart discount not applied), inc-0012 (profile crashes), and inc-0019 (free shipping coupon applied incorrectly)."
+    },
+    {
+      "repeat": 6,
+      "lang": "es",
+      "source": "model",
+      "drafts": 1,
+      "problems": [],
+      "fallback_reason": [],
+      "rejected": [],
+      "calls": 1,
+      "cost_usd": 0.006153,
+      "report": "# Informe de triage QA\n\nLote `sample-497c47c8` \u00b7 redactado por el modelo global.anthropic.claude-haiku-4-5-20251001-v1:0 con el prompt summarize/v3\n\n## Resumen general\n\nSe procesaron 20 incidentes, de los cuales 20 fueron clasificados autom\u00e1ticamente. 0 requieren clasificaci\u00f3n manual. Tras consolidar reportes duplicados, se identificaron 17 bugs distintos, siendo 3 de ellos reportados m\u00faltiples veces.\n\n## Severidad\n\nLa distribuci\u00f3n de severidad entre incidentes clasificados es:\n- 5 cr\u00edticos (25,0\u00a0%)\n- 5 altos (25,0\u00a0%)\n- 7 medios (35,0\u00a0%)\n- 3 bajos (15,0\u00a0%)\n\n## Componentes m\u00e1s afectados\n\nLos 3 componentes con m\u00e1s incidentes son:\n- Checkout: 2 cr\u00edticos, 1 altos\n- Notifications: 2 medios, 1 bajos\n- Search: 1 altos, 2 medios\n\n## Reportes duplicados\n\nSe detectaron duplicados en 3 bugs:\n- inc-0003: 2 reportes\n- inc-0006: 2 reportes\n- inc-0009: 2 reportes\n\n## Qu\u00e9 reparar primero\n\nPrioritarios por severidad cr\u00edtica:\n- inc-0003: Error 500 al confirmar pedido\n- inc-0005: Pago con tarjeta se cobra dos veces\n- inc-0010: API devuelve direcciones de otros usuarios\n- inc-0016: Contrase\u00f1a visible en logs del admin\n\nLuego los altos en checkout e impacto funcional:\n- inc-0019: Cup\u00f3n de env\u00edo gratis se aplica incorrectamente\n- inc-0001: Fallo al iniciar sesi\u00f3n con Google\n- inc-0002: Total del carrito ignora c\u00f3digo de descuento"
+    },
+    {
+      "repeat": 6,
+      "lang": "en",
+      "source": "template",
+      "drafts": 2,
+      "problems": [
+        [
+          "number word 'three' in section 'Duplicates': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number",
+          "number word 'four' in section 'What to fix first': keys with this value are {{representatives.severity.critical.count}} (incidents listed in <incidents> classified as critical); write the one you mean, or say it without a number"
+        ],
+        [
+          "number word 'three' in section 'Most affected components': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number",
+          "number word 'three' in section 'Duplicates': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number"
+        ]
+      ],
+      "fallback_reason": [
+        "number word 'three' in section 'Most affected components': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number",
+        "number word 'three' in section 'Duplicates': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number"
+      ],
+      "rejected": [
+        [
+          {
+            "heading": "Overview",
+            "body": "{{total.incidents}} incidents were submitted for triage, of which {{total.classified}} have been classified by the model and {{total.needs_manual}} require manual review. After deduplication, {{clusters.unique_bugs}} distinct bugs remain. {{clusters.duplicate_groups}} bugs were reported multiple times, accounting for {{clusters.duplicate_reports}} duplicate reports."
+          },
+          {
+            "heading": "Severity distribution",
+            "body": "{{severity.critical.count}} incidents are critical ({{severity.critical.pct}}), {{severity.high.count}} are high ({{severity.high.pct}}), {{severity.medium.count}} are medium ({{severity.medium.pct}}), and {{severity.low.count}} are low ({{severity.low.pct}})."
+          },
+          {
+            "heading": "Most affected components",
+            "body": "- Checkout: {{component.checkout.severity.critical.count}} critical, {{component.checkout.severity.high.count}} high\n- Notifications: {{component.notifications.severity.medium.count}} medium, {{component.notifications.severity.low.count}} low\n- Search: {{component.search.severity.high.count}} high, {{component.search.severity.medium.count}} medium"
+          },
+          {
+            "heading": "Duplicates",
+            "body": "Three incidents were reported multiple times: inc-0003 appears in {{reports.inc_0003}} reports, inc-0006 in {{reports.inc_0006}} reports, and inc-0009 in {{reports.inc_0009}} reports."
+          },
+          {
+            "heading": "What to fix first",
+            "body": "Address the four critical incidents immediately:\n- inc-0003: Checkout crashes with Error 500 when confirming orders\n- inc-0005: Payment card charges twice\n- inc-0010: API exposes other users' addresses\n- inc-0016: Admin logs contain plaintext passwords\n\nThen prioritize the high-severity checkout and search issues: inc-0019 (free shipping voucher applies internationally), inc-0006 (search ignores accents), and inc-0001 (Google login unavailable)."
+          }
+        ],
+        [
+          {
+            "heading": "Overview",
+            "body": "The batch contains {{total.incidents}} incidents, of which {{total.classified}} were automatically classified and {{total.needs_manual}} require manual review. {{clusters.unique_bugs}} distinct bugs were identified after merging {{clusters.duplicate_reports}} duplicate reports across {{clusters.duplicate_groups}} bugs that were reported multiple times."
+          },
+          {
+            "heading": "Severity",
+            "body": "Critical incidents dominate the triage: {{severity.critical.count}} are classified as critical ({{severity.critical.pct}} of classified incidents). {{severity.high.count}} are high severity ({{severity.high.pct}}), {{severity.medium.count}} are medium ({{severity.medium.pct}}), and {{severity.low.count}} are low ({{severity.low.pct}})."
+          },
+          {
+            "heading": "Most affected components",
+            "body": "Three components account for the majority of issues:\n- Checkout: {{component.checkout.severity.critical.count}} critical and {{component.checkout.severity.high.count}} high severity incidents\n- Notifications: {{component.notifications.severity.medium.count}} medium and {{component.notifications.severity.low.count}} low severity incidents\n- Search: {{component.search.severity.high.count}} high and {{component.search.severity.medium.count}} medium severity incidents"
+          },
+          {
+            "heading": "Duplicates",
+            "body": "Three incidents were reported multiple times: inc-0003 ({{reports.inc_0003}} reports), inc-0006 ({{reports.inc_0006}} reports), and inc-0009 ({{reports.inc_0009}} reports). These duplicates indicate widespread user impact on critical checkout, search, and notification features."
+          },
+          {
+            "heading": "What to fix first",
+            "body": "The {{representatives.severity.critical.count}} critical incidents must be prioritized:\n- inc-0003: Checkout crash on order confirmation\n- inc-0005: Payment charged twice on card transactions\n- inc-0010: API exposes other users' addresses\n- inc-0016: Admin passwords visible in logs"
+          }
+        ]
+      ],
+      "calls": 2,
+      "cost_usd": 0.011398,
+      "report": "# QA triage report\n\nBatch `sample-497c47c8` \u00b7 deterministic template: the model's text failed validation\n\n## Overview\n\n20 incidents were received (0 CSV rows rejected). 20 were classified automatically and 0 need manual review. After merging duplicates there are 17 distinct bugs.\n\n## Severity\n\n- Critical: 5 (25.0%)\n- High: 5 (25.0%)\n- Medium: 7 (35.0%)\n- Low: 3 (15.0%)\n\n## Most affected components\n\n- checkout: 3\n- notifications: 3\n- search: 3\n\n## Duplicates\n\n3 bugs were reported more than once, with 3 repeated reports."
+    },
+    {
+      "repeat": 7,
+      "lang": "es",
+      "source": "model",
+      "drafts": 1,
+      "problems": [],
+      "fallback_reason": [],
+      "rejected": [],
+      "calls": 1,
+      "cost_usd": 0.005688,
+      "report": "# Informe de triage QA\n\nLote `sample-497c47c8` \u00b7 redactado por el modelo global.anthropic.claude-haiku-4-5-20251001-v1:0 con el prompt summarize/v3\n\n## Resumen general\n\nSe procesaron 20 reportes de incidentes. 20 fueron clasificados autom\u00e1ticamente y 0 requieren revisi\u00f3n manual. Despu\u00e9s de fusionar duplicados, se identificaron 17 bugs distintos, con 3 problemas reportados m\u00e1s de una vez.\n\n## Severidad\n\n5 incidentes son cr\u00edticos (25,0\u00a0% de los clasificados). 5 se clasificaron como altos (25,0\u00a0%) y 7 como medianos (35,0\u00a0%).\n\n## Componentes m\u00e1s afectados\n\nLos 3 componentes con m\u00e1s incidentes son:\n- Checkout: 2 cr\u00edticos, 1 altos\n- Notifications: 2 medianos, 1 bajos\n- Search: 1 altos, 2 medianos\n\n## Duplicados\n\nSe encontraron 3 reportes duplicados en 3 grupos. inc-0003 tiene 2 reportes, inc-0006 tiene 2 reportes e inc-0009 tiene 2 reportes.\n\n## Qu\u00e9 reparar primero\n\nLas 4 incidencias cr\u00edticas deben resolverse primero:\n- inc-0003: aplicaci\u00f3n se cuelga al confirmar pedido\n- inc-0005: cobros duplicados en transacciones\n- inc-0010: exposici\u00f3n de datos sensibles del usuario\n- inc-0016: fuga de credenciales en logs"
+    },
+    {
+      "repeat": 7,
+      "lang": "en",
+      "source": "model",
+      "drafts": 2,
+      "problems": [
+        [
+          "number word 'three' in section 'Most Affected Components': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number",
+          "number word 'three' in section 'Duplicate Reports': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number"
+        ]
+      ],
+      "fallback_reason": [],
+      "rejected": [
+        [
+          {
+            "heading": "Overview",
+            "body": "The batch contains {{total.incidents}} incidents, of which {{total.classified}} were classified automatically. {{total.needs_manual}} incidents require manual triage. After merging duplicates, {{clusters.unique_bugs}} distinct bugs remain, with {{clusters.duplicate_groups}} bugs reported multiple times ({{clusters.duplicate_reports}} duplicate reports total)."
+          },
+          {
+            "heading": "Severity Breakdown",
+            "body": "Of the classified incidents, {{severity.critical.count}} are critical ({{severity.critical.pct}}), {{severity.high.count}} are high ({{severity.high.pct}}), {{severity.medium.count}} are medium ({{severity.medium.pct}}), and {{severity.low.count}} are low ({{severity.low.pct}})."
+          },
+          {
+            "heading": "Most Affected Components",
+            "body": "Three components account for the majority of incidents:\n- Checkout: {{component.checkout.severity.critical.count}} critical, {{component.checkout.severity.high.count}} high\n- Notifications: {{component.notifications.severity.medium.count}} medium, {{component.notifications.severity.low.count}} low\n- Search: {{component.search.severity.high.count}} high, {{component.search.severity.medium.count}} medium"
+          },
+          {
+            "heading": "Duplicate Reports",
+            "body": "Three bugs were reported more than once:\n- inc-0003: {{reports.inc_0003}} reports of a checkout crash on order confirmation\n- inc-0006: {{reports.inc_0006}} reports of search ignoring accents\n- inc-0009: {{reports.inc_0009}} reports of duplicate push notifications"
+          },
+          {
+            "heading": "What to Fix First",
+            "body": "Address these critical issues immediately:\n- inc-0003: Order confirmation server crash\n- inc-0005: Double charging on card payments\n- inc-0010: API leaking other users' addresses\n- inc-0016: Admin passwords exposed in logs\n\nThen fix these high-severity issues that impact core features:\n- inc-0006: Search ignoring accents\n- inc-0001: Google sign-in broken\n- inc-0002: Discount codes not applied to cart totals\n- inc-0012: App crashing on order history\n- inc-0019: Free shipping coupon applied to international orders"
+          }
+        ]
+      ],
+      "calls": 2,
+      "cost_usd": 0.011970999999999999,
+      "report": "# QA triage report\n\nBatch `sample-497c47c8` \u00b7 written by model global.anthropic.claude-haiku-4-5-20251001-v1:0 with prompt summarize/v3\n\n## Overview\n\n20 incidents were submitted for triage. 20 were automatically classified, while 0 require manual review. 0 CSV rows were rejected before triage. After deduplication, 17 distinct bugs remain, with 3 bugs reported multiple times across 3 duplicate reports.\n\n## Severity\n\n5 incidents are critical (25.0% of classified incidents), 5 are high (25.0%), 7 are medium (35.0%), and 3 are low (15.0%).\n\n## Most Affected Components\n\nThe 3 most affected components are:\n- Checkout: 2 critical, 1 high\n- Notifications: 2 medium, 1 low\n- Search: 1 high, 2 medium\n\n## Duplicate Reports\n\nSeveral bugs have been reported more than once: inc-0003 (2 reports), inc-0006 (2 reports), and inc-0009 (2 reports). Deduplication consolidates these into single issues for tracking.\n\n## What to Fix First\n\nAddress critical incidents immediately:\n- inc-0003: Checkout crash when confirming orders\n- inc-0005: Payment charged twice on card transactions\n- inc-0010: API exposes other users' addresses\n- inc-0016: Admin passwords visible in logs\n\nThen tackle high-severity functional and data issues: inc-0006, inc-0001, inc-0002, inc-0012, and inc-0019."
+    },
+    {
+      "repeat": 8,
+      "lang": "es",
+      "source": "model",
+      "drafts": 1,
+      "problems": [],
+      "fallback_reason": [],
+      "rejected": [],
+      "calls": 1,
+      "cost_usd": 0.006063,
+      "report": "# Informe de triage QA\n\nLote `sample-497c47c8` \u00b7 redactado por el modelo global.anthropic.claude-haiku-4-5-20251001-v1:0 con el prompt summarize/v3\n\n## Resumen general\n\nSe han triado 20 incidentes en este lote. 20 fueron clasificados autom\u00e1ticamente y 0 requieren revisi\u00f3n manual. Despu\u00e9s de agrupar reportes duplicados, se identificaron 17 bugs distintos, de los cuales 3 fueron reportados m\u00e1s de una vez con 3 reportes duplicados en total.\n\n## Severidad\n\nLa distribuci\u00f3n de severidades en los incidentes clasificados es la siguiente:\n- 5 cr\u00edticos (25,0\u00a0%)\n- 5 altos (25,0\u00a0%)\n- 7 medios (35,0\u00a0%)\n- 3 bajos (15,0\u00a0%)\n\n## Componentes m\u00e1s afectados\n\nLos 3 componentes con m\u00e1s incidentes son:\n- Checkout: afectado por 2 cr\u00edticos y 1 altos\n- Notifications: contiene 2 medios y 1 bajos\n- Search: tiene 1 altos y 2 medios\n\n## Reportes duplicados\n\nSe encontraron reportes duplicados para:\n- inc-0003: 2 reportes del mismo bug\n- inc-0006: 2 reportes del mismo bug\n- inc-0009: 2 reportes del mismo bug\n\n## Qu\u00e9 reparar primero\n\nSe recomienda priorizar los siguientes incidentes cr\u00edticos por su impacto en la experiencia de usuario y la integridad de datos:\n- inc-0003: Error que impide confirmar pedidos\n- inc-0005: Cargo duplicado en pagos con tarjeta\n- inc-0010: Fuga de datos de direcciones de otros usuarios\n- inc-0016: Exposici\u00f3n de contrase\u00f1as en logs administrativos"
+    },
+    {
+      "repeat": 8,
+      "lang": "en",
+      "source": "template",
+      "drafts": 2,
+      "problems": [
+        [
+          "number word 'three' in section 'Most affected components': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number",
+          "number word 'three' in section 'Duplicates': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number"
+        ],
+        [
+          "number word 'three' in section 'Duplicates': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number"
+        ]
+      ],
+      "fallback_reason": [
+        "number word 'three' in section 'Duplicates': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number"
+      ],
+      "rejected": [
+        [
+          {
+            "heading": "Overview",
+            "body": "The batch contains {{total.incidents}} incidents, of which {{total.classified}} were classified automatically and {{total.needs_manual}} require manual review. After merging duplicates, {{clusters.unique_bugs}} distinct bugs remain. {{clusters.duplicate_groups}} bugs were reported multiple times, accounting for {{clusters.duplicate_reports}} duplicate reports."
+          },
+          {
+            "heading": "Severity",
+            "body": "{{severity.critical.count}} incidents are critical ({{severity.critical.pct}} of classified incidents), {{severity.high.count}} are high ({{severity.high.pct}}), {{severity.medium.count}} are medium ({{severity.medium.pct}}), and {{severity.low.count}} are low ({{severity.low.pct}})."
+          },
+          {
+            "heading": "Most affected components",
+            "body": "Three components account for the highest incident volumes:\n- Checkout: {{component.checkout.severity.critical.count}} critical and {{component.checkout.severity.high.count}} high severity incidents\n- Notifications: {{component.notifications.severity.medium.count}} medium and {{component.notifications.severity.low.count}} low severity incidents\n- Search: {{component.search.severity.high.count}} high and {{component.search.severity.medium.count}} medium severity incidents"
+          },
+          {
+            "heading": "Duplicates",
+            "body": "Three bugs were reported multiple times: inc-0003 ({{reports.inc_0003}} reports), inc-0006 ({{reports.inc_0006}} reports), and inc-0009 ({{reports.inc_0009}} reports)."
+          },
+          {
+            "heading": "What to fix first",
+            "body": "Address critical incidents immediately:\n- inc-0003: Server error when confirming order\n- inc-0005: Charge applied twice on card payments\n- inc-0010: API exposes other users' addresses\n- inc-0016: Admin passwords visible in logs\n\nThen tackle high-severity checkout and search issues: inc-0019, inc-0006, and other high-priority incidents in auth and cart."
+          }
+        ],
+        [
+          {
+            "heading": "Overview",
+            "body": "{{total.incidents}} incidents were submitted for triage. {{total.classified}} were automatically classified, while {{total.needs_manual}} require manual review. {{total.row_errors}} CSV rows were rejected during ingestion. After deduplication, {{clusters.unique_bugs}} distinct bugs were identified, with {{clusters.duplicate_groups}} bugs reported multiple times across {{clusters.duplicate_reports}} duplicate reports."
+          },
+          {
+            "heading": "Severity distribution",
+            "body": "{{severity.critical.count}} incidents are critical ({{severity.critical.pct}} of classified), {{severity.high.count}} are high ({{severity.high.pct}}), {{severity.medium.count}} are medium ({{severity.medium.pct}}), and {{severity.low.count}} are low ({{severity.low.pct}})."
+          },
+          {
+            "heading": "Most affected components",
+            "body": "- Checkout: {{component.checkout.severity.critical.count}} critical, {{component.checkout.severity.high.count}} high\n- Notifications: {{component.notifications.severity.medium.count}} medium, {{component.notifications.severity.low.count}} low\n- Search: {{component.search.severity.high.count}} high, {{component.search.severity.medium.count}} medium"
+          },
+          {
+            "heading": "Duplicates",
+            "body": "Three incidents were reported multiple times: inc-0003 ({{reports.inc_0003}} reports), inc-0006 ({{reports.inc_0006}} reports), and inc-0009 ({{reports.inc_0009}} reports). These represent user-confirmed issues affecting multiple testers."
+          },
+          {
+            "heading": "What to fix first",
+            "body": "Address the {{severity.critical.count}} critical incidents immediately: inc-0003 (checkout crash on order confirmation), inc-0005 (double charge on card payments), inc-0010 (API exposing other users' addresses), and inc-0016 (admin password visible in logs). Then prioritize the high-severity issues: inc-0006 (search ignoring accents), inc-0001 (Google login failure), inc-0002 (discount code not applied to cart), inc-0012 (profile app crash), and inc-0019 (free shipping coupon applied incorrectly)."
+          }
+        ]
+      ],
+      "calls": 2,
+      "cost_usd": 0.011695,
+      "report": "# QA triage report\n\nBatch `sample-497c47c8` \u00b7 deterministic template: the model's text failed validation\n\n## Overview\n\n20 incidents were received (0 CSV rows rejected). 20 were classified automatically and 0 need manual review. After merging duplicates there are 17 distinct bugs.\n\n## Severity\n\n- Critical: 5 (25.0%)\n- High: 5 (25.0%)\n- Medium: 7 (35.0%)\n- Low: 3 (15.0%)\n\n## Most affected components\n\n- checkout: 3\n- notifications: 3\n- search: 3\n\n## Duplicates\n\n3 bugs were reported more than once, with 3 repeated reports."
+    },
+    {
+      "repeat": 9,
+      "lang": "es",
+      "source": "model",
+      "drafts": 1,
+      "problems": [],
+      "fallback_reason": [],
+      "rejected": [],
+      "calls": 1,
+      "cost_usd": 0.005913,
+      "report": "# Informe de triage QA\n\nLote `sample-497c47c8` \u00b7 redactado por el modelo global.anthropic.claude-haiku-4-5-20251001-v1:0 con el prompt summarize/v3\n\n## Resumen general\n\nSe procesaron 20 incidentes en esta tanda. 20 fueron clasificados autom\u00e1ticamente y 0 requieren revisi\u00f3n manual. Despu\u00e9s de agrupar reportes duplicados, se identificaron 17 bugs distintos, siendo 3 de ellos reportados m\u00e1s de una vez.\n\n## Severidad\n\nDe los incidentes clasificados: 5 son cr\u00edticos (25,0\u00a0%), 5 son altos (25,0\u00a0%), 7 son medios (35,0\u00a0%) y 3 son bajos (15,0\u00a0%).\n\n## Componentes m\u00e1s afectados\n\nLos 3 componentes con m\u00e1s incidentes son:\n- Checkout: 2 cr\u00edticos, 1 altos\n- Notifications: 2 medios, 1 bajos\n- Search: 1 altos, 2 medios\n\n## Reportes duplicados\n\nSe detectaron 3 reportes duplicados: inc-0003 registra 2 reportes, inc-0006 registra 2 reportes e inc-0009 registra 2 reportes.\n\n## Qu\u00e9 reparar primero\n\nPriorizar estos incidentes cr\u00edticos:\n- inc-0003: Error 500 al confirmar el pedido (checkout)\n- inc-0005: Pago con tarjeta se cobra dos veces (payments)\n- inc-0010: API devuelve direcciones de otros usuarios (api)\n- inc-0016: Contrase\u00f1a visible en logs del admin (admin)\n\nLuego abordar los altos en checkout e incidentes de seguridad en api."
+    },
+    {
+      "repeat": 9,
+      "lang": "en",
+      "source": "template",
+      "drafts": 2,
+      "problems": [
+        [
+          "number word 'three' in section 'Most affected components': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number",
+          "number word 'three' in section 'Duplicates': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number"
+        ],
+        [
+          "number word 'three' in section 'Duplicate reports': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number"
+        ]
+      ],
+      "fallback_reason": [
+        "number word 'three' in section 'Duplicate reports': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number"
+      ],
+      "rejected": [
+        [
+          {
+            "heading": "Overview",
+            "body": "{{total.incidents}} incidents were submitted for triage. {{total.classified}} were automatically classified; {{total.needs_manual}} require manual review. After deduplication, {{clusters.unique_bugs}} distinct bugs remain, with {{clusters.duplicate_groups}} bugs reported multiple times ({{clusters.duplicate_reports}} duplicate reports total)."
+          },
+          {
+            "heading": "Severity distribution",
+            "body": "{{severity.critical.count}} incidents are critical ({{severity.critical.pct}} of classified), {{severity.high.count}} are high ({{severity.high.pct}}), {{severity.medium.count}} are medium ({{severity.medium.pct}}), and {{severity.low.count}} are low ({{severity.low.pct}})."
+          },
+          {
+            "heading": "Most affected components",
+            "body": "Three components account for the majority of issues:\n- Checkout: {{component.checkout.severity.critical.count}} critical, {{component.checkout.severity.high.count}} high\n- Notifications: {{component.notifications.severity.medium.count}} medium, {{component.notifications.severity.low.count}} low\n- Search: {{component.search.severity.high.count}} high, {{component.search.severity.medium.count}} medium"
+          },
+          {
+            "heading": "Duplicates",
+            "body": "Three bugs were reported multiple times: inc-0003 ({{reports.inc_0003}} reports), inc-0006 ({{reports.inc_0006}} reports), and inc-0009 ({{reports.inc_0009}} reports)."
+          },
+          {
+            "heading": "What to fix first",
+            "body": "Address critical severity bugs immediately:\n- inc-0003: Checkout crashes with Error 500 during order confirmation\n- inc-0005: Duplicate charges when paying by card\n- inc-0010: API exposes other users' addresses\n- inc-0016: Admin logs expose passwords in plain text\n\nThen tackle high-severity checkout and search issues: inc-0019 (free shipping voucher applies to international orders) and inc-0006 (search ignores accents)."
+          }
+        ],
+        [
+          {
+            "heading": "Overview",
+            "body": "{{total.incidents}} incidents were submitted for triage, with {{total.classified}} automatically classified and {{total.needs_manual}} requiring manual review. After clustering, {{clusters.unique_bugs}} distinct bugs were identified, with {{clusters.duplicate_groups}} bugs reported multiple times\u2014{{clusters.duplicate_reports}} duplicate reports in total."
+          },
+          {
+            "heading": "Severity distribution",
+            "body": "{{severity.critical.count}} incidents are critical ({{severity.critical.pct}}), {{severity.high.count}} are high ({{severity.high.pct}}), {{severity.medium.count}} are medium ({{severity.medium.pct}}), and {{severity.low.count}} are low ({{severity.low.pct}})."
+          },
+          {
+            "heading": "Most affected components",
+            "body": "- Checkout: {{component.checkout.severity.critical.count}} critical, {{component.checkout.severity.high.count}} high\n- Notifications: {{component.notifications.severity.medium.count}} medium, {{component.notifications.severity.low.count}} low\n- Search: {{component.search.severity.high.count}} high, {{component.search.severity.medium.count}} medium"
+          },
+          {
+            "heading": "Duplicate reports",
+            "body": "Three incidents were reported multiple times: inc-0003 ({{reports.inc_0003}} reports), inc-0006 ({{reports.inc_0006}} reports), and inc-0009 ({{reports.inc_0009}} reports). These should be prioritized due to their frequency."
+          },
+          {
+            "heading": "What to fix first",
+            "body": "Address critical incidents immediately:\n- inc-0003: Checkout crash on order confirmation\n- inc-0005: Duplicate charges on card payments\n- inc-0010: API exposing other users' addresses\n- inc-0016: Admin passwords visible in logs\n\nThen tackle high-severity issues in checkout and search before medium-priority items."
+          }
+        ]
+      ],
+      "calls": 2,
+      "cost_usd": 0.011375,
+      "report": "# QA triage report\n\nBatch `sample-497c47c8` \u00b7 deterministic template: the model's text failed validation\n\n## Overview\n\n20 incidents were received (0 CSV rows rejected). 20 were classified automatically and 0 need manual review. After merging duplicates there are 17 distinct bugs.\n\n## Severity\n\n- Critical: 5 (25.0%)\n- High: 5 (25.0%)\n- Medium: 7 (35.0%)\n- Low: 3 (15.0%)\n\n## Most affected components\n\n- checkout: 3\n- notifications: 3\n- search: 3\n\n## Duplicates\n\n3 bugs were reported more than once, with 3 repeated reports."
+    },
+    {
+      "repeat": 10,
+      "lang": "es",
+      "source": "template",
+      "drafts": 2,
+      "problems": [
+        [
+          "number word 'tres' in section 'Reportes duplicados': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number"
+        ],
+        [
+          "number word 'cuatro' in section 'Qu\u00e9 reparar primero': keys with this value are {{representatives.severity.critical.count}} (incidents listed in <incidents> classified as critical); write the one you mean, or say it without a number"
+        ]
+      ],
+      "fallback_reason": [
+        "number word 'cuatro' in section 'Qu\u00e9 reparar primero': keys with this value are {{representatives.severity.critical.count}} (incidents listed in <incidents> classified as critical); write the one you mean, or say it without a number"
+      ],
+      "rejected": [
+        [
+          {
+            "heading": "Resumen general",
+            "body": "Se procesaron {{total.incidents}} incidentes, de los cuales {{total.classified}} fueron clasificados autom\u00e1ticamente y {{total.needs_manual}} requieren triaje manual. Tras agrupar reportes duplicados, se identificaron {{clusters.unique_bugs}} bugs distintos. {{clusters.duplicate_groups}} bugs fueron reportados m\u00e1s de una vez, con {{clusters.duplicate_reports}} reportes duplicados en total."
+          },
+          {
+            "heading": "Severidad",
+            "body": "La distribuci\u00f3n de severidad muestra:\n- {{severity.critical.count}} incidentes cr\u00edticos ({{severity.critical.pct}} del total clasificado)\n- {{severity.high.count}} incidentes de alta severidad ({{severity.high.pct}})\n- {{severity.medium.count}} incidentes de severidad media ({{severity.medium.pct}})\n- {{severity.low.count}} incidentes de baja severidad ({{severity.low.pct}})"
+          },
+          {
+            "heading": "Componentes m\u00e1s afectados",
+            "body": "Los {{top_components.count}} componentes con m\u00e1s incidentes son:\n- Checkout: {{component.checkout.severity.critical.count}} cr\u00edtico, {{component.checkout.severity.high.count}} alto\n- Notifications: {{component.notifications.severity.medium.count}} medio, {{component.notifications.severity.low.count}} bajo\n- Search: {{component.search.severity.high.count}} alto, {{component.search.severity.medium.count}} medio"
+          },
+          {
+            "heading": "Reportes duplicados",
+            "body": "Tres bugs fueron reportados m\u00faltiples veces:\n- inc-0003: {{reports.inc_0003}} reportes\n- inc-0006: {{reports.inc_0006}} reportes\n- inc-0009: {{reports.inc_0009}} reportes"
+          },
+          {
+            "heading": "Qu\u00e9 reparar primero",
+            "body": "Priorizar estos incidentes cr\u00edticos y de alto impacto:\n- inc-0003: fallo de servidor al confirmar pedido\n- inc-0005: cobro duplicado en transacciones\n- inc-0010: fuga de datos de direcciones de otros usuarios\n- inc-0016: exposici\u00f3n de contrase\u00f1as en logs\n- inc-0001: inicio de sesi\u00f3n con Google no funciona\n- inc-0002: total del carrito ignora c\u00f3digos de descuento\n- inc-0012: aplicaci\u00f3n se bloquea al abrir historial de pedidos"
+          }
+        ],
+        [
+          {
+            "heading": "Resumen general",
+            "body": "Se procesaron {{total.incidents}} incidentes en esta tanda de pruebas. {{total.classified}} fueron clasificados autom\u00e1ticamente por el modelo, mientras que {{total.needs_manual}} requieren clasificaci\u00f3n manual. Tras consolidar reportes duplicados, se identificaron {{clusters.unique_bugs}} bugs distintos en TiendaLite."
+          },
+          {
+            "heading": "Severidad de los incidentes",
+            "body": "La distribuci\u00f3n de severidad muestra:\n- {{severity.critical.count}} incidentes cr\u00edticos ({{severity.critical.pct}})\n- {{severity.high.count}} incidentes de alta severidad ({{severity.high.pct}})\n- {{severity.medium.count}} incidentes de severidad media ({{severity.medium.pct}})\n- {{severity.low.count}} incidentes de baja severidad ({{severity.low.pct}})"
+          },
+          {
+            "heading": "Componentes m\u00e1s afectados",
+            "body": "Los {{top_components.count}} componentes con m\u00e1s incidentes son:\n- Checkout: {{component.checkout.severity.critical.count}} cr\u00edticos y {{component.checkout.severity.high.count}} de alta severidad\n- Notifications: {{component.notifications.severity.medium.count}} de severidad media y {{component.notifications.severity.low.count}} de baja severidad\n- Search: {{component.search.severity.high.count}} de alta severidad y {{component.search.severity.medium.count}} de severidad media"
+          },
+          {
+            "heading": "Reportes duplicados",
+            "body": "Se encontraron {{clusters.duplicate_groups}} bugs reportados m\u00faltiples veces. Los incidentes inc-0003, inc-0006 e inc-0009 acumulan reportes duplicados, con {{reports.inc_0003}} reportes de inc-0003, {{reports.inc_0006}} de inc-0006 y {{reports.inc_0009}} de inc-0009 en total."
+          },
+          {
+            "heading": "Qu\u00e9 reparar primero",
+            "body": "Priorizar los siguientes incidentes cr\u00edticos:\n- inc-0003: Error 500 al confirmar pedidos (checkout)\n- inc-0005: Pago con tarjeta se cobra dos veces (payments)\n- inc-0010: API retorna direcciones de otros usuarios (api)\n- inc-0016: Contrase\u00f1a visible en logs del admin (admin)\n\nEstos cuatro incidentes requieren correcci\u00f3n inmediata por su impacto en seguridad, funcionalidad de pagos y estabilidad del sistema."
+          }
+        ]
+      ],
+      "calls": 2,
+      "cost_usd": 0.012686,
+      "report": "# Informe de triage QA\n\nLote `sample-497c47c8` \u00b7 plantilla determinista: el texto del modelo no pas\u00f3 la validaci\u00f3n\n\n## Resumen\n\nSe recibieron 20 incidentes (0 filas del CSV rechazadas). 20 se clasificaron autom\u00e1ticamente y 0 requieren revisi\u00f3n manual. Tras agrupar duplicados quedan 17 errores distintos.\n\n## Severidad\n\n- Cr\u00edtica: 5 (25,0\u00a0%)\n- Alta: 5 (25,0\u00a0%)\n- Media: 7 (35,0\u00a0%)\n- Baja: 3 (15,0\u00a0%)\n\n## Componentes m\u00e1s afectados\n\n- checkout: 3\n- notifications: 3\n- search: 3\n\n## Duplicados\n\n3 errores se reportaron m\u00e1s de una vez, con 3 reportes repetidos."
+    },
+    {
+      "repeat": 10,
+      "lang": "en",
+      "source": "template",
+      "drafts": 2,
+      "problems": [
+        [
+          "number word 'three' in section 'Duplicates': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number"
+        ],
+        [
+          "number word 'three' in section 'Most affected components': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number",
+          "number word 'three' in section 'Duplicates': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number"
+        ]
+      ],
+      "fallback_reason": [
+        "number word 'three' in section 'Most affected components': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number",
+        "number word 'three' in section 'Duplicates': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number"
+      ],
+      "rejected": [
+        [
+          {
+            "heading": "Overview",
+            "body": "The batch contains {{total.incidents}} incidents, of which {{total.classified}} were automatically classified and {{total.needs_manual}} require manual review. After deduplication, {{clusters.unique_bugs}} distinct bugs remain. {{clusters.duplicate_groups}} bugs were reported multiple times, accounting for {{clusters.duplicate_reports}} duplicate reports."
+          },
+          {
+            "heading": "Severity",
+            "body": "{{severity.critical.count}} incidents are critical ({{severity.critical.pct}} of classified), {{severity.high.count}} are high ({{severity.high.pct}}), {{severity.medium.count}} are medium ({{severity.medium.pct}}), and {{severity.low.count}} are low ({{severity.low.pct}})."
+          },
+          {
+            "heading": "Most Affected Components",
+            "body": "The {{top_components.count}} most impacted components are:\n- Checkout: {{component.checkout.severity.critical.count}} critical, {{component.checkout.severity.high.count}} high\n- Notifications: {{component.notifications.severity.medium.count}} medium, {{component.notifications.severity.low.count}} low\n- Search: {{component.search.severity.high.count}} high, {{component.search.severity.medium.count}} medium"
+          },
+          {
+            "heading": "Duplicates",
+            "body": "Three bugs were reported multiple times: inc-0003 ({{reports.inc_0003}} reports), inc-0006 ({{reports.inc_0006}} reports), and inc-0009 ({{reports.inc_0009}} reports)."
+          },
+          {
+            "heading": "What to Fix First",
+            "body": "Address these critical incidents immediately:\n- inc-0003: Checkout crash on order confirmation\n- inc-0005: Payment card charged twice\n- inc-0010: API exposes other users' addresses\n- inc-0016: Admin passwords visible in logs\n\nThen tackle high-severity issues in checkout and search that affect core workflows."
+          }
+        ],
+        [
+          {
+            "heading": "Overview",
+            "body": "The batch contains {{total.incidents}} incidents, of which {{total.classified}} were automatically classified and {{total.needs_manual}} require manual review. After deduplication, {{clusters.unique_bugs}} distinct bugs were identified, with {{clusters.duplicate_groups}} bugs reported multiple times across {{clusters.duplicate_reports}} duplicate reports."
+          },
+          {
+            "heading": "Severity breakdown",
+            "body": "Of classified incidents, {{severity.critical.count}} are critical ({{severity.critical.pct}}), {{severity.high.count}} are high ({{severity.high.pct}}), {{severity.medium.count}} are medium ({{severity.medium.pct}}), and {{severity.low.count}} are low ({{severity.low.pct}})."
+          },
+          {
+            "heading": "Most affected components",
+            "body": "Three components account for the majority of incidents:\n- Checkout: {{component.checkout.severity.critical.count}} critical, {{component.checkout.severity.high.count}} high\n- Notifications: {{component.notifications.severity.medium.count}} medium, {{component.notifications.severity.low.count}} low\n- Search: {{component.search.severity.high.count}} high, {{component.search.severity.medium.count}} medium"
+          },
+          {
+            "heading": "Duplicates",
+            "body": "Three incidents were reported multiple times: inc-0003 ({{reports.inc_0003}} reports), inc-0006 ({{reports.inc_0006}} reports), and inc-0009 ({{reports.inc_0009}} reports). These should be prioritized as they reflect user impact."
+          },
+          {
+            "heading": "What to fix first",
+            "body": "Address the {{severity.critical.count}} critical incidents immediately:\n- inc-0003: checkout crash on order confirmation\n- inc-0005: duplicate payment charges\n- inc-0010: API exposing other users' addresses\n- inc-0016: admin logs exposing passwords\n\nThen tackle high-severity functional issues: inc-0006, inc-0001, inc-0002, inc-0012, and inc-0019."
+          }
+        ]
+      ],
+      "calls": 2,
+      "cost_usd": 0.011244,
+      "report": "# QA triage report\n\nBatch `sample-497c47c8` \u00b7 deterministic template: the model's text failed validation\n\n## Overview\n\n20 incidents were received (0 CSV rows rejected). 20 were classified automatically and 0 need manual review. After merging duplicates there are 17 distinct bugs.\n\n## Severity\n\n- Critical: 5 (25.0%)\n- High: 5 (25.0%)\n- Medium: 7 (35.0%)\n- Low: 3 (15.0%)\n\n## Most affected components\n\n- checkout: 3\n- notifications: 3\n- search: 3\n\n## Duplicates\n\n3 bugs were reported more than once, with 3 repeated reports."
+    },
+    {
+      "repeat": 11,
+      "lang": "es",
+      "source": "model",
+      "drafts": 1,
+      "problems": [],
+      "fallback_reason": [],
+      "rejected": [],
+      "calls": 1,
+      "cost_usd": 0.005848,
+      "report": "# Informe de triage QA\n\nLote `sample-497c47c8` \u00b7 redactado por el modelo global.anthropic.claude-haiku-4-5-20251001-v1:0 con el prompt summarize/v3\n\n## Resumen general\n\nSe procesaron 20 incidentes en esta tanda. 20 fueron clasificados autom\u00e1ticamente y 0 requieren revisi\u00f3n manual. Despu\u00e9s de agrupar reportes duplicados, se identificaron 17 errores distintos, de los cuales 3 fueron reportados m\u00e1s de una vez con 3 reportes duplicados en total.\n\n## Severidad\n\nDe los incidentes clasificados: 5 son cr\u00edticos (25,0\u00a0%), 5 son altos (25,0\u00a0%), 7 son medios (35,0\u00a0%) y 3 son bajos (15,0\u00a0%).\n\n## Componentes m\u00e1s afectados\n\nLos 3 componentes con m\u00e1s incidentes son:\n- Checkout: 2 cr\u00edticos, 1 altos\n- Notifications: 2 medios, 1 bajos\n- Search: 1 altos, 2 medios\n\n## Reportes duplicados\n\nSe encontraron reportes duplicados en:\n- inc-0003: 2 reportes\n- inc-0006: 2 reportes\n- inc-0009: 2 reportes\n\n## Qu\u00e9 arreglar primero\n\nPriorizar los siguientes incidentes cr\u00edticos que afectan funcionalidad esencial:\n- inc-0003: Error 500 al confirmar pedidos\n- inc-0005: Cargo duplicado en pagos con tarjeta\n- inc-0010: API expone direcciones de otros usuarios\n- inc-0016: Contrase\u00f1a visible en logs del administrador"
+    },
+    {
+      "repeat": 11,
+      "lang": "en",
+      "source": "model",
+      "drafts": 2,
+      "problems": [
+        [
+          "number word 'three' in section 'Most affected components': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number",
+          "number word 'three' in section 'Duplicates': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number"
+        ]
+      ],
+      "fallback_reason": [],
+      "rejected": [
+        [
+          {
+            "heading": "Overview",
+            "body": "{{total.incidents}} incidents entered triage, with {{total.classified}} automatically classified. {{clusters.duplicate_groups}} bugs were reported multiple times, accounting for {{clusters.duplicate_reports}} duplicate reports; this leaves {{clusters.unique_bugs}} distinct bugs to address."
+          },
+          {
+            "heading": "Severity",
+            "body": "{{severity.critical.count}} incidents are critical ({{severity.critical.pct}} of classified incidents), {{severity.high.count}} are high ({{severity.high.pct}}), {{severity.medium.count}} are medium ({{severity.medium.pct}}), and {{severity.low.count}} are low ({{severity.low.pct}})."
+          },
+          {
+            "heading": "Most affected components",
+            "body": "Three components dominate the incidents:\n- Checkout: contains {{component.checkout.severity.critical.count}} critical incidents and {{component.checkout.severity.high.count}} high\n- Notifications: has {{component.notifications.severity.medium.count}} medium and {{component.notifications.severity.low.count}} low incidents\n- Search: includes {{component.search.severity.high.count}} high and {{component.search.severity.medium.count}} medium incidents"
+          },
+          {
+            "heading": "Duplicates",
+            "body": "Three bugs were reported multiple times: inc-0003 with {{reports.inc_0003}} reports, inc-0006 with {{reports.inc_0006}} reports, and inc-0009 with {{reports.inc_0009}} reports."
+          },
+          {
+            "heading": "What to fix first",
+            "body": "Start with the critical incidents: inc-0003 (checkout crash on order confirmation), inc-0005 (duplicate card charges), inc-0010 (API leaks user addresses), and inc-0016 (admin logs expose passwords). Then address high-severity issues: inc-0006 (search ignores accents), inc-0001 (Google login fails), inc-0002 (cart discount not applied), inc-0012 (profile app crash), and inc-0019 (free shipping coupon misapplied internationally)."
+          }
+        ]
+      ],
+      "calls": 2,
+      "cost_usd": 0.011555,
+      "report": "# QA triage report\n\nBatch `sample-497c47c8` \u00b7 written by model global.anthropic.claude-haiku-4-5-20251001-v1:0 with prompt summarize/v3\n\n## Overview\n\n20 incidents were submitted for triage. 20 were automatically classified, while 0 require manual review. 17 distinct bugs were identified after merging duplicates.\n\n## Severity breakdown\n\n5 incidents are critical (25.0%), 5 are high (25.0%), 7 are medium (35.0%), and 3 are low (15.0%).\n\n## Most affected components\n\n- Checkout: 2 critical, 1 high\n- Notifications: 2 medium, 1 low\n- Search: 1 high, 2 medium\n\n## Duplicates\n\n3 bugs were reported multiple times, accounting for 3 duplicate reports. The most-reported bugs are inc-0003 (2 reports), inc-0006 (2 reports), and inc-0009 (2 reports).\n\n## What to fix first\n\nAddress the critical incidents immediately: inc-0003 (checkout crash on order confirmation), inc-0005 (double charge on card payments), inc-0010 (API exposing other users' addresses), and inc-0016 (admin password visible in logs). Then prioritize high-severity issues: inc-0006 (search ignoring accents), inc-0001 (Google login failing), inc-0002 (discount codes not applied to cart), inc-0012 (app crash on order history), and inc-0019 (free shipping coupon applied to international orders)."
+    },
+    {
+      "repeat": 12,
+      "lang": "es",
+      "source": "model",
+      "drafts": 1,
+      "problems": [],
+      "fallback_reason": [],
+      "rejected": [],
+      "calls": 1,
+      "cost_usd": 0.006098,
+      "report": "# Informe de triage QA\n\nLote `sample-497c47c8` \u00b7 redactado por el modelo global.anthropic.claude-haiku-4-5-20251001-v1:0 con el prompt summarize/v3\n\n## Resumen general\n\nSe procesaron 20 incidentes en esta tanda. 20 fueron clasificados autom\u00e1ticamente y 0 requieren revisi\u00f3n manual. Despu\u00e9s de fusionar reportes duplicados, se identificaron 17 bugs distintos. 3 reportes corresponden a bugs ya reportados, agrupados en 3 problemas recurrentes.\n\n## Severidad\n\nDe los incidentes clasificados, 5 son cr\u00edticos (25,0\u00a0%), 5 tienen severidad alta (25,0\u00a0%), 7 son medios (35,0\u00a0%) y 3 son bajos (15,0\u00a0%).\n\n## Componentes m\u00e1s afectados\n\nLos 3 componentes con m\u00e1s incidentes son:\n- Checkout: 2 cr\u00edticos, 1 altos\n- Notifications: 2 medios, 1 bajos\n- Search: 1 altos, 2 medios\n\n## Reportes duplicados\n\nSe encontraron 2 reportes de inc-0003 (error 500 en checkout), 2 reportes de inc-0006 (b\u00fasqueda ignora acentos) e 2 reportes de inc-0009 (notificaci\u00f3n duplicada).\n\n## Qu\u00e9 reparar primero\n\nLas prioridades inmediatas son los incidentes cr\u00edticos de seguridad y funcionalidad:\n- inc-0003: fallo al confirmar pedidos (checkout)\n- inc-0005: cobro duplicado en pagos\n- inc-0010: fuga de direcciones de otros usuarios en API\n- inc-0016: credenciales expuestas en logs\n- inc-0001: fallo de autenticaci\u00f3n con Google\n- inc-0019: cup\u00f3n de env\u00edo gratis se aplica incorrectamente"
+    },
+    {
+      "repeat": 12,
+      "lang": "en",
+      "source": "model",
+      "drafts": 2,
+      "problems": [
+        [
+          "number word 'three' in section 'Most Affected Components': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number",
+          "number word 'three' in section 'Duplicates': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number"
+        ]
+      ],
+      "fallback_reason": [],
+      "rejected": [
+        [
+          {
+            "heading": "Overview",
+            "body": "{{total.incidents}} incidents were submitted for triage. {{total.classified}} were automatically classified; {{total.needs_manual}} require manual review. After deduplication, {{clusters.unique_bugs}} distinct bugs remain, with {{clusters.duplicate_groups}} bugs reported multiple times."
+          },
+          {
+            "heading": "Severity",
+            "body": "{{severity.critical.count}} incidents are critical ({{severity.critical.pct}}), {{severity.high.count}} are high ({{severity.high.pct}}), {{severity.medium.count}} are medium ({{severity.medium.pct}}), and {{severity.low.count}} are low ({{severity.low.pct}})."
+          },
+          {
+            "heading": "Most Affected Components",
+            "body": "Three components account for the majority of issues:\n- Checkout: {{component.checkout.severity.critical.count}} critical, {{component.checkout.severity.high.count}} high\n- Notifications: {{component.notifications.severity.medium.count}} medium, {{component.notifications.severity.low.count}} low\n- Search: {{component.search.severity.high.count}} high, {{component.search.severity.medium.count}} medium"
+          },
+          {
+            "heading": "Duplicates",
+            "body": "Three bugs were reported multiple times: inc-0003 ({{reports.inc_0003}} reports), inc-0006 ({{reports.inc_0006}} reports), and inc-0009 ({{reports.inc_0009}} reports)."
+          },
+          {
+            "heading": "What to Fix First",
+            "body": "Start with the critical security and payment issues:\n- inc-0010: API exposes other users' addresses\n- inc-0016: Admin logs contain plaintext passwords\n- inc-0005: Payment charges twice\n- inc-0003: Checkout crashes on order confirmation\n\nThen address high-severity checkout and search problems: inc-0019, inc-0006, inc-0001, inc-0002, and inc-0012."
+          }
+        ]
+      ],
+      "calls": 2,
+      "cost_usd": 0.011426,
+      "report": "# QA triage report\n\nBatch `sample-497c47c8` \u00b7 written by model global.anthropic.claude-haiku-4-5-20251001-v1:0 with prompt summarize/v3\n\n## Overview\n\nThe batch contains 20 incidents, of which 20 were automatically classified and 0 require manual review. 17 distinct bugs have been identified after merging duplicates.\n\n## Severity\n\n5 incidents are critical (25.0% of classified), 5 are high (25.0%), 7 are medium (35.0%), and 3 are low (15.0%).\n\n## Most Affected Components\n\nThe 3 most affected components are:\n- Checkout: 2 critical, 1 high\n- Notifications: 2 medium, 1 low\n- Search: 1 high, 2 medium\n\n## Duplicates\n\n3 bugs were reported more than once, accounting for 3 duplicate reports total. The most-reported incidents are inc-0003 (2 reports), inc-0006 (2 reports), and inc-0009 (2 reports).\n\n## What to Fix First\n\nAddress these critical incidents immediately:\n- inc-0003: Checkout crash preventing orders\n- inc-0005: Payment charged twice on card transactions\n- inc-0010: API exposing other users' addresses\n- inc-0016: Admin passwords visible in logs\n\nThen prioritize high-severity functional issues inc-0006, inc-0001, inc-0002, inc-0012, and inc-0019 that impact core features."
+    },
+    {
+      "repeat": 13,
+      "lang": "es",
+      "source": "model",
+      "drafts": 2,
+      "problems": [
+        [
+          "number word 'tres' in section 'Reportes duplicados': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number"
+        ]
+      ],
+      "fallback_reason": [],
+      "rejected": [
+        [
+          {
+            "heading": "Resumen general",
+            "body": "Se procesaron {{total.incidents}} incidentes en esta tanda. {{total.classified}} fueron clasificados autom\u00e1ticamente y {{total.needs_manual}} requieren revisi\u00f3n manual. Despu\u00e9s de agrupar reportes duplicados, se identificaron {{clusters.unique_bugs}} bugs distintos, con {{clusters.duplicate_groups}} bugs reportados m\u00e1s de una vez ({{clusters.duplicate_reports}} reportes duplicados en total)."
+          },
+          {
+            "heading": "Severidad",
+            "body": "De los incidentes clasificados: {{severity.critical.count}} son cr\u00edticos ({{severity.critical.pct}}), {{severity.high.count}} tienen severidad alta ({{severity.high.pct}}), {{severity.medium.count}} son media ({{severity.medium.pct}}) y {{severity.low.count}} son baja ({{severity.low.pct}})."
+          },
+          {
+            "heading": "Componentes m\u00e1s afectados",
+            "body": "Los {{top_components.count}} componentes con m\u00e1s incidentes son:\n- Checkout: {{component.checkout.severity.critical.count}} cr\u00edticos, {{component.checkout.severity.high.count}} altos\n- Notifications: {{component.notifications.severity.medium.count}} media, {{component.notifications.severity.low.count}} baja\n- Search: {{component.search.severity.high.count}} altos, {{component.search.severity.medium.count}} media"
+          },
+          {
+            "heading": "Reportes duplicados",
+            "body": "Tres bugs fueron reportados m\u00faltiples veces: inc-0003 ({{reports.inc_0003}} reportes), inc-0006 ({{reports.inc_0006}} reportes) e inc-0009 ({{reports.inc_0009}} reportes). Esto indica que estos problemas afectan a varios usuarios."
+          },
+          {
+            "heading": "Qu\u00e9 reparar primero",
+            "body": "Los {{representatives.severity.critical.count}} incidentes cr\u00edticos requieren atenci\u00f3n inmediata:\n- inc-0003: Error 500 al confirmar pedidos\n- inc-0005: Pago con tarjeta se cobra dos veces\n- inc-0010: API retorna direcciones de otros usuarios\n- inc-0016: Contrase\u00f1a visible en logs del admin\n\nLuego abordar los {{representatives.severity.high.count}} incidentes de severidad alta, comenzando con los m\u00e1s duplicados (inc-0006 e inc-0019)."
+          }
+        ]
+      ],
+      "calls": 2,
+      "cost_usd": 0.012261000000000001,
+      "report": "# Informe de triage QA\n\nLote `sample-497c47c8` \u00b7 redactado por el modelo global.anthropic.claude-haiku-4-5-20251001-v1:0 con el prompt summarize/v3\n\n## Resumen general\n\nSe han triado 20 reportes en total. El modelo clasific\u00f3 autom\u00e1ticamente 20 incidentes, mientras que 0 requieren clasificaci\u00f3n manual. Tras agrupar duplicados, se identificaron 17 bugs distintos en la plataforma TiendaLite.\n\n## Severidad\n\nDe los incidentes clasificados, 5 son cr\u00edticos (25,0\u00a0%), 5 tienen severidad alta (25,0\u00a0%), 7 son medios (35,0\u00a0%) y 3 son bajos (15,0\u00a0%).\n\n## Componentes m\u00e1s afectados\n\nLos 3 componentes con m\u00e1s incidentes son:\n- Checkout: 2 cr\u00edtico, 1 alto\n- Notifications: 2 medios, 1 bajo\n- Search: 1 alto, 2 medio\n\n## Reportes duplicados\n\nSe encontraron 3 bugs reportados m\u00faltiples veces, sumando 3 reportes duplicados. Los bugs inc-0003, inc-0006 e inc-0009 concentran la mayor\u00eda de reportes repetidos.\n\n## Qu\u00e9 reparar primero\n\nPriorizar estos incidentes cr\u00edticos:\n- inc-0003: Error 500 al confirmar pedidos (2 reportes)\n- inc-0005: Pago con tarjeta cobrado dos veces\n- inc-0010: API expone direcciones de otros usuarios\n- inc-0016: Contrase\u00f1a visible en logs del admin\n\nLuego los de severidad alta, con atenci\u00f3n a inc-0006 (b\u00fasqueda ignora acentos) por sus 2 reportes."
+    },
+    {
+      "repeat": 13,
+      "lang": "en",
+      "source": "template",
+      "drafts": 2,
+      "problems": [
+        [
+          "number word 'three' in section 'Most affected components': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number",
+          "number word 'three' in section 'Duplicates': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number"
+        ],
+        [
+          "number word 'three' in section 'Most affected components': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number",
+          "number word 'three' in section 'Duplicates': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number"
+        ]
+      ],
+      "fallback_reason": [
+        "number word 'three' in section 'Most affected components': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number",
+        "number word 'three' in section 'Duplicates': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number"
+      ],
+      "rejected": [
+        [
+          {
+            "heading": "Overview",
+            "body": "{{total.incidents}} incidents were submitted for triage. {{total.classified}} were automatically classified; {{total.needs_manual}} require manual review. After deduplication, {{clusters.unique_bugs}} distinct bugs remain. {{clusters.duplicate_groups}} bugs were reported multiple times, accounting for {{clusters.duplicate_reports}} duplicate reports."
+          },
+          {
+            "heading": "Severity distribution",
+            "body": "{{severity.critical.count}} incidents are critical ({{severity.critical.pct}}), {{severity.high.count}} are high ({{severity.high.pct}}), {{severity.medium.count}} are medium ({{severity.medium.pct}}), and {{severity.low.count}} are low ({{severity.low.pct}})."
+          },
+          {
+            "heading": "Most affected components",
+            "body": "Three components account for the highest incident volume:\n- Checkout: {{component.checkout.severity.critical.count}} critical, {{component.checkout.severity.high.count}} high\n- Notifications: {{component.notifications.severity.medium.count}} medium, {{component.notifications.severity.low.count}} low\n- Search: {{component.search.severity.high.count}} high, {{component.search.severity.medium.count}} medium"
+          },
+          {
+            "heading": "Duplicates",
+            "body": "Three bugs were reported multiple times: inc-0003 ({{reports.inc_0003}} reports), inc-0006 ({{reports.inc_0006}} reports), and inc-0009 ({{reports.inc_0009}} reports)."
+          },
+          {
+            "heading": "What to fix first",
+            "body": "Address critical severity issues that block core workflows:\n- inc-0003: Checkout crashes on order confirmation\n- inc-0005: Payment charged twice on card transactions\n- inc-0010: API exposes other users' addresses\n- inc-0016: Admin logs expose passwords\n\nThen tackle high-severity functional issues affecting payments and checkout: inc-0019 and inc-0001."
+          }
+        ],
+        [
+          {
+            "heading": "Overview",
+            "body": "{{total.incidents}} incidents were submitted for triage. {{total.classified}} were automatically classified, while {{total.needs_manual}} require manual review. {{clusters.duplicate_reports}} duplicate reports were identified, covering {{clusters.duplicate_groups}} distinct bugs that users reported multiple times."
+          },
+          {
+            "heading": "Severity distribution",
+            "body": "{{severity.critical.count}} incidents are critical ({{severity.critical.pct}}), {{severity.high.count}} are high ({{severity.high.pct}}), {{severity.medium.count}} are medium ({{severity.medium.pct}}), and {{severity.low.count}} are low ({{severity.low.pct}})."
+          },
+          {
+            "heading": "Most affected components",
+            "body": "Three components account for most of the issues: checkout with {{component.checkout.count}} incidents, notifications with {{component.notifications.count}} incidents, and search with {{component.search.count}} incidents. Checkout has {{component.checkout.severity.critical.count}} critical issues and {{component.checkout.severity.high.count}} high-severity issues. Notifications contains {{component.notifications.severity.medium.count}} medium and {{component.notifications.severity.low.count}} low-severity issues. Search shows {{component.search.severity.high.count}} high-severity and {{component.search.severity.medium.count}} medium-severity incidents."
+          },
+          {
+            "heading": "Duplicates",
+            "body": "Three bugs were reported multiple times: inc-0003 with {{reports.inc_0003}} reports, inc-0006 with {{reports.inc_0006}} reports, and inc-0009 with {{reports.inc_0009}} reports. These duplicates indicate high-impact issues affecting multiple users."
+          },
+          {
+            "heading": "What to fix first",
+            "body": "Address critical incidents immediately: inc-0003 (checkout crash), inc-0005 (double charge), inc-0010 (API data leak), and inc-0016 (exposed admin passwords). Follow with high-severity issues: inc-0006, inc-0001, inc-0002, inc-0012, and inc-0019."
+          }
+        ]
+      ],
+      "calls": 2,
+      "cost_usd": 0.011439999999999999,
+      "report": "# QA triage report\n\nBatch `sample-497c47c8` \u00b7 deterministic template: the model's text failed validation\n\n## Overview\n\n20 incidents were received (0 CSV rows rejected). 20 were classified automatically and 0 need manual review. After merging duplicates there are 17 distinct bugs.\n\n## Severity\n\n- Critical: 5 (25.0%)\n- High: 5 (25.0%)\n- Medium: 7 (35.0%)\n- Low: 3 (15.0%)\n\n## Most affected components\n\n- checkout: 3\n- notifications: 3\n- search: 3\n\n## Duplicates\n\n3 bugs were reported more than once, with 3 repeated reports."
+    },
+    {
+      "repeat": 14,
+      "lang": "es",
+      "source": "model",
+      "drafts": 2,
+      "problems": [
+        [
+          "number word 'tres' in section 'Reportes duplicados': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number"
+        ]
+      ],
+      "fallback_reason": [],
+      "rejected": [
+        [
+          {
+            "heading": "Resumen general",
+            "body": "Se procesaron {{total.incidents}} incidentes en esta ronda de triage. {{total.classified}} fueron clasificados autom\u00e1ticamente y {{total.needs_manual}} requieren revisi\u00f3n manual. Despu\u00e9s de agrupar reportes duplicados, se identificaron {{clusters.unique_bugs}} bugs distintos, siendo {{clusters.duplicate_reports}} reportes duplicados en {{clusters.duplicate_groups}} grupos."
+          },
+          {
+            "heading": "Severidad",
+            "body": "De los incidentes clasificados, {{severity.critical.count}} son cr\u00edticos ({{severity.critical.pct}}), {{severity.high.count}} tienen severidad alta ({{severity.high.pct}}), {{severity.medium.count}} son medianos ({{severity.medium.pct}}) y {{severity.low.count}} son bajos ({{severity.low.pct}})."
+          },
+          {
+            "heading": "Componentes m\u00e1s afectados",
+            "body": "Los {{top_components.count}} componentes con m\u00e1s incidentes son:\n- Checkout: {{component.checkout.severity.critical.count}} cr\u00edticos, {{component.checkout.severity.high.count}} altos\n- Notifications: {{component.notifications.severity.medium.count}} medianos, {{component.notifications.severity.low.count}} bajos\n- Search: {{component.search.severity.high.count}} altos, {{component.search.severity.medium.count}} medianos"
+          },
+          {
+            "heading": "Reportes duplicados",
+            "body": "Se encontraron tres bugs reportados m\u00faltiples veces: inc-0003 con {{reports.inc_0003}} reportes, inc-0006 con {{reports.inc_0006}} reportes e inc-0009 con {{reports.inc_0009}} reportes."
+          },
+          {
+            "heading": "Qu\u00e9 reparar primero",
+            "body": "Comienza con estos incidentes cr\u00edticos:\n- inc-0003: La app se bloquea al confirmar pedidos en checkout\n- inc-0005: Los pagos con tarjeta se cobran dos veces\n- inc-0010: La API expone direcciones de otros usuarios\n- inc-0016: Las contrase\u00f1as quedan visibles en los logs del admin\n\nLuego atiende los incidentes de alta severidad en checkout e integraci\u00f3n de pagos: inc-0001, inc-0002, inc-0012, inc-0019 e inc-0006."
+          }
+        ]
+      ],
+      "calls": 2,
+      "cost_usd": 0.012271,
+      "report": "# Informe de triage QA\n\nLote `sample-497c47c8` \u00b7 redactado por el modelo global.anthropic.claude-haiku-4-5-20251001-v1:0 con el prompt summarize/v3\n\n## Resumen general\n\nSe han triado 20 incidentes, de los cuales 20 fueron clasificados autom\u00e1ticamente y 0 requieren clasificaci\u00f3n manual. Tras agrupar reportes duplicados, se identificaron 17 bugs distintos.\n\n## Severidad\n\nDe los incidentes clasificados, 5 (25,0\u00a0%) tienen severidad cr\u00edtica, 5 (25,0\u00a0%) alta, 7 (35,0\u00a0%) media y 3 (15,0\u00a0%) baja.\n\n## Componentes m\u00e1s afectados\n\nLos 3 componentes con m\u00e1s incidentes son:\n- Checkout: 2 cr\u00edticos, 1 altos\n- Notifications: 2 medios, 1 bajos\n- Search: 1 altos, 2 medios\n\n## Reportes duplicados\n\nSe encontraron 3 bugs reportados m\u00faltiples veces: inc-0003 (2 reportes), inc-0006 (2 reportes) e inc-0009 (2 reportes). En total, 3 reportes duplican bugs ya conocidos.\n\n## Qu\u00e9 reparar primero\n\nPriorizar los incidentes cr\u00edticos que afectan transacciones y seguridad:\n- inc-0003: Error 500 al confirmar pedidos\n- inc-0005: Cargo doble con tarjeta\n- inc-0010: API expone direcciones de otros usuarios\n- inc-0016: Contrase\u00f1a visible en logs\n\nLuego abordar los altos en checkout e integraci\u00f3n: inc-0019, inc-0001, inc-0002, inc-0012, e inc-0006 en search."
+    },
+    {
+      "repeat": 14,
+      "lang": "en",
+      "source": "model",
+      "drafts": 2,
+      "problems": [
+        [
+          "number word 'three' in section 'Most affected components': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number",
+          "number word 'three' in section 'Duplicates': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number"
+        ]
+      ],
+      "fallback_reason": [],
+      "rejected": [
+        [
+          {
+            "heading": "Overview",
+            "body": "{{total.incidents}} incidents were submitted for triage. {{total.classified}} were automatically classified; {{total.needs_manual}} require manual review. After deduplication, {{clusters.unique_bugs}} distinct bugs remain. {{clusters.duplicate_groups}} bugs were reported multiple times, accounting for {{clusters.duplicate_reports}} duplicate reports."
+          },
+          {
+            "heading": "Severity distribution",
+            "body": "{{severity.critical.count}} incidents are critical ({{severity.critical.pct}} of classified incidents), {{severity.high.count}} are high ({{severity.high.pct}}), {{severity.medium.count}} are medium ({{severity.medium.pct}}), and {{severity.low.count}} are low ({{severity.low.pct}})."
+          },
+          {
+            "heading": "Most affected components",
+            "body": "Three components dominate the report: checkout with {{component.checkout.severity.critical.count}} critical and {{component.checkout.severity.high.count}} high severity incidents, notifications with {{component.notifications.severity.medium.count}} medium and {{component.notifications.severity.low.count}} low severity incidents, and search with {{component.search.severity.high.count}} high and {{component.search.severity.medium.count}} medium severity incidents."
+          },
+          {
+            "heading": "Duplicates",
+            "body": "Three bugs were reported multiple times: inc-0003 ({{reports.inc_0003}} reports), inc-0006 ({{reports.inc_0006}} reports), and inc-0009 ({{reports.inc_0009}} reports)."
+          },
+          {
+            "heading": "What to fix first",
+            "body": "Address critical incidents immediately: inc-0003 (checkout crash on order confirmation), inc-0005 (double charge on card payments), inc-0010 (API exposing other users' addresses), and inc-0016 (admin logs leaking passwords). Then tackle high severity items: inc-0001 (Google login failure), inc-0002 (discount codes ignored in cart), inc-0006 (search ignores accents), inc-0012 (app crash on order history), and inc-0019 (free shipping coupon applied incorrectly to international orders)."
+          }
+        ]
+      ],
+      "calls": 2,
+      "cost_usd": 0.011635,
+      "report": "# QA triage report\n\nBatch `sample-497c47c8` \u00b7 written by model global.anthropic.claude-haiku-4-5-20251001-v1:0 with prompt summarize/v3\n\n## Overview\n\n20 incidents were submitted for triage. 20 were automatically classified, while 0 require manual review. After merging duplicates, 17 distinct bugs remain, with 3 bugs reported multiple times across 3 duplicate reports.\n\n## Severity distribution\n\n5 incidents are critical (25.0% of classified incidents), 5 are high (25.0%), 7 are medium (35.0%), and 3 are low (15.0%).\n\n## Most affected components\n\n- Checkout: 2 critical, 1 high\n- Notifications: 2 medium, 1 low\n- Search: 1 high, 2 medium\n\n## Duplicates\n\nSeveral bugs have been reported multiple times: inc-0003 appears in 2 reports, inc-0006 in 2 reports, and inc-0009 in 2 reports.\n\n## What to fix first\n\nAddress the critical incidents immediately: inc-0003 (checkout crash), inc-0005 (double charge on card payments), inc-0010 (API exposing other users' addresses), and inc-0016 (password visible in admin logs). Then tackle the high-severity functional and data bugs: inc-0006 (search ignores accents), inc-0001 (Google login failure), inc-0002 (discount code not applied), inc-0012 (profile app crash), and inc-0019 (free shipping coupon on international orders)."
+    },
+    {
+      "repeat": 15,
+      "lang": "es",
+      "source": "model",
+      "drafts": 1,
+      "problems": [],
+      "fallback_reason": [],
+      "rejected": [],
+      "calls": 1,
+      "cost_usd": 0.005948,
+      "report": "# Informe de triage QA\n\nLote `sample-497c47c8` \u00b7 redactado por el modelo global.anthropic.claude-haiku-4-5-20251001-v1:0 con el prompt summarize/v3\n\n## Resumen general\n\nSe procesaron 20 incidentes en esta tanda. 20 fueron clasificados autom\u00e1ticamente y 0 requieren revisi\u00f3n manual. Despu\u00e9s de fusionar reportes duplicados, se identificaron 17 bugs distintos, de los cuales 3 fueron reportados m\u00e1s de una vez.\n\n## Severidad\n\nDe los incidentes clasificados: 5 son cr\u00edticos (25,0\u00a0%), 5 tienen severidad alta (25,0\u00a0%), 7 son media (35,0\u00a0%) y 3 baja (15,0\u00a0%).\n\n## Componentes m\u00e1s afectados\n\nLos 3 componentes con m\u00e1s incidentes son:\n- Checkout: 2 cr\u00edticos, 1 altos\n- Notifications: 2 medios, 1 bajos\n- Search: 1 altos, 2 medios\n\n## Reportes duplicados\n\nSe encontraron 3 reportes duplicados: 2 para inc-0003, 2 para inc-0006 y 2 para inc-0009.\n\n## Qu\u00e9 reparar primero\n\nComienza con estos incidentes cr\u00edticos que afectan funcionalidades esenciales:\n- inc-0003: aplicaci\u00f3n se bloquea al confirmar pedido\n- inc-0005: cobros duplicados en transacciones\n- inc-0010: fuga de datos de direcciones de otros usuarios\n- inc-0016: contrase\u00f1as expuestas en logs\n\nLuego atiende los problemas de alta severidad: inc-0006, inc-0001, inc-0002, inc-0012 e inc-0019."
+    },
+    {
+      "repeat": 15,
+      "lang": "en",
+      "source": "model",
+      "drafts": 2,
+      "problems": [
+        [
+          "number word 'three' in section 'Most affected components': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number",
+          "number word 'three' in section 'Duplicate reports': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number"
+        ]
+      ],
+      "fallback_reason": [],
+      "rejected": [
+        [
+          {
+            "heading": "Overview",
+            "body": "The batch contains {{total.incidents}} incidents, with {{total.classified}} automatically classified and {{total.needs_manual}} requiring manual review. After deduplication, {{clusters.unique_bugs}} distinct bugs were identified, with {{clusters.duplicate_groups}} bugs reported multiple times. {{clusters.duplicate_reports}} reports were duplicates of previously reported issues."
+          },
+          {
+            "heading": "Severity distribution",
+            "body": "{{severity.critical.count}} incidents are critical ({{severity.critical.pct}}), {{severity.high.count}} are high ({{severity.high.pct}}), {{severity.medium.count}} are medium ({{severity.medium.pct}}), and {{severity.low.count}} are low ({{severity.low.pct}})."
+          },
+          {
+            "heading": "Most affected components",
+            "body": "Three components account for the majority of issues:\n- Checkout: {{component.checkout.severity.critical.count}} critical and {{component.checkout.severity.high.count}} high severity incidents\n- Notifications: {{component.notifications.severity.medium.count}} medium and {{component.notifications.severity.low.count}} low severity incidents\n- Search: {{component.search.severity.high.count}} high and {{component.search.severity.medium.count}} medium severity incidents"
+          },
+          {
+            "heading": "Duplicate reports",
+            "body": "Three bugs received multiple reports:\n- inc-0003 (checkout crash): {{reports.inc_0003}} reports\n- inc-0006 (search ignores accents): {{reports.inc_0006}} reports\n- inc-0009 (duplicate push notifications): {{reports.inc_0009}} reports"
+          },
+          {
+            "heading": "What to fix first",
+            "body": "Address critical severity incidents immediately:\n- inc-0003: checkout error blocking order confirmation\n- inc-0005: duplicate payment charges\n- inc-0010: API exposing other users' addresses\n- inc-0016: admin password visible in logs"
+          }
+        ]
+      ],
+      "calls": 2,
+      "cost_usd": 0.011365,
+      "report": "# QA triage report\n\nBatch `sample-497c47c8` \u00b7 written by model global.anthropic.claude-haiku-4-5-20251001-v1:0 with prompt summarize/v3\n\n## Overview\n\n20 incidents were submitted for triage. 20 were automatically classified, while 0 require manual review. 3 duplicate reports were identified and merged into 17 distinct bugs.\n\n## Severity breakdown\n\n5 incidents are critical (25.0%), 5 are high (25.0%), 7 are medium (35.0%), and 3 are low (15.0%).\n\n## Most affected components\n\n- Checkout: 2 critical, 1 high\n- Notifications: 2 medium, 1 low\n- Search: 1 high, 2 medium\n\n## Duplicate reports\n\n3 bugs were reported multiple times: inc-0003 (2 reports), inc-0006 (2 reports), and inc-0009 (2 reports).\n\n## What to fix first\n\nAddress critical issues immediately: inc-0003 (checkout crash on order confirmation), inc-0005 (double charge on card payments), inc-0010 (API exposing other users' addresses), and inc-0016 (admin password visible in logs). Then prioritize high-severity incidents: inc-0006 (search ignoring accents), inc-0001 (Google login failure), inc-0002 (cart discount not applied), inc-0012 (profile crashes on order history), and inc-0019 (free shipping coupon applied incorrectly to international orders)."
+    },
+    {
+      "repeat": 16,
+      "lang": "es",
+      "source": "model",
+      "drafts": 1,
+      "problems": [],
+      "fallback_reason": [],
+      "rejected": [],
+      "calls": 1,
+      "cost_usd": 0.005738,
+      "report": "# Informe de triage QA\n\nLote `sample-497c47c8` \u00b7 redactado por el modelo global.anthropic.claude-haiku-4-5-20251001-v1:0 con el prompt summarize/v3\n\n## Resumen general\n\nSe procesaron 20 incidentes en esta ronda de triage. 20 fueron clasificados autom\u00e1ticamente y 0 requieren revisi\u00f3n manual. Despu\u00e9s de agrupar reportes duplicados, se identificaron 17 bugs distintos, siendo 3 de ellos reportados m\u00faltiples veces.\n\n## Severidad\n\nDe los incidentes clasificados: 5 son cr\u00edticos (25,0\u00a0%), 5 tienen severidad alta (25,0\u00a0%), 7 son media (35,0\u00a0%) y 3 son baja (15,0\u00a0%).\n\n## Componentes m\u00e1s afectados\n\nLos 3 componentes con m\u00e1s incidentes son:\n- Checkout: 2 cr\u00edticos, 1 altos\n- Notifications: 2 medios, 1 bajos\n- Search: 1 altos, 2 medios\n\n## Reportes duplicados\n\nSe encontraron reportes duplicados en: inc-0003 (2 reportes), inc-0006 (2 reportes) e inc-0009 (2 reportes).\n\n## Qu\u00e9 reparar primero\n\nPriorizar los siguientes incidentes cr\u00edticos:\n- inc-0003: Error 500 al confirmar pedidos\n- inc-0005: Cargo duplicado en pagos\n- inc-0010: Exposici\u00f3n de direcciones de otros usuarios en API\n- inc-0016: Contrase\u00f1as visibles en logs administrativos"
+    },
+    {
+      "repeat": 16,
+      "lang": "en",
+      "source": "template",
+      "drafts": 2,
+      "problems": [
+        [
+          "number word 'three' in section 'Duplicates': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number"
+        ],
+        [
+          "number word 'three' in section 'Duplicates': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number"
+        ]
+      ],
+      "fallback_reason": [
+        "number word 'three' in section 'Duplicates': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number"
+      ],
+      "rejected": [
+        [
+          {
+            "heading": "Overview",
+            "body": "{{total.incidents}} incidents were submitted for triage, with {{total.classified}} automatically classified and {{total.needs_manual}} awaiting manual review. After deduplication, {{clusters.unique_bugs}} distinct bugs remain, with {{clusters.duplicate_groups}} bugs reported multiple times. The batch identified {{representatives.count}} representative incidents across severity levels and components."
+          },
+          {
+            "heading": "Severity breakdown",
+            "body": "{{severity.critical.count}} incidents are critical ({{severity.critical.pct}} of classified incidents), {{severity.high.count}} are high ({{severity.high.pct}}), {{severity.medium.count}} are medium ({{severity.medium.pct}}), and {{severity.low.count}} are low ({{severity.low.pct}})."
+          },
+          {
+            "heading": "Most affected components",
+            "body": "The {{top_components.count}} components with the most incidents are:\n- Checkout: {{component.checkout.severity.critical.count}} critical, {{component.checkout.severity.high.count}} high\n- Notifications: {{component.notifications.severity.medium.count}} medium, {{component.notifications.severity.low.count}} low\n- Search: {{component.search.severity.high.count}} high, {{component.search.severity.medium.count}} medium"
+          },
+          {
+            "heading": "Duplicates",
+            "body": "Three bugs received multiple reports: inc-0003 ({{reports.inc_0003}} reports), inc-0006 ({{reports.inc_0006}} reports), and inc-0009 ({{reports.inc_0009}} reports). These account for {{clusters.duplicate_reports}} of the {{clusters.duplicate_groups}} duplicate reports in the batch."
+          },
+          {
+            "heading": "What to fix first",
+            "body": "Address the {{representatives.severity.critical.count}} critical incidents immediately:\n- inc-0003: checkout crashes on order confirmation\n- inc-0005: payments duplicate charges\n- inc-0010: API exposes other users' addresses\n- inc-0016: admin logs expose passwords\n\nThen prioritize the {{representatives.severity.high.count}} high-severity incidents affecting checkout and search functionality."
+          }
+        ],
+        [
+          {
+            "heading": "Overview",
+            "body": "The batch contains {{total.incidents}} incidents, of which {{total.classified}} were automatically classified and {{total.needs_manual}} require manual review. After deduplication, {{clusters.unique_bugs}} distinct bugs remain. {{clusters.duplicate_groups}} bugs were reported multiple times, with {{clusters.duplicate_reports}} duplicate reports identified."
+          },
+          {
+            "heading": "Severity distribution",
+            "body": "{{severity.critical.count}} incidents are critical ({{severity.critical.pct}}), {{severity.high.count}} are high ({{severity.high.pct}}), {{severity.medium.count}} are medium ({{severity.medium.pct}}), and {{severity.low.count}} are low ({{severity.low.pct}})."
+          },
+          {
+            "heading": "Most affected components",
+            "body": "- Checkout: {{component.checkout.severity.critical.count}} critical, {{component.checkout.severity.high.count}} high\n- Notifications: {{component.notifications.severity.medium.count}} medium, {{component.notifications.severity.low.count}} low\n- Search: {{component.search.severity.high.count}} high, {{component.search.severity.medium.count}} medium"
+          },
+          {
+            "heading": "Duplicates",
+            "body": "Three incidents have multiple reports: inc-0003 ({{reports.inc_0003}} reports), inc-0006 ({{reports.inc_0006}} reports), and inc-0009 ({{reports.inc_0009}} reports)."
+          },
+          {
+            "heading": "What to fix first",
+            "body": "Address critical incidents immediately: inc-0003 (checkout crash on order confirmation), inc-0005 (double charge on card payments), inc-0010 (API exposing other users' addresses), and inc-0016 (admin password visible in logs)."
+          }
+        ]
+      ],
+      "calls": 2,
+      "cost_usd": 0.011119,
+      "report": "# QA triage report\n\nBatch `sample-497c47c8` \u00b7 deterministic template: the model's text failed validation\n\n## Overview\n\n20 incidents were received (0 CSV rows rejected). 20 were classified automatically and 0 need manual review. After merging duplicates there are 17 distinct bugs.\n\n## Severity\n\n- Critical: 5 (25.0%)\n- High: 5 (25.0%)\n- Medium: 7 (35.0%)\n- Low: 3 (15.0%)\n\n## Most affected components\n\n- checkout: 3\n- notifications: 3\n- search: 3\n\n## Duplicates\n\n3 bugs were reported more than once, with 3 repeated reports."
+    },
+    {
+      "repeat": 17,
+      "lang": "es",
+      "source": "model",
+      "drafts": 1,
+      "problems": [],
+      "fallback_reason": [],
+      "rejected": [],
+      "calls": 1,
+      "cost_usd": 0.005863,
+      "report": "# Informe de triage QA\n\nLote `sample-497c47c8` \u00b7 redactado por el modelo global.anthropic.claude-haiku-4-5-20251001-v1:0 con el prompt summarize/v3\n\n## Resumen general\n\nSe procesaron 20 incidentes, de los cuales 20 fueron clasificados autom\u00e1ticamente. 0 requieren clasificaci\u00f3n manual. Tras consolidar reportes duplicados, se identificaron 17 bugs distintos, siendo 3 de ellos reportados m\u00e1s de una vez.\n\n## Severidad\n\nDe los incidentes clasificados, 5 son cr\u00edticos (25,0\u00a0%), 5 tienen severidad alta (25,0\u00a0%), 7 son medios (35,0\u00a0%) y 3 son bajos (15,0\u00a0%).\n\n## Componentes m\u00e1s afectados\n\nLos 3 componentes con m\u00e1s incidentes son:\n- Checkout: 2 cr\u00edticos, 1 altos\n- Notifications: 2 medios, 1 bajos\n- Search: 1 altos, 2 medios\n\n## Reportes duplicados\n\nSe encontraron 3 reportes duplicados correspondientes a 3 bugs:\n- inc-0003: 2 reportes\n- inc-0006: 2 reportes\n- inc-0009: 2 reportes\n\n## Qu\u00e9 reparar primero\n\nPriorizar los siguientes incidentes cr\u00edticos que afectan la funcionalidad esencial:\n- inc-0003: Error 500 al confirmar el pedido\n- inc-0005: Pago con tarjeta se cobra dos veces\n- inc-0010: API devuelve direcciones de otros usuarios\n- inc-0016: Contrase\u00f1a visible en logs del admin"
+    },
+    {
+      "repeat": 17,
+      "lang": "en",
+      "source": "model",
+      "drafts": 2,
+      "problems": [
+        [
+          "number word 'three' in section 'Most affected components': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number"
+        ]
+      ],
+      "fallback_reason": [],
+      "rejected": [
+        [
+          {
+            "heading": "Overview",
+            "body": "This batch contains {{total.incidents}} incidents, of which {{total.classified}} were automatically classified and {{total.needs_manual}} require manual review. After deduplication, {{clusters.unique_bugs}} distinct bugs were identified. {{clusters.duplicate_groups}} bugs were reported multiple times, accounting for {{clusters.duplicate_reports}} duplicate reports."
+          },
+          {
+            "heading": "Severity distribution",
+            "body": "Of classified incidents, {{severity.critical.count}} are critical ({{severity.critical.pct}}), {{severity.high.count}} are high ({{severity.high.pct}}), {{severity.medium.count}} are medium ({{severity.medium.pct}}), and {{severity.low.count}} are low ({{severity.low.pct}})."
+          },
+          {
+            "heading": "Most affected components",
+            "body": "Three components account for the majority of incidents:\n- Checkout: {{component.checkout.severity.critical.count}} critical and {{component.checkout.severity.high.count}} high severity issues\n- Notifications: {{component.notifications.severity.medium.count}} medium and {{component.notifications.severity.low.count}} low severity issues\n- Search: {{component.search.severity.high.count}} high and {{component.search.severity.medium.count}} medium severity issues"
+          },
+          {
+            "heading": "What to fix first",
+            "body": "Address these critical incidents immediately:\n- inc-0003: Application crash when confirming orders\n- inc-0005: Duplicate charges on card transactions\n- inc-0010: API exposing other users' addresses\n- inc-0016: Admin passwords visible in logs\n\nThen prioritize high-severity checkout and search issues: inc-0019, inc-0006, inc-0001, inc-0002, inc-0012."
+          }
+        ]
+      ],
+      "calls": 2,
+      "cost_usd": 0.010853999999999999,
+      "report": "# QA triage report\n\nBatch `sample-497c47c8` \u00b7 written by model global.anthropic.claude-haiku-4-5-20251001-v1:0 with prompt summarize/v3\n\n## Overview\n\n20 incidents were submitted for triage, with 20 automatically classified and 0 awaiting manual review. 3 reports duplicate bugs already in the system, reducing the distinct issues to 17.\n\n## Severity breakdown\n\n5 incidents are critical (25.0%), 5 are high (25.0%), 7 are medium (35.0%), and 3 are low (15.0%).\n\n## Most affected components\n\nThe checkout, notifications, and search components account for the highest incident volumes:\n- Checkout: 2 critical, 1 high\n- Notifications: 2 medium, 1 low\n- Search: 1 high, 2 medium\n\n## Duplicates\n\n3 bugs were reported multiple times. The most reported incidents are inc-0003 (2 reports), inc-0006 (2 reports), and inc-0009 (2 reports).\n\n## What to fix first\n\nAddress critical issues immediately:\n- inc-0003: checkout crashes on order confirmation\n- inc-0005: payments charged twice\n- inc-0010: API exposes other users' addresses\n- inc-0016: admin passwords visible in logs\n\nThen tackle high-severity functional issues affecting checkout (inc-0019) and authentication (inc-0001)."
+    },
+    {
+      "repeat": 18,
+      "lang": "es",
+      "source": "model",
+      "drafts": 1,
+      "problems": [],
+      "fallback_reason": [],
+      "rejected": [],
+      "calls": 1,
+      "cost_usd": 0.005948,
+      "report": "# Informe de triage QA\n\nLote `sample-497c47c8` \u00b7 redactado por el modelo global.anthropic.claude-haiku-4-5-20251001-v1:0 con el prompt summarize/v3\n\n## Resumen del lote\n\nSe han triado 20 incidentes de un total de 20 reportes. 0 requieren clasificaci\u00f3n manual. Tras consolidar duplicados, se identificaron 17 problemas distintos en 3 \u00e1reas reportadas m\u00faltiples veces.\n\n## Severidad\n\n- 5 incidentes cr\u00edticos (25,0\u00a0%)\n- 5 incidentes altos (25,0\u00a0%)\n- 7 incidentes medianos (35,0\u00a0%)\n- 3 incidentes bajos (15,0\u00a0%)\n\n## Componentes m\u00e1s afectados\n\nLos 3 componentes con m\u00e1s incidentes son: checkout con 2 cr\u00edticos y 1 altos; notifications con 2 medianos y 1 bajos; search con 1 altos y 2 medianos.\n\n## Duplicados\n\n- inc-0003 tiene 2 reportes\n- inc-0006 tiene 2 reportes\n- inc-0009 tiene 2 reportes\n\n## Qu\u00e9 reparar primero\n\nLos incidentes cr\u00edticos requieren atenci\u00f3n inmediata:\n- inc-0003: La aplicaci\u00f3n falla al confirmar pedidos\n- inc-0005: Los pagos se cobran dos veces\n- inc-0010: La API expone direcciones de otros usuarios\n- inc-0016: Las contrase\u00f1as quedan registradas en los logs del administrador\n\nLuego abordar los incidentes altos en checkout e-inc-0019 (cupones de env\u00edo se aplican incorrectamente) e inc-0001, inc-0002, inc-0012 en otros componentes."
+    },
+    {
+      "repeat": 18,
+      "lang": "en",
+      "source": "model",
+      "drafts": 2,
+      "problems": [
+        [
+          "number word 'three' in section 'Most affected components': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number",
+          "number word 'three' in section 'Duplicates': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number"
+        ]
+      ],
+      "fallback_reason": [],
+      "rejected": [
+        [
+          {
+            "heading": "Overview",
+            "body": "{{total.incidents}} incidents were submitted for triage, of which {{total.classified}} were automatically classified and {{total.needs_manual}} require manual review. The classification identified {{clusters.unique_bugs}} distinct bugs after deduplication. {{clusters.duplicate_reports}} reports were duplicates of existing bugs across {{clusters.duplicate_groups}} bug clusters."
+          },
+          {
+            "heading": "Severity distribution",
+            "body": "Of the classified incidents, {{severity.critical.count}} are critical ({{severity.critical.pct}}), {{severity.high.count}} are high ({{severity.high.pct}}), {{severity.medium.count}} are medium ({{severity.medium.pct}}), and {{severity.low.count}} are low ({{severity.low.pct}})."
+          },
+          {
+            "heading": "Most affected components",
+            "body": "Three components account for the majority of incidents:\n- Checkout: {{component.checkout.severity.critical.count}} critical, {{component.checkout.severity.high.count}} high\n- Notifications: {{component.notifications.severity.medium.count}} medium, {{component.notifications.severity.low.count}} low\n- Search: {{component.search.severity.high.count}} high, {{component.search.severity.medium.count}} medium"
+          },
+          {
+            "heading": "Duplicates",
+            "body": "Three bugs were reported multiple times: inc-0003 ({{reports.inc_0003}} reports), inc-0006 ({{reports.inc_0006}} reports), and inc-0009 ({{reports.inc_0009}} reports). Deduplication consolidates these into single issues for fix tracking."
+          },
+          {
+            "heading": "What to fix first",
+            "body": "Address the {{severity.critical.count}} critical incidents immediately:\n- inc-0003: Checkout crashes with Error 500 during order confirmation\n- inc-0005: Payment processing charges customers twice\n- inc-0010: API exposes other users' addresses\n- inc-0016: Admin logs contain plaintext passwords"
+          }
+        ]
+      ],
+      "calls": 2,
+      "cost_usd": 0.01119,
+      "report": "# QA triage report\n\nBatch `sample-497c47c8` \u00b7 written by model global.anthropic.claude-haiku-4-5-20251001-v1:0 with prompt summarize/v3\n\n## Overview\n\n20 incidents were submitted for triage, with 20 classified by the model and 0 requiring manual review. After clustering, 17 distinct bugs were identified, with 3 bugs reported more than once, accounting for 3 duplicate reports.\n\n## Severity distribution\n\n5 incidents are critical (25.0%), 5 are high (25.0%), 7 are medium (35.0%), and 3 are low (15.0%).\n\n## Most affected components\n\n- Checkout: 2 critical, 1 high\n- Notifications: 2 medium, 1 low\n- Search: 1 high, 2 medium\n\n## Duplicates\n\n- inc-0003: 2 reports of a checkout crash on order confirmation\n- inc-0006: 2 reports of search ignoring accents\n- inc-0009: 2 reports of duplicate push notifications\n\n## What to fix first\n\nAddress these critical incidents immediately:\n- inc-0003: Checkout error preventing order confirmation\n- inc-0005: Payment processing charges users twice\n- inc-0010: API exposes other users' addresses\n- inc-0016: Admin passwords visible in logs"
+    },
+    {
+      "repeat": 19,
+      "lang": "es",
+      "source": "model",
+      "drafts": 1,
+      "problems": [],
+      "fallback_reason": [],
+      "rejected": [],
+      "calls": 1,
+      "cost_usd": 0.006003,
+      "report": "# Informe de triage QA\n\nLote `sample-497c47c8` \u00b7 redactado por el modelo global.anthropic.claude-haiku-4-5-20251001-v1:0 con el prompt summarize/v3\n\n## Resumen general\n\nSe han triado 20 incidentes, 20 fueron clasificados autom\u00e1ticamente y 0 requieren revisi\u00f3n manual. Despu\u00e9s de consolidar reportes duplicados, se identificaron 17 defectos \u00fanicos. 3 defectos fueron reportados m\u00faltiples veces.\n\n## Por severidad\n\nSe encontraron 5 incidentes cr\u00edticos (25,0\u00a0%), 5 altos (25,0\u00a0%), 7 medios (35,0\u00a0%) y 3 bajos (15,0\u00a0%).\n\n## Componentes m\u00e1s afectados\n\nLos 3 componentes con m\u00e1s incidentes son:\n- Checkout: 2 cr\u00edticos, 1 altos\n- Notifications: 2 medios, 1 bajos\n- Search: 1 altos, 2 medios\n\n## Reportes duplicados\n\nSe encontraron 3 reportes duplicados en 3 defectos: inc-0003 con 2 reportes, inc-0006 con 2 reportes, e inc-0009 con 2 reportes.\n\n## Qu\u00e9 arreglar primero\n\nComenzar por los incidentes cr\u00edticos de seguridad y funcionalidad:\n- inc-0003: Error 500 al confirmar el pedido\n- inc-0005: Pago con tarjeta se cobra dos veces\n- inc-0010: API returns other user's addresses\n- inc-0016: Contrase\u00f1a visible en logs del admin\n- inc-0001: No puedo iniciar sesi\u00f3n con Google\n- inc-0019: El cup\u00f3n de env\u00edo gratis se aplica a pedidos internacionales"
+    },
+    {
+      "repeat": 19,
+      "lang": "en",
+      "source": "model",
+      "drafts": 1,
+      "problems": [],
+      "fallback_reason": [],
+      "rejected": [],
+      "calls": 1,
+      "cost_usd": 0.005493,
+      "report": "# QA triage report\n\nBatch `sample-497c47c8` \u00b7 written by model global.anthropic.claude-haiku-4-5-20251001-v1:0 with prompt summarize/v3\n\n## Overview\n\nThe batch contains 20 incidents, of which 20 were automatically classified and 0 require manual review. After deduplication, 17 distinct bugs remain. 3 bugs were reported multiple times, accounting for 3 duplicate reports.\n\n## Severity\n\n5 incidents are critical (25.0% of classified incidents), 5 are high (25.0%), 7 are medium (35.0%), and 3 are low (15.0%).\n\n## Most affected components\n\n- Checkout: 2 critical, 1 high\n- Notifications: 2 medium, 1 low\n- Search: 1 high, 2 medium\n\n## Duplicates\n\n- inc-0003 reported 2 times (checkout crash on order confirmation)\n- inc-0006 reported 2 times (search ignores accents)\n- inc-0009 reported 2 times (duplicate push notifications)\n\n## What to fix first\n\nStart with critical incidents: inc-0003 (checkout failure), inc-0005 (double charge), inc-0010 (exposed user addresses), and inc-0016 (password in logs). Then address high-severity issues inc-0019 (incorrect shipping discount), inc-0001 (Google login), inc-0002 (cart discount), and inc-0012 (profile crash)."
+    },
+    {
+      "repeat": 20,
+      "lang": "es",
+      "source": "model",
+      "drafts": 2,
+      "problems": [
+        [
+          "number word 'tres' in section 'Reportes duplicados': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number"
+        ]
+      ],
+      "fallback_reason": [],
+      "rejected": [
+        [
+          {
+            "heading": "Resumen general",
+            "body": "Se han triado {{total.incidents}} incidentes en este lote. {{total.classified}} fueron clasificados autom\u00e1ticamente por el modelo, mientras que {{total.needs_manual}} requieren revisi\u00f3n manual. Despu\u00e9s de fusionar reportes duplicados, se identificaron {{clusters.unique_bugs}} bugs distintos, con {{clusters.duplicate_groups}} bugs reportados m\u00e1s de una vez ({{clusters.duplicate_reports}} reportes duplicados en total)."
+          },
+          {
+            "heading": "Severidad",
+            "body": "La distribuci\u00f3n de severidad entre los incidentes clasificados es: {{severity.critical.count}} cr\u00edticos ({{severity.critical.pct}}), {{severity.high.count}} altos ({{severity.high.pct}}), {{severity.medium.count}} medios ({{severity.medium.pct}}) y {{severity.low.count}} bajos ({{severity.low.pct}})."
+          },
+          {
+            "heading": "Componentes m\u00e1s afectados",
+            "body": "Los {{top_components.count}} componentes con m\u00e1s incidentes son:\n- Checkout: {{component.checkout.severity.critical.count}} cr\u00edticos, {{component.checkout.severity.high.count}} altos\n- Notifications: {{component.notifications.severity.medium.count}} medios, {{component.notifications.severity.low.count}} bajos\n- Search: {{component.search.severity.high.count}} altos, {{component.search.severity.medium.count}} medios"
+          },
+          {
+            "heading": "Reportes duplicados",
+            "body": "Tres bugs fueron reportados m\u00faltiples veces: inc-0003 ({{reports.inc_0003}} reportes), inc-0006 ({{reports.inc_0006}} reportes) e inc-0009 ({{reports.inc_0009}} reportes). Esto indica que estos problemas afectan a varios usuarios y merecen prioridad."
+          },
+          {
+            "heading": "Qu\u00e9 arreglar primero",
+            "body": "Comienza con los incidentes cr\u00edticos: inc-0003 (error al confirmar pedido en checkout), inc-0005 (cargo doble en pagos), inc-0010 (API expone direcciones de otros usuarios) e inc-0016 (contrase\u00f1a visible en logs). Luego aborda los problemas de checkout de severidad alta: inc-0019."
+          }
+        ]
+      ],
+      "calls": 2,
+      "cost_usd": 0.012355999999999999,
+      "report": "# Informe de triage QA\n\nLote `sample-497c47c8` \u00b7 redactado por el modelo global.anthropic.claude-haiku-4-5-20251001-v1:0 con el prompt summarize/v3\n\n## Resumen general\n\nSe procesaron 20 incidentes en esta tanda de triage. 20 fueron clasificados autom\u00e1ticamente por el modelo, mientras que 0 requieren clasificaci\u00f3n manual. Tras consolidar reportes duplicados, se identificaron 17 bugs distintos.\n\n## Severidad\n\nLos incidentes clasificados se distribuyen as\u00ed:\n- 5 cr\u00edticos (25,0\u00a0%)\n- 5 altos (25,0\u00a0%)\n- 7 medios (35,0\u00a0%)\n- 3 bajos (15,0\u00a0%)\n\n## Componentes m\u00e1s afectados\n\nLos 3 componentes con m\u00e1s incidentes son:\n- Checkout: 2 cr\u00edticos, 1 altos\n- Notifications: 2 medios, 1 bajos\n- Search: 1 altos, 2 medios\n\n## Reportes duplicados\n\nSe encontraron 3 bugs reportados m\u00faltiples veces. Los incidentes duplicados son:\n- inc-0003 con 2 reportes\n- inc-0006 con 2 reportes\n- inc-0009 con 2 reportes\n\n## Qu\u00e9 reparar primero\n\nSe recomienda priorizar estos incidentes cr\u00edticos y de alto impacto:\n- inc-0003: Crash al confirmar pedido (2 reportes)\n- inc-0005: Cargo duplicado en pagos con tarjeta\n- inc-0010: API expone direcciones de otros usuarios\n- inc-0016: Contrase\u00f1a visible en logs del admin\n- inc-0006: B\u00fasqueda ignora acentos (2 reportes)\n- inc-0001: Fallo en inicio de sesi\u00f3n con Google\n- inc-0019: Cup\u00f3n de env\u00edo gratis se aplica incorrectamente"
+    },
+    {
+      "repeat": 20,
+      "lang": "en",
+      "source": "model",
+      "drafts": 2,
+      "problems": [
+        [
+          "number word 'three' in section 'Most Affected Components': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number",
+          "number word 'three' in section 'Duplicates': keys with this value are {{clusters.duplicate_groups}} (bugs that were reported more than once), {{clusters.duplicate_reports}} (reports that repeat a bug someone already reported), {{severity.low.count}} (incidents classified as low), {{category.crash.count}} (incidents in the crash category), {{category.ui.count}} (incidents in the ui category), {{component.checkout.count}} (incidents in the checkout component), {{component.notifications.count}} (incidents in the notifications component), {{component.search.count}} (incidents in the search component), {{top_components.count}} (components listed in <top_components>); write the one you mean, or say it without a number"
+        ]
+      ],
+      "fallback_reason": [],
+      "rejected": [
+        [
+          {
+            "heading": "Overview",
+            "body": "The batch contains {{total.incidents}} incidents, of which {{total.classified}} were automatically classified and {{total.needs_manual}} require manual review. After deduplication, {{clusters.unique_bugs}} distinct bugs remain. {{clusters.duplicate_groups}} bugs were reported multiple times, accounting for {{clusters.duplicate_reports}} duplicate reports."
+          },
+          {
+            "heading": "Severity",
+            "body": "{{severity.critical.count}} incidents are critical ({{severity.critical.pct}} of classified), {{severity.high.count}} are high ({{severity.high.pct}}), {{severity.medium.count}} are medium ({{severity.medium.pct}}), and {{severity.low.count}} are low ({{severity.low.pct}})."
+          },
+          {
+            "heading": "Most Affected Components",
+            "body": "Three components dominate the report:\n- Checkout: {{component.checkout.severity.critical.count}} critical, {{component.checkout.severity.high.count}} high\n- Notifications: {{component.notifications.severity.medium.count}} medium, {{component.notifications.severity.low.count}} low\n- Search: {{component.search.severity.high.count}} high, {{component.search.severity.medium.count}} medium"
+          },
+          {
+            "heading": "Duplicates",
+            "body": "Three bugs were reported more than once: inc-0003 ({{reports.inc_0003}} reports), inc-0006 ({{reports.inc_0006}} reports), and inc-0009 ({{reports.inc_0009}} reports). These should be prioritized after deduplication is confirmed."
+          },
+          {
+            "heading": "What to Fix First",
+            "body": "Address critical incidents immediately:\n- inc-0003: Checkout error preventing order confirmation\n- inc-0005: Duplicate charges on card payments\n- inc-0010: API exposing other users' addresses\n- inc-0016: Admin passwords logged in plaintext\n\nThen tackle high-severity checkout and search issues: inc-0019, inc-0006, inc-0001, and inc-0002."
+          }
+        ]
+      ],
+      "calls": 2,
+      "cost_usd": 0.011251,
+      "report": "# QA triage report\n\nBatch `sample-497c47c8` \u00b7 written by model global.anthropic.claude-haiku-4-5-20251001-v1:0 with prompt summarize/v3\n\n## Overview\n\n20 incidents were submitted for triage. 20 were automatically classified, while 0 require manual review. 3 reports duplicate bugs already in the backlog, reducing the unique bug count to 17.\n\n## Severity\n\n5 incidents are critical (25.0%), posing immediate risks to users. 5 are high severity (25.0%), requiring urgent attention. 7 are medium (35.0%).\n\n## Most Affected Components\n\n- Checkout: 2 critical, 1 high\n- Notifications: 2 medium, 1 low\n- Search: 1 high, 2 medium\n\n## Duplicates\n\n3 bugs were reported multiple times. inc-0003 has 2 reports, inc-0006 has 2 reports, and inc-0009 has 2 reports.\n\n## What to Fix First\n\nAddress critical security and payment issues immediately: inc-0010 (API leaks user addresses), inc-0016 (admin password in logs), and inc-0005 (double charging). Then fix inc-0003 (checkout crash) and high-severity issues inc-0001, inc-0002, inc-0012, inc-0019, and inc-0006."
+    }
+  ]
+}
