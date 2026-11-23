@@ -1,0 +1,117 @@
+name: eval
+
+on:
+  pull_request:
+    paths: &eval_paths
+      - "prompts/**"
+      - "config/**"
+      - "src/triagelite/**"
+      - "evals/**"
+      - "!evals/results/**"
+      - "uv.lock"
+      - ".github/workflows/eval.yml"
+  push:
+    branches: [main]
+    paths: *eval_paths
+  schedule:
+    - cron: "17 6 * * 1,4"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+  actions: read
+
+concurrency:
+  group: eval-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: us-east-1
+  RESULTS: ci-eval
+
+jobs:
+  eval:
+    name: classify eval on tuning
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          version: "0.8.22"
+          enable-cache: true
+
+      - name: Install locked dependencies
+        run: uv sync --locked
+
+      - name: Download main's latest result
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          run_id=$(gh run list --workflow eval.yml --branch main --status success --limit 1 \
+            --json databaseId --jq '.[0].databaseId // empty')
+          if [ -z "$run_id" ]; then
+            echo "::error title=No baseline from main::Run the eval workflow on main (Actions, eval, Run workflow) once, then re-run this job."
+            exit 1
+          fi
+          gh run download "$run_id" --name eval-result --dir baseline
+
+      - uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: evals/cache
+          key: eval-cache-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: eval-cache-
+
+      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
+        with:
+          role-to-assume: ${{ vars.AWS_EVAL_ROLE_ARN }}
+          role-session-name: eval-${{ github.run_id }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Run the harness with the configured prompt
+        run: |
+          for attempt in 1 2 3; do
+            code=0
+            uv run python -m evals.harness --split tuning --repeat 3 --results-dir "$RESULTS" || code=$?
+            if [ "$code" -ne 3 ]; then
+              exit "$code"
+            fi
+            echo "::warning title=Bedrock throttled::attempt $attempt of 3; retrying in 60 s, finished chunks come from the cache"
+            sleep 60
+          done
+          echo "::error title=Bedrock throttled::Infrastructure failure, not a quality regression. Re-run the job later."
+          exit 3
+
+      - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        if: always()
+        with:
+          path: evals/cache
+          key: eval-cache-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Compare with main (paired bootstrap gate)
+        if: github.event_name == 'pull_request'
+        run: |
+          code=0
+          uv run python -m evals.compare baseline/*.json "$RESULTS"/*.json \
+            --results-dir "$RESULTS" --fail-on-regression || code=$?
+          cat "$RESULTS"/compare-*.md >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
+          exit "$code"
+
+      - name: Result in the job summary
+        if: github.event_name != 'pull_request'
+        run: head -c 800000 "$RESULTS"/*.md >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: github.event_name != 'pull_request'
+        with:
+          name: eval-result
+          path: ${{ env.RESULTS }}/*.json
+          if-no-files-found: error
+          retention-days: 90
