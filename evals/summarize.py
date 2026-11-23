@@ -13,7 +13,7 @@ from collections.abc import Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 
-from pydantic import NonNegativeFloat, NonNegativeInt, PositiveInt
+from pydantic import Field, NonNegativeFloat, NonNegativeInt, PositiveInt
 
 from evals.dataset import read_jsonl, write_json
 from evals.harness import RESULTS_DIR, EvalError, model_slug, parse_prompt_id
@@ -26,6 +26,7 @@ from triagelite.domain.models import (
     Language,
     LLMCallRecord,
     NonEmptyStr,
+    ReportSection,
     RowError,
     StrictModel,
 )
@@ -45,6 +46,8 @@ from triagelite.settings import (
 )
 
 REVIEW_REPORTS = 3
+BROKEN_SENTENCES = 20
+SENTENCE_END = re.compile(r"(?<=[.!?])\s+|\n+")
 QUOTED = re.compile(r"^[a-z ]+ '([^']*)'")
 BRACED = re.compile(r"\{\{([^}]*)\}\}")
 PROBLEM_KINDS = {
@@ -67,6 +70,7 @@ class Trial(StrictModel):
     drafts: NonNegativeInt
     problems: list[list[NonEmptyStr]]
     fallback_reason: list[NonEmptyStr]
+    rejected: list[list[ReportSection]] = Field(default_factory=list)
     calls: NonNegativeInt
     cost_usd: NonNegativeFloat
     report: str
@@ -122,6 +126,36 @@ def offending(problem: str) -> str | None:
     return match[1] if match else None
 
 
+def sentences_with(text: str, token: str) -> list[str]:
+    """The sentences of `text` that contain `token` as a whole word, ignoring case."""
+    word = re.compile(rf"(?<!\w){re.escape(token)}(?!\w)", re.IGNORECASE)
+    return [
+        sentence.strip()
+        for sentence in SENTENCE_END.split(text)
+        if sentence.strip() and word.search(sentence)
+    ]
+
+
+def broken_sentences(trial: Trial) -> list[str]:
+    """`<lang>, repeat <n>, '<token>': <sentence>` for every number a rejected draft wrote."""
+    found: list[str] = []
+    for sections, problems in zip(trial.rejected, trial.problems, strict=False):
+        tokens = dict.fromkeys(
+            token
+            for problem in problems
+            if problem_kind(problem) in {"number word", "bare number"}
+            and (token := offending(problem)) is not None
+        )
+        for token in tokens:
+            for section in sections:
+                for text in (section.heading, section.body):
+                    found += [
+                        f"{trial.lang}, repeat {trial.repeat}, '{token}': {sentence}"
+                        for sentence in sentences_with(text, token)
+                    ]
+    return list(dict.fromkeys(found))
+
+
 def drafts_of(draft: ReportDraft) -> int:
     """Model drafts that passed schema validation, kept or rejected."""
     return len(draft.rejected) + (draft.source is ReportSource.MODEL)
@@ -167,6 +201,7 @@ def run_summarize_eval(
                     drafts=drafts_of(draft),
                     problems=[rejected.problems for rejected in draft.rejected],
                     fallback_reason=draft.problems if draft.source is ReportSource.TEMPLATE else [],
+                    rejected=[rejected.sections for rejected in draft.rejected],
                     calls=len(made),
                     cost_usd=sum(record.cost_usd for record in made),
                     report=render_draft(
@@ -236,6 +271,12 @@ def render_markdown(result: SummarizeEvalResult) -> str:
     if other_fallbacks:
         lines += ["", "Fallbacks not caused by grounding:", ""]
         lines += [f"- {reason}" for reason in other_fallbacks]
+    broken = [sentence for t in result.trials for sentence in broken_sentences(t)]
+    if broken:
+        lines += ["", "## Sentences that broke a rule", ""]
+        lines += [f"- {sentence}" for sentence in broken[:BROKEN_SENTENCES]]
+        if len(broken) > BROKEN_SENTENCES:
+            lines.append(f"- … and {len(broken) - BROKEN_SENTENCES} more in the JSON result")
     lines += [
         "",
         "## Reports to review",

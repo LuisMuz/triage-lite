@@ -11,6 +11,7 @@ from evals.summarize import (
     problem_kind,
     render_markdown,
     run_summarize_eval,
+    sentences_with,
     write_result,
 )
 from tests.pipeline.conftest import write_report
@@ -73,6 +74,7 @@ def test_a_draft_rejected_twice_is_a_template_fallback(run_dir: Path) -> None:
     assert "- number word: 2" in report
     assert "- number word 'three': 2" in report
     assert "Fallbacks not caused by grounding" not in report
+    assert "- en, repeat 1, 'three': Three incidents arrived, tres incidentes." in report
 
 
 def test_a_draft_fixed_on_the_re_ask_counts_as_passed_on_re_ask(run_dir: Path) -> None:
@@ -81,6 +83,35 @@ def test_a_draft_fixed_on_the_re_ask_counts_as_passed_on_re_ask(run_dir: Path) -
     spanish = result.trials[0]
     assert (spanish.source, spanish.drafts, spanish.fallback_reason) == (ReportSource.MODEL, 2, [])
     assert "| es | 0/1 (0%) | 0/1 (0%) | 1/1 (100%) |" in render_markdown(result)
+
+
+def test_the_rejected_drafts_are_kept(run_dir: Path) -> None:
+    result = evaluate(run_dir, [NUMBER_WORD, GOOD, GOOD])
+
+    rejected = result.trials[0].rejected
+    assert len(rejected) == 1
+    assert "tres incidentes" in rejected[0][0].body
+
+
+def test_results_saved_before_drafts_were_kept_still_load(run_dir: Path) -> None:
+    result = evaluate(run_dir, [GOOD, GOOD])
+    saved = result.model_dump(mode="json")
+    for trial in saved["trials"]:
+        del trial["rejected"]
+
+    assert SummarizeEvalResult.model_validate(saved).trials[0].rejected == []
+
+
+@pytest.mark.parametrize(
+    ("body", "token", "expected"),
+    [
+        ("Intro.\nThe three components lead. Next one.", "three", ["The three components lead."]),
+        ("Top 3 here; not 13.", "3", ["Top 3 here; not 13."]),
+        ("Nothing here.", "five", []),
+    ],
+)
+def test_the_sentence_with_the_token_is_found(body: str, token: str, expected: list[str]) -> None:
+    assert sentences_with(body, token) == expected
 
 
 def test_a_fallback_from_throttling_is_listed_apart(run_dir: Path) -> None:
