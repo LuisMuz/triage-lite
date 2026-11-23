@@ -50,3 +50,14 @@ variable "budget_alert_email" {
   description = "Address that receives budget alerts. Set it in the gitignored terraform.tfvars."
   type        = string
 }
+
+variable "github_repository" {
+  description = "GitHub owner/name whose Actions runs may assume the CI roles."
+  type        = string
+  default     = "LuisMuz/triage-lite"
+
+  validation {
+    condition     = can(regex("^[A-Za-z0-9-]+/[A-Za-z0-9._-]+$", var.github_repository))
+    error_message = "Use the owner/name form, e.g. octo-org/triage-lite."
+  }
+}

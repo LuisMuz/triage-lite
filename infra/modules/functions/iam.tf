@@ -8,63 +8,11 @@ data "aws_iam_policy_document" "logs" {
   }
 }
 
-data "aws_iam_policy_document" "claude" {
+module "claude" {
+  source   = "../bedrock_invoke"
   for_each = local.claude_profile_for
 
-  statement {
-    sid       = "GrantGlobalCrisInferenceProfileRegionAccess"
-    actions   = ["bedrock:InvokeModel"]
-    resources = ["arn:${local.partition}:bedrock:${local.region}:${local.account}:inference-profile/${each.value}"]
-
-    condition {
-      test     = "StringEquals"
-      variable = "aws:RequestedRegion"
-      values   = [local.region]
-    }
-  }
-
-  statement {
-    sid       = "GrantGlobalCrisInferenceProfileInRegionModelAccess"
-    actions   = ["bedrock:InvokeModel"]
-    resources = ["arn:${local.partition}:bedrock:${local.region}::foundation-model/${trimprefix(each.value, "global.")}"]
-
-    condition {
-      test     = "StringEquals"
-      variable = "aws:RequestedRegion"
-      values   = [local.region]
-    }
-
-    condition {
-      test     = "StringEquals"
-      variable = "bedrock:InferenceProfileArn"
-      values   = ["arn:${local.partition}:bedrock:${local.region}:${local.account}:inference-profile/${each.value}"]
-    }
-  }
-
-  statement {
-    sid       = "GrantGlobalCrisInferenceProfileGlobalModelAccess"
-    actions   = ["bedrock:InvokeModel"]
-    resources = ["arn:${local.partition}:bedrock:::foundation-model/${trimprefix(each.value, "global.")}"]
-
-    condition {
-      test     = "StringEquals"
-      variable = "aws:RequestedRegion"
-      values   = ["unspecified"]
-    }
-
-    condition {
-      test     = "StringEquals"
-      variable = "bedrock:InferenceProfileArn"
-      values   = ["arn:${local.partition}:bedrock:${local.region}:${local.account}:inference-profile/${each.value}"]
-    }
-  }
-
-  lifecycle {
-    precondition {
-      condition     = startswith(each.value, "global.")
-      error_message = "Claude stages must use a global inference profile; other model IDs need their own IAM statements."
-    }
-  }
+  profile_ids = [each.value]
 }
 
 data "aws_iam_policy_document" "normalize" {
@@ -92,7 +40,7 @@ data "aws_iam_policy_document" "normalize" {
 data "aws_iam_policy_document" "classify_chunk" {
   source_policy_documents = [
     data.aws_iam_policy_document.logs["classify_chunk"].json,
-    data.aws_iam_policy_document.claude["classify_chunk"].json,
+    module.claude["classify_chunk"].policy_json,
   ]
 
   statement {
@@ -111,7 +59,7 @@ data "aws_iam_policy_document" "classify_chunk" {
 data "aws_iam_policy_document" "dedupe" {
   source_policy_documents = [
     data.aws_iam_policy_document.logs["dedupe"].json,
-    data.aws_iam_policy_document.claude["dedupe"].json,
+    module.claude["dedupe"].policy_json,
   ]
 
   statement {
@@ -136,7 +84,7 @@ data "aws_iam_policy_document" "dedupe" {
 data "aws_iam_policy_document" "summarize" {
   source_policy_documents = [
     data.aws_iam_policy_document.logs["summarize"].json,
-    data.aws_iam_policy_document.claude["summarize"].json,
+    module.claude["summarize"].policy_json,
   ]
 
   statement {
