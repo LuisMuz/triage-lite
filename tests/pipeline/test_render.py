@@ -22,23 +22,34 @@ def percent(value: float) -> Aggregate:
     return Aggregate(value=value, kind="percent", description="d")
 
 
-AGGREGATES = {
-    key: count(1)
-    for key in (
-        "total.incidents",
-        "total.row_errors",
-        "total.classified",
-        "total.needs_manual",
-        "clusters.unique_bugs",
-        "clusters.duplicate_groups",
-        "clusters.duplicate_reports",
-        "component.checkout.count",
-    )
-} | {
-    f"severity.{level}.{kind}": (count(1) if kind == "count" else percent(25.0))
-    for level in ("critical", "high", "medium", "low")
-    for kind in ("count", "pct")
-}
+AGGREGATES = (
+    {
+        key: count(1)
+        for key in (
+            "total.incidents",
+            "total.row_errors",
+            "total.classified",
+            "total.needs_manual",
+            "clusters.unique_bugs",
+            "clusters.duplicate_groups",
+            "clusters.duplicate_reports",
+            "component.checkout.count",
+        )
+    }
+    | {
+        "clusters.duplicate_groups": Aggregate(
+            value=3, kind="count", description="bugs reported more than once"
+        ),
+        "top_components.count": Aggregate(
+            value=3, kind="count", description="components listed in <top_components>"
+        ),
+    }
+    | {
+        f"severity.{level}.{kind}": (count(1) if kind == "count" else percent(25.0))
+        for level in ("critical", "high", "medium", "low")
+        for kind in ("count", "pct")
+    }
+)
 FACTS = ReportFacts(aggregates=AGGREGATES, top_components=["checkout"], representatives=[])
 
 
@@ -84,8 +95,16 @@ class TestGrounding:
 
     def test_bare_digit_is_rejected(self) -> None:
         assert check("13 incidents are critical.") == [
-            "bare number '13' in section 'Overview': write every number as a placeholder "
-            "from <aggregates>"
+            "bare number '13' in section 'Overview': no key in <aggregates> has this value; "
+            "name the incidents by id instead of counting them, or say it without a number"
+        ]
+
+    def test_bare_digit_lists_the_keys_with_its_value(self) -> None:
+        assert check("3 bugs repeat.") == [
+            "bare number '3' in section 'Overview': keys with this value are "
+            "{{clusters.duplicate_groups}} (bugs reported more than once), "
+            "{{top_components.count}} (components listed in <top_components>); "
+            "write the one you mean, or say it without a number"
         ]
 
     def test_short_numbers_from_titles_are_still_rejected(self) -> None:
@@ -126,11 +145,28 @@ class TestGrounding:
             "lang must be 'en', got 'es'"
         ]
 
-    def test_number_word_is_rejected(self) -> None:
-        assert check("Start with the three critical incidents.") == [
-            "number word 'three' in section 'Overview': use a placeholder from <aggregates>, "
+    def test_number_word_lists_the_keys_with_its_value(self) -> None:
+        assert check("The three most affected components.") == [
+            "number word 'three' in section 'Overview': keys with this value are "
+            "{{clusters.duplicate_groups}} (bugs reported more than once), "
+            "{{top_components.count}} (components listed in <top_components>); "
+            "write the one you mean, or say it without a number"
+        ]
+
+    def test_number_word_without_a_matching_key_asks_for_ids(self) -> None:
+        assert check("Fix these cuatro first.", lang="es") == [
+            "number word 'cuatro' in section 'Overview': no key in <aggregates> has this value; "
+            "name the incidents by id instead of counting them, or say it without a number"
+        ]
+
+    def test_number_word_without_a_value_gets_the_general_hint(self) -> None:
+        assert check("Hundreds of users.") == [
+            "number word 'hundreds' in section 'Overview': use a placeholder from <aggregates>, "
             "or say it without a number"
         ]
+
+    def test_percentages_never_match_a_count(self) -> None:
+        assert "no key in <aggregates> has this value" in check("About 25 users.")[0]
 
     def test_number_words_are_checked_in_the_report_language(self) -> None:
         assert check("Los tres componentes.") == []

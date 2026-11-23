@@ -16,56 +16,52 @@ WORD = re.compile(r"[^\W\d_]+")
 WRAPPING_PUNCTUATION = "()[]{}<>.,;:!?¡¿\"'`*_«»"
 NBSP = "\u00a0"
 
-NUMBER_WORDS: dict[Language, frozenset[str]] = {
-    "es": frozenset(
-        [
-            "dos",
-            "tres",
-            "cuatro",
-            "cinco",
-            "seis",
-            "siete",
-            "ocho",
-            "nueve",
-            "diez",
-            "doce",
-            "quince",
-            "veinte",
-            "treinta",
-            "cien",
-            "ciento",
-            "cientos",
-            "mil",
-            "docena",
-            "docenas",
-        ]
-    ),
-    "en": frozenset(
-        [
-            "two",
-            "three",
-            "four",
-            "five",
-            "six",
-            "seven",
-            "eight",
-            "nine",
-            "ten",
-            "eleven",
-            "twelve",
-            "fifteen",
-            "twenty",
-            "thirty",
-            "hundred",
-            "hundreds",
-            "thousand",
-            "thousands",
-            "dozen",
-            "dozens",
-        ]
-    ),
+NUMBER_WORDS: dict[Language, dict[str, int | None]] = {
+    "es": {
+        "dos": 2,
+        "tres": 3,
+        "cuatro": 4,
+        "cinco": 5,
+        "seis": 6,
+        "siete": 7,
+        "ocho": 8,
+        "nueve": 9,
+        "diez": 10,
+        "doce": 12,
+        "quince": 15,
+        "veinte": 20,
+        "treinta": 30,
+        "cien": 100,
+        "ciento": None,
+        "cientos": None,
+        "mil": 1000,
+        "docena": 12,
+        "docenas": None,
+    },
+    "en": {
+        "two": 2,
+        "three": 3,
+        "four": 4,
+        "five": 5,
+        "six": 6,
+        "seven": 7,
+        "eight": 8,
+        "nine": 9,
+        "ten": 10,
+        "eleven": 11,
+        "twelve": 12,
+        "fifteen": 15,
+        "twenty": 20,
+        "thirty": 30,
+        "hundred": 100,
+        "hundreds": None,
+        "thousand": 1000,
+        "thousands": None,
+        "dozen": 12,
+        "dozens": None,
+    },
 }
-ALL_NUMBER_WORDS = NUMBER_WORDS["es"] | NUMBER_WORDS["en"]
+ALL_NUMBER_WORDS = NUMBER_WORDS["es"].keys() | NUMBER_WORDS["en"].keys()
 TITLES: dict[Language, str] = {"es": "Informe de triage QA", "en": "QA triage report"}
 SEVERITY_NAMES: dict[Language, dict[Severity, str]] = {
     "es": {
@@ -206,17 +202,49 @@ def _text_problems(
         if ref.lower() not in incident_ids
     ]
     problems += [
-        f"bare number '{token}' in {where}: write every number as a placeholder from <aggregates>"
+        f"bare number '{token}' in {where}: "
+        + number_hint(
+            int(token) if token.isdecimal() else None,
+            aggregates,
+            "write every number as a placeholder from <aggregates>",
+        )
         for token in _bare_tokens(INCIDENT_REF.sub(" ", prose))
         if not VERSION.match(token) and token.casefold() not in allowed_tokens
     ]
     problems += [
-        f"number word '{word}' in {where}: use a placeholder from <aggregates>, "
-        "or say it without a number"
+        f"number word '{word}' in {where}: "
+        + number_hint(
+            NUMBER_WORDS[lang][word],
+            aggregates,
+            "use a placeholder from <aggregates>, or say it without a number",
+        )
         for word in WORD.findall(prose.casefold())
         if word in NUMBER_WORDS[lang] and word not in allowed_tokens
     ]
     return problems
+
+
+def number_hint(value: int | None, aggregates: Mapping[str, Aggregate], general: str) -> str:
+    """How to replace a number the model wrote: the count keys holding that value, if any.
+
+    The keys are matched against a number the draft already contains, so no value leaks.
+    """
+    if value is None:
+        return general
+    keys = [
+        f"{{{{{key}}}}} ({aggregate.description})"
+        for key, aggregate in aggregates.items()
+        if aggregate.kind == "count" and aggregate.value == value
+    ]
+    if not keys:
+        return (
+            "no key in <aggregates> has this value; name the incidents by id instead of "
+            "counting them, or say it without a number"
+        )
+    return (
+        f"keys with this value are {', '.join(keys)}; "
+        "write the one you mean, or say it without a number"
+    )
 
 
 def template_sections(facts: ReportFacts, lang: Language) -> list[ReportSection]:

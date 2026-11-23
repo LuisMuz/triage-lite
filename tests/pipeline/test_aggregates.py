@@ -63,7 +63,11 @@ def test_counts_and_percentages_come_from_the_results() -> None:
 
 def test_top_components_get_their_severity_mix() -> None:
     facts = compute_facts(INCIDENTS, RESULTS, CLUSTERS, 0, CONFIG)
-    mix = {key: a.value for key, a in facts.aggregates.items() if ".severity." in key}
+    mix = {
+        key: a.value
+        for key, a in facts.aggregates.items()
+        if key.startswith("component.") and ".severity." in key
+    }
 
     assert mix == {
         "component.checkout.severity.critical.count": 2,
@@ -86,6 +90,21 @@ def test_representatives_are_canonicals_most_severe_and_most_reported_first() ->
     assert first.reports_key == reports_key("inc-0002") == "reports.inc_0002"
     assert facts.aggregates["reports.inc_0002"].value == 2
     assert facts.representatives[1].reports_key is None
+
+
+def test_the_lists_shown_to_the_model_have_counts() -> None:
+    facts = compute_facts(INCIDENTS, RESULTS, CLUSTERS, 0, CONFIG)
+    values = {key: aggregate.value for key, aggregate in facts.aggregates.items()}
+
+    assert values["top_components.count"] == 2
+    assert values["representatives.count"] == 3
+    assert {
+        key: value for key, value in values.items() if key.startswith("representatives.severity.")
+    } == {
+        "representatives.severity.critical.count": 1,
+        "representatives.severity.medium.count": 1,
+        "representatives.severity.low.count": 1,
+    }
 
 
 def test_representatives_are_capped() -> None:

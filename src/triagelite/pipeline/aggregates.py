@@ -72,7 +72,8 @@ def compute_facts(
 ) -> ReportFacts:
     """Counts by severity, category and component, duplicates, and the incidents worth naming.
 
-    The top components also get their severity mix, so the report can ground claims about it.
+    The top components also get their severity mix, and the lists the model sees get their
+    sizes, so the report can ground claims about them instead of counting.
     """
     labels = {r.incident_id: r.classification for r in results if r.classification}
     classified = len(labels)
@@ -124,8 +125,20 @@ def compute_facts(
                 sizes[representative.incident_id],
                 f"reports of the bug {representative.incident_id}, duplicates included",
             )
+    aggregates["representatives.count"] = _count(
+        len(representatives), "incidents listed in <incidents>"
+    )
+    listed = Counter(representative.severity for representative in representatives)
+    for severity in Severity:
+        if listed[severity]:
+            aggregates[f"representatives.severity.{severity}.count"] = _count(
+                listed[severity], f"incidents listed in <incidents> classified as {severity}"
+            )
     top = sorted(components.items(), key=lambda item: (-item[1], item[0]))
     top_components = [component for component, _ in top[: config.top_components]]
+    aggregates["top_components.count"] = _count(
+        len(top_components), "components listed in <top_components>"
+    )
     mix = Counter((label.component, label.severity) for label in labels.values())
     for component in top_components:
         for severity in Severity:
