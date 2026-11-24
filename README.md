@@ -48,7 +48,7 @@ Per class on holdout: critical F1 0.90, high 0.79, medium 0.63, low 0.76. Medium
 | split | arm | precision | recall |
 |---|---|---|---|
 | holdout | similarity only | 26.9% [13.3–50.0] | 100% |
-| holdout | similarity + judge | 91.3% [73.9–100]** | 100% |
+| holdout | similarity + judge | 91.3% [73.9–100] | 100% |
 
 All 21 gold pairs were found, including the 6 that cross languages. 2 of 59 unrelated candidate pairs were merged.
 
