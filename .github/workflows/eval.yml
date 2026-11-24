@@ -55,8 +55,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: |
-          run_id=$(gh run list --workflow eval.yml --branch main --status success --limit 1 \
-            --json databaseId --jq '.[0].databaseId // empty')
+          run_id=$(gh run list --workflow eval.yml --branch main --limit 20 --json databaseId,conclusion \
+            --jq 'map(select(.conclusion == "success"))[0].databaseId // empty')
           if [ -z "$run_id" ]; then
             echo "::error title=No baseline from main::Run the eval workflow on main (Actions, eval, Run workflow) once, then re-run this job."
             exit 1
