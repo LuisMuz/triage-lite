@@ -52,12 +52,12 @@ variable "budget_alert_email" {
 }
 
 variable "github_repository" {
-  description = "GitHub owner/name whose Actions runs may assume the CI roles."
+  description = "GitHub repository whose Actions runs may assume the CI roles, as owner@owner_id/name@repo_id: the immutable OIDC subject prefix, without \"repo:\"."
   type        = string
-  default     = "LuisMuz/triage-lite"
+  default     = "LuisMuz@100327980/triage-lite@1436205723"
 
   validation {
-    condition     = can(regex("^[A-Za-z0-9-]+/[A-Za-z0-9._-]+$", var.github_repository))
-    error_message = "Use the owner/name form, e.g. octo-org/triage-lite."
+    condition     = can(regex("^[A-Za-z0-9-]+@[0-9]+/[A-Za-z0-9._-]+@[0-9]+$", var.github_repository))
+    error_message = "Use owner@owner_id/name@repo_id, as in sub_claim_prefix from GET /repos/{owner}/{repo}/actions/oidc/customization/sub."
   }
 }
