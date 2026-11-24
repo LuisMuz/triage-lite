@@ -68,7 +68,7 @@ Reproduce with `make eval REPEAT=3` (tuning), `make eval-dedupe` and `make eval-
 | Total, per 100 incidents (60-incident batch) | ≈ 0.21 (ceiling 1.00) |
 | Sample batch in the cloud (20 incidents, 28 model calls) | 0.048 |
 | One uncached CI eval run | ≈ 0.13 |
-| Idle deployment, per month | TODO: from Cost Explorer |
+| Idle deployment, per month | ≈ 0.10 (S3 storage; Lambda, Step Functions, DynamoDB, the HTTP API and CloudWatch stay within the free tier) |
 
 Every model call records its tokens and cost. Each batch stores its total cost, and the dashboard plots it. An account-wide budget emails at 85% and 100% of USD 30/month, and when the forecast passes 100%. An alarm fires when model calls cost USD 0.50 or more in 24 hours.
 
